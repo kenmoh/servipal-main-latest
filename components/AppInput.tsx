@@ -6,15 +6,16 @@ type InputProp = {
     keyboardType?: KeyboardTypeOptions
     secureTextEntry?: boolean
     placeholder?: string
+    height?: string
 
 }
-const AppTextInput = ({ label, placeholder, keyboardType = 'default', secureTextEntry = false }: InputProp) => {
+const AppTextInput = ({ label, placeholder, height = '$5', keyboardType = 'default', secureTextEntry = false }: InputProp) => {
     const theme = useTheme()
     return (
-        <YStack width={'90%'} justifyContent='center' alignItems='center'>
+        <YStack width={'90%'} justifyContent='center' alignItems='center' alignSelf='center'>
             {label && <Label color={'$text'} fontWeight={'600'} fontFamily={'$body'} alignSelf='flex-start'>{label}</Label>}
             <Input
-                height={'$5'}
+                height={height}
                 backgroundColor={'$inputBackground'}
                 borderRadius={10}
                 width={'100%'}

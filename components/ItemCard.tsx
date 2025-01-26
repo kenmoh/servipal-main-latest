@@ -59,7 +59,7 @@ const ItemCard = ({ data, isHomeScreen = false }: CardProp) => {
                                     <Text color={'$text'} fontFamily={'$body'} fontSize={11}>{data?.package_name || data?.order_owner_username}</Text>
                                 </XStack>
                                 <XStack gap={5} alignItems='center'>
-                                    <Feather name='map-pin' color={theme.icon.val} size={10} />
+
                                     <Text color={'$text'} fontFamily={'$body'} fontSize={11}>{data?.origin}</Text>
                                 </XStack>
                                 <XStack gap={5} alignItems='center'>

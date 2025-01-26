@@ -2,32 +2,17 @@ import { Dimensions, ScrollView, StyleSheet } from 'react-native'
 import React, { useRef, useState } from 'react'
 import { useLocalSearchParams } from 'expo-router'
 import { Button, Heading, Image, Paragraph, Text, useTheme, View, XStack, YStack } from 'tamagui'
-import { AntDesign } from '@expo/vector-icons'
+import { AntDesign, Feather } from '@expo/vector-icons'
 import HDivider from '@/components/HDivider'
+import Category from '@/components/Category'
 
 
 const IMAGET_HEIGHT = Dimensions.get('screen').height * 0.2
 const StoreDetails = () => {
     const theme = useTheme()
-    const [activeCategory, setActiveCategory] = useState('Pizza');
-    const scrollRef = useRef<ScrollView>(null); const buttonWidth = 100;
-    const screenWidth = Dimensions.get('window').width;
-
-    const categories = [
-        'Pizza', 'Burger', 'Chicken', 'Salad',
-        'Pasta', 'Dessert', 'Drinks', 'Seafood'
-    ];
 
 
-    const scrollToCategory = (index: number) => {
-        const offset = index * buttonWidth;
-        const centerOffset = (screenWidth - buttonWidth) / 2;
 
-        scrollRef.current?.scrollTo({
-            x: Math.max(0, offset - centerOffset),
-            animated: true
-        });
-    };
     const {
         storeId,
         companyName,
@@ -49,7 +34,7 @@ const StoreDetails = () => {
                         height={IMAGET_HEIGHT}
                         objectFit='cover'
                     />
-                    <View backgroundColor={'rebeccapurple'}>
+                    <View >
                         <Image src={require('@/assets/images/Pizza.jpeg')}
                             height={65}
                             width={65}
@@ -70,56 +55,23 @@ const StoreDetails = () => {
                         >{companyName}</Heading>
                         <XStack alignItems='center' gap={'$2'}>
                             <AntDesign name='staro' color={theme.btnPrimaryColor.val} />
-                            <Paragraph color={'$text'} fontFamily={'$body'} fontSize={'$2'}>{rating}</Paragraph>
-                            <Paragraph color={'$text'} fontFamily={'$body'} fontSize={'$2'}>( 300 reviews)</Paragraph>
+                            <Paragraph color={'$icon'} fontFamily={'$body'} fontSize={'$2'}>{rating}</Paragraph>
+                            <Paragraph color={'$icon'} fontFamily={'$body'} fontSize={'$2'}>( 300 reviews)</Paragraph>
                         </XStack>
-                        <Paragraph color={'$text'} fontFamily={'$body'} fontSize={'$2'}>{address}</Paragraph>
+                        <XStack alignItems='center' gap={'$2'}>
+                            <Feather name='map-pin' color={theme.icon.val} size={12} />
+                            <Paragraph color={'$icon'} fontFamily={'$body'} fontSize={'$2'}>{address}</Paragraph>
+                        </XStack>
+                        <XStack alignItems='center' gap={'$2'}>
+                            <AntDesign name='clockcircleo' color={theme.icon.val} />
+                            <Paragraph color={'$icon'} fontFamily={'$body'} fontSize={'$2'}>{openingHour}</Paragraph>
+                            <Paragraph color={'$icon'} fontFamily={'$body'} fontSize={'$2'}>{closingHour}</Paragraph>
+                        </XStack>
                     </YStack>
                     <HDivider />
                 </YStack>
-                <ScrollView
-                    ref={scrollRef}
-                    horizontal
-                    showsHorizontalScrollIndicator={false}
-                    contentContainerStyle={{
-                        paddingHorizontal: 10,
-                        gap: 5
-                    }}
-                >
-                    {categories.map((category, index) => (
-                        <Button
-                            key={category}
-                            onPress={() => {
-                                setActiveCategory(category);
-                                scrollToCategory(index);
-                            }}
-                            backgroundColor={
-                                activeCategory === category
-                                    ? '$transparentBtnPrimaryColor'
-                                    : '$profileCard'
-                            }
-                            color={
-                                activeCategory === category
-                                    ? 'white'
-                                    : '$text'
-                            }
-                            borderRadius="$10"
-                            paddingHorizontal="$4"
-                            height={'$3'}
-                            pressStyle={{
-                                scale: 0.97,
-                                opacity: 0.9
-                            }}
-                        >
-                            <Text
-                                fontSize={14}
-                                fontFamily="$body"
-                            >
-                                {category}
-                            </Text>
-                        </Button>
-                    ))}
-                </ScrollView>
+
+
 
             </View>
         </>

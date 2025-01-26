@@ -1,12 +1,26 @@
 import { StyleSheet, FlatList } from 'react-native'
 import React from 'react'
 import StoreCard from '@/components/StoreCard'
-import { View } from 'tamagui'
+import { useTheme, View } from 'tamagui'
 import { useQuery } from '@tanstack/react-query'
 import { getUsersByMealCategory } from '@/api/user'
 import LoadingIndicator from '@/components/LoadingIndicator'
+import { SafeAreaView } from 'react-native-safe-area-context'
+import Category from '@/components/Category'
+import AppTextInput from '@/components/AppInput'
 
+const categories = [
+    { id: 1, name: 'Pizza' },
+    { id: 2, name: 'Burger' },
+    { id: 3, name: 'Chicken' },
+    { id: 4, name: 'Salad' },
+    { id: 5, name: 'Pasta' },
+    { id: 6, name: 'Dessert' },
+    { id: 7, name: 'Drinks' },
+    { id: 8, name: 'Seafood' }
+];
 const Page = () => {
+    const theme = useTheme()
 
     const { data, isPending } = useQuery({
         queryKey: ['restaurants'],
@@ -18,7 +32,11 @@ const Page = () => {
     }
 
     return (
-        <View flex={1} backgroundColor={'$background'}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: theme.background.val }}>
+            <View marginTop={'$4'}>
+                <AppTextInput height='$4' />
+            </View>
+            <Category categories={categories} />
 
             <FlatList
                 data={data}
@@ -30,7 +48,7 @@ const Page = () => {
                 }}
             />
 
-        </View>
+        </SafeAreaView>
     )
 }
 
