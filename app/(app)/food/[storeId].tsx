@@ -1,20 +1,23 @@
-import { Dimensions, ScrollView, StyleSheet } from 'react-native'
-import React, { useRef, useState } from 'react'
+import { Dimensions, StyleSheet } from 'react-native'
 import { useLocalSearchParams } from 'expo-router'
-import { Button, Heading, Image, Paragraph, Text, useTheme, View, XStack, YStack } from 'tamagui'
+import { Heading, Image, Paragraph, Text, useTheme, View, XStack, YStack } from 'tamagui'
 import { AntDesign, Feather } from '@expo/vector-icons'
 import HDivider from '@/components/HDivider'
 import Category from '@/components/Category'
+import FoodCard from '@/components/FoodCard'
 
+const groups = [
+    { id: 1, name: 'Starters' },
+    { id: 2, name: 'Main Course' },
+    { id: 3, name: 'Desserts' },
+    { id: 4, name: 'Others' },
+
+];
 
 const IMAGET_HEIGHT = Dimensions.get('screen').height * 0.2
 const StoreDetails = () => {
     const theme = useTheme()
-
-
-
     const {
-        storeId,
         companyName,
         backDrop,
         openingHour,
@@ -45,6 +48,7 @@ const StoreDetails = () => {
                             left={20}
                         />
                     </View>
+
                     <YStack marginTop={'$7'} paddingHorizontal={10}>
 
                         <Heading
@@ -69,9 +73,9 @@ const StoreDetails = () => {
                         </XStack>
                     </YStack>
                     <HDivider />
+                    <Category categories={groups} />
                 </YStack>
-
-
+                <FoodCard />
 
             </View>
         </>
