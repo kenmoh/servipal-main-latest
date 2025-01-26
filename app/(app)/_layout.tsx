@@ -48,6 +48,7 @@ const TabBarLayout = () => {
         <Tabs screenOptions={{
 
             tabBarActiveTintColor: theme.text.val,
+            headerShown: false,
             headerTitleAlign: "center",
             headerTintColor: theme.text.val,
             tabBarShowLabel: false,
