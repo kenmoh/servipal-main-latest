@@ -28,7 +28,7 @@ const ItemCard = ({ data, isHomeScreen = false }: CardProp) => {
     };
     return (
         <TouchableOpacity activeOpacity={0.6} onPress={() => router.push({
-            pathname: '/[id]',
+            pathname: '/(app)/(delivery)/[id]',
             params: {
                 id: data?.id,
                 orderNumber: data?.order_number

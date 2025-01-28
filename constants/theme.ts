@@ -61,11 +61,13 @@ export const poppinsFont = createFont({
 
 export const tokens = createTokens({
   color: {
+    cardLight: "#fff",
+    cardDark: "rgba(30, 33, 39, 0.5)",
     primaryLight: "#0000CD",
     primaryDark: "#ffffff",
     textLight: "#11181C",
     textDark: "#ddd",
-    backgroundLight: "#fff",
+    backgroundLight: "#eee",
     backgroundDark: "#18191c",
     error: "#ff8282",
     errorTransparent: "rgba(255, 130, 130, 0.35)",
@@ -99,6 +101,7 @@ export const tokens = createTokens({
 export const appTheme = {
   lightTheme: {
     ...themes.light,
+    cardBackground: tokens.color.cardLight,
     background: tokens.color.backgroundLight,
     text: tokens.color.textLight,
     icon: tokens.color.iconLight,
@@ -117,6 +120,7 @@ export const appTheme = {
   },
   darkTheme: {
     ...themes.dark,
+    cardBackground: tokens.color.cardDark,
     background: tokens.color.backgroundDark,
     text: tokens.color.textDark,
     icon: tokens.color.iconDark,

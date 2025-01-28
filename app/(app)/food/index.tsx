@@ -1,7 +1,7 @@
 import { StyleSheet, FlatList } from 'react-native'
 import React from 'react'
 import StoreCard from '@/components/StoreCard'
-import { useTheme, View } from 'tamagui'
+import { Button, useTheme, View } from 'tamagui'
 import { useQuery } from '@tanstack/react-query'
 import { getUsersByMealCategory } from '@/api/user'
 import LoadingIndicator from '@/components/LoadingIndicator'
@@ -47,6 +47,8 @@ const Page = () => {
                     paddingBottom: 10
                 }}
             />
+
+
 
         </SafeAreaView>
     )

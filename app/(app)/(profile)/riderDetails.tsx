@@ -1,14 +1,14 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 
-const MarketplaceLayout = () => {
+const riderDetails = () => {
     return (
         <View>
-            <Text>MarketplaceLayout</Text>
+            <Text>riderDetails</Text>
         </View>
     )
 }
 
-export default MarketplaceLayout
+export default riderDetails
 
 const styles = StyleSheet.create({})

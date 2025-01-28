@@ -1,47 +1,25 @@
 import { StyleSheet, Text, View } from 'react-native'
-import { withLayoutContext } from "expo-router";
-import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
-import { useTheme } from 'tamagui';
-
-const DeliveryTabs = withLayoutContext(createMaterialTopTabNavigator().Navigator);
+import React from 'react'
+import { Stack } from 'expo-router'
+import { useTheme } from 'tamagui'
 
 const DeliveryLayout = () => {
     const theme = useTheme()
     return (
-        <DeliveryTabs screenOptions={{
-            tabBarLabelStyle: {
-                color: theme.tabIconDefault.val,
-                fontSize: 12,
-                textAlign: 'center',
-                textTransform: 'capitalize',
-                fontFamily: 'Poppins-Bold',
+        <Stack>
+            <Stack.Screen name='[id]' options={{
+                headerTransparent: true,
+                title: '',
+                headerStyle: {
+                    backgroundColor: 'transparent',
 
-            },
-            tabBarActiveTintColor: theme.text.val,
-            tabBarInactiveTintColor: theme.icon.val,
-            tabBarAndroidRipple: { borderless: false, color: theme.icon.val },
+                },
+                headerTintColor: 'red'
+            }} />
+            <Stack.Screen name='(topTabs)' options={{
 
-            tabBarIndicatorStyle: {
-                backgroundColor: theme.btnPrimaryColor.val,
-                height: StyleSheet.hairlineWidth
-            },
-            tabBarContentContainerStyle: {
-                backgroundColor: theme.profileCard.val,
-            },
-            tabBarStyle: {
-                borderBottomColor: theme.borderColor.val,
-                borderBottomWidth: StyleSheet.hairlineWidth,
-                elevation: 0,
-                shadowOpacity: 0,
-                backgroundColor: theme.background.val,
-
-            },
-        }}>
-            <DeliveryTabs.Screen name="index" options={{ title: 'Packages' }} />
-            <DeliveryTabs.Screen name="orders" options={{ title: 'My Orders' }} />
-
-
-        </DeliveryTabs>
+            }} />
+        </Stack>
     )
 }
 

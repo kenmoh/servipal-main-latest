@@ -6,11 +6,13 @@ import LoadingIndicator from '@/components/LoadingIndicator'
 import Tabs from '@/components/Tabs'
 import { Order } from '@/types/order-types'
 import { useQuery } from '@tanstack/react-query'
+import { router } from 'expo-router'
+import { Plus } from 'lucide-react-native'
 import React, { useState } from 'react'
 import { FlatList } from 'react-native'
 import { LayoutAnimationConfig } from 'react-native-reanimated'
 
-import { YStack, Text, useTheme, View } from 'tamagui'
+import { YStack, Text, useTheme, View, Button } from 'tamagui'
 
 
 
@@ -101,6 +103,19 @@ const index = () => {
             <LayoutAnimationConfig skipEntering>
                 {renderContent()}
             </LayoutAnimationConfig>
+            <Button
+                onPress={() => router.push('/modal')}
+                size={'$5'}
+                circular
+                position='absolute'
+                bottom={20}
+                right={20}
+                pressStyle={{
+                    backgroundColor: '$orange10'
+                }}
+                backgroundColor={'$orange10'}>
+                <Plus color={'white'} size={25} />
+            </Button>
         </YStack>
     )
 }

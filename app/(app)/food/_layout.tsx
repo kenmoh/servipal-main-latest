@@ -17,6 +17,7 @@ const FoodLayout = () => {
             <Stack.Screen name="[storeId]" options={{
                 headerTransparent: true,
                 title: '',
+
                 headerStyle: {
                     backgroundColor: 'transparent',
 

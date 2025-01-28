@@ -1,14 +1,14 @@
 import { StyleSheet, Text, View } from 'react-native'
-import { withLayoutContext } from "expo-router";
+import React from 'react'
 
-const ProfileLayout = () => {
+const riders = () => {
     return (
         <View>
-            <Text>_layout</Text>
+            <Text>riders</Text>
         </View>
     )
 }
 
-export default ProfileLayout
+export default riders
 
 const styles = StyleSheet.create({})

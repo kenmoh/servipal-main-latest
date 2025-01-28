@@ -9,6 +9,7 @@ import {
     Button,
 } from 'tamagui';
 import { FlatList, Dimensions } from 'react-native';
+import { router } from 'expo-router';
 interface MarketplaceItem {
     id: string;
     name: string;
@@ -57,7 +58,7 @@ const marketplaceItems: MarketplaceItem[] = [
 
 export default function Marketplace() {
     const screenWidth = Dimensions.get('window').width;
-    const columnWidth = (screenWidth - 30) / 2; // 48 accounts for padding and gap
+    const columnWidth = (screenWidth - 30) / 2;
 
     const renderRatingStars = (rating: number) => {
         return (
@@ -79,30 +80,39 @@ export default function Marketplace() {
             key={item.id}
             elevate
             bordered
-            animation="bouncy"
-            scale={0.95}
+            onPress={() => router.push({
+                pathname: '/[itemId]',
+                params: {
+                    itemId: item.id,
+                    name: item.name,
+                    price: item.price,
+                    image: item.image,
+                    seller: item.seller,
+                    rating: item.rating
+                }
+            })}
             pressStyle={{ scale: 0.975 }}
             width={columnWidth}
             margin="$2"
+            overflow='hidden'
 
         >
-            <Card.Header padded>
-                <Image
-                    source={{ uri: item.image }}
-                    width="100%"
-                    height={120}
-                    objectFit="cover"
-                    borderRadius="$4"
-                />
-            </Card.Header>
 
-            <Card.Footer padded>
+            <Image
+                source={{ uri: item.image }}
+                width="100%"
+                height={120}
+                objectFit="cover"
+                borderRadius="$0"
+            />
+
+            <Card.Footer padded alignSelf='center'>
                 <YStack gap="$2">
                     <Text fontSize="$3" fontWeight="bold" numberOfLines={1}>
                         {item.name}
                     </Text>
 
-                    <Text fontSize="$2" color="$gray10" numberOfLines={1}>
+                    <Text fontSize={10} color="$gray10" numberOfLines={1}>
                         Seller: {item.seller}
                     </Text>
 
@@ -115,11 +125,14 @@ export default function Marketplace() {
 
                     <Button
                         alignSelf='center'
-                        backgroundColor="$btnPrimaryColor"
+                        backgroundColor="$transparentBtnPrimaryColor"
                         color="white"
                         marginTop="$2"
                         size="$3"
                         width={'100%'}
+                        borderRadius={'$10'}
+                        fontWeight={'700'}
+                        fontSize={'$1'}
                     >
                         Buy Now
                     </Button>
@@ -138,6 +151,7 @@ export default function Marketplace() {
                 data={marketplaceItems}
                 renderItem={renderItem}
                 numColumns={2}
+
                 keyExtractor={(item) => item.id}
                 contentContainerStyle={{ padding: 0 }}
                 showsVerticalScrollIndicator={false}

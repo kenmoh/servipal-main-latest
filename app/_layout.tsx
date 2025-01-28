@@ -51,23 +51,17 @@ export default function RootLayout() {
             <Stack.Screen name="(app)" options={{ headerShown: false }} />
             <Stack.Screen name="index" options={{ headerShown: false }} />
             <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-            <Stack.Screen name="home" options={{ headerShown: false }} />
+
             <Stack.Screen name="modal" options={{
-              presentation: 'containedModal',
+              presentation: 'modal',
               animation: 'slide_from_bottom',
-              headerStyle: {
-                backgroundColor: 'red'
-              }
+              headerShown: false
             }} />
-            <Stack.Screen name="[id]" options={{
+            {/* <Stack.Screen name="[id]" options={{
               title: '',
 
-            }} />
-            <Stack.Screen name="marketplace" options={{
-              headerStyle: {
-                backgroundColor: 'teal'
-              }
-            }} />
+            }} /> */}
+
           </Stack>
           <StatusBar style="auto" />
         </ThemeProvider>

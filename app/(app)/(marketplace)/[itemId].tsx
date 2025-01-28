@@ -7,14 +7,13 @@ import {
     Button,
     Input,
     ScrollView,
-    Select,
-    Separator,
-    Sheet,
     View,
     useTheme
 } from 'tamagui'
 import { router } from 'expo-router'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
+import { useLocalSearchParams, useSearchParams } from 'expo-router/build/hooks'
+import { ChevronLeft, Store } from 'lucide-react-native'
 
 
 const sizes = [
@@ -31,27 +30,34 @@ const ItemDetail = () => {
     const [color, setColor] = useState('')
     const [address, setAddress] = useState('')
 
+    const {
+        itemId,
+        name,
+        price,
+        image,
+        seller,
+        rating
+    } = useLocalSearchParams()
+
     return (
         <ScrollView flex={1} backgroundColor="$background">
+            {/* Product Image */}
+            <Image
+                src={image}
+                resizeMode='cover' height={600}
+                style={{ width: '100%', height: 350, borderRadius: 12 }}
+            />
             <YStack padding="$4" gap="$4">
-                {/* Header */}
-                <XStack justifyContent="space-between" alignItems="center" top={20}>
-                    <Button backgroundColor={'$transparentBtnPrimaryColor'} circular icon={<MaterialCommunityIcons name='chevron-left' color={theme.icon.val} size={35} />} onPress={() => router.back()} />
-                    <Button backgroundColor={'$transparentBtnPrimaryColor'} icon={<MaterialCommunityIcons name='heart-outline' color={theme.icon.val} size={35} />} circular />
-                </XStack>
 
-                {/* Product Image */}
-                <Image
-                    source={require('@/assets/images/mkt.png')}
-                    resizeMode='cover' height={600}
-                    style={{ width: '100%', height: 350, borderRadius: 12 }}
-                />
 
                 {/* Product Info */}
                 <YStack gap="$1">
-                    <Text fontSize="$3" fontWeight="500" color={'$text'} >Store Name</Text>
-                    <Text fontSize="$4" fontWeight="600">Product Name</Text>
-                    <Text fontSize="$5" color="$orange10" fontWeight={'bold'}>₦99.99</Text>
+                    <XStack gap={'$2'}>
+                        <Store size={15} color={theme.icon.val} />
+                        <Text fontSize="$3" fontWeight="500" color={'$text'} >{seller}</Text>
+                    </XStack>
+                    <Text fontSize="$4" fontWeight="700">{name}</Text>
+                    <Text fontSize="$5" color="$orange10" fontWeight={'bold'}>₦{price}</Text>
                     <Text color="$gray11">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore.</Text>
                 </YStack>
 

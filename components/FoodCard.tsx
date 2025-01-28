@@ -12,8 +12,9 @@ const FoodCard = () => {
                 width={'95%'}
                 alignSelf='center'
                 borderWidth={StyleSheet.hairlineWidth}
-                borderColor={'$inputBackground'}
+                borderColor={'$profileCard'}
                 marginVertical='$1.5'
+                backgroundColor={'$cardBackground'}
             >
                 <TouchableOpacity
                     activeOpacity={0.8}

@@ -1,8 +1,9 @@
 import { StyleSheet } from 'react-native'
 import React, { ReactNode } from 'react'
 import { Tabs } from 'expo-router'
-import { Text, useTheme, View } from 'tamagui'
-import { AntDesign, Entypo, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
+import { useTheme, View } from 'tamagui'
+import { BikeIcon, CookingPotIcon, Store, UserRound, Wallet, WashingMachine } from 'lucide-react-native'
+
 
 
 const TAB_BAR_ICON_SIZE = 25;
@@ -53,14 +54,15 @@ const TabBarLayout = () => {
             headerTintColor: theme.text.val,
             tabBarShowLabel: false,
             tabBarHideOnKeyboard: true,
+            tabBarStyle: {
+                height: 55
+            },
             tabBarItemStyle: {
                 padding: 15,
                 justifyContent: 'center',
                 alignItems: 'center',
                 flexDirection: 'column',
                 backgroundColor: theme.background.val,
-                borderTopColor: theme.btnPrimaryColor.val,
-                borderTopWidth: StyleSheet.hairlineWidth,
             },
 
 
@@ -73,7 +75,7 @@ const TabBarLayout = () => {
                 title: '',
                 tabBarIcon: ({ color, focused }) => (
                     <CustomTabBarIcon focused={focused}>
-                        <AntDesign name="home" size={TAB_BAR_ICON_SIZE} color={color} />
+                        <BikeIcon size={TAB_BAR_ICON_SIZE} color={color} />
                     </CustomTabBarIcon>
                 ),
             }} />
@@ -81,8 +83,7 @@ const TabBarLayout = () => {
                 title: '',
                 tabBarIcon: ({ color, focused }) => (
                     <CustomTabBarIcon focused={focused}>
-                        <MaterialIcons
-                            name="restaurant"
+                        <CookingPotIcon
                             size={TAB_BAR_ICON_SIZE}
                             color={color}
                         />
@@ -93,19 +94,19 @@ const TabBarLayout = () => {
                 title: '',
                 tabBarIcon: ({ color, focused }) => (
                     <CustomTabBarIcon focused={focused}>
-                        <MaterialCommunityIcons
-                            name="washing-machine"
+                        <WashingMachine
                             size={TAB_BAR_ICON_SIZE}
                             color={color}
                         />
                     </CustomTabBarIcon>
                 ),
             }} />
-            <Tabs.Screen name='marketplace' options={{
+            <Tabs.Screen name='(marketplace)' options={{
                 title: '',
                 tabBarIcon: ({ color, focused }) => (
                     <CustomTabBarIcon focused={focused}>
-                        <Entypo name="shop" size={TAB_BAR_ICON_SIZE} color={color} />
+                        <Store size={TAB_BAR_ICON_SIZE} color={color} />
+
                     </CustomTabBarIcon>
                 ),
             }} />
@@ -113,15 +114,15 @@ const TabBarLayout = () => {
                 title: '',
                 tabBarIcon: ({ color, focused }) => (
                     <CustomTabBarIcon focused={focused}>
-                        <Entypo name="wallet" size={TAB_BAR_ICON_SIZE} color={color} />
+                        <Wallet size={TAB_BAR_ICON_SIZE} color={color} />
                     </CustomTabBarIcon>
                 ),
             }} />
-            <Tabs.Screen name='profile' options={{
+            <Tabs.Screen name='(profile)' options={{
                 title: '',
                 tabBarIcon: ({ color, focused }) => (
                     <CustomTabBarIcon focused={focused}>
-                        <AntDesign name="user" size={TAB_BAR_ICON_SIZE} color={color} />
+                        <UserRound size={TAB_BAR_ICON_SIZE} color={color} />
                     </CustomTabBarIcon>
                 ),
             }} />
