@@ -2,7 +2,7 @@ import { StyleSheet } from 'react-native'
 import React, { ReactNode } from 'react'
 import { Tabs } from 'expo-router'
 import { useTheme, View } from 'tamagui'
-import { BikeIcon, CookingPotIcon, Store, UserRound, Wallet, WashingMachine } from 'lucide-react-native'
+import { Bell, BikeIcon, CookingPotIcon, Store, UserRound, Wallet, WashingMachine } from 'lucide-react-native'
 
 
 
@@ -64,6 +64,12 @@ const TabBarLayout = () => {
                 flexDirection: 'column',
                 backgroundColor: theme.background.val,
             },
+            tabBarBadgeStyle: {
+                position: 'absolute',
+                top: -12,
+                backgroundColor: theme.btnPrimaryColor.val,
+                color: 'white'
+            }
 
 
 
@@ -123,6 +129,16 @@ const TabBarLayout = () => {
                 tabBarIcon: ({ color, focused }) => (
                     <CustomTabBarIcon focused={focused}>
                         <UserRound size={TAB_BAR_ICON_SIZE} color={color} />
+                    </CustomTabBarIcon>
+                ),
+            }} />
+            <Tabs.Screen name='notification' options={{
+                title: '',
+                tabBarBadge: 3,
+
+                tabBarIcon: ({ color, focused }) => (
+                    <CustomTabBarIcon focused={focused}>
+                        <Bell size={TAB_BAR_ICON_SIZE} color={color} />
                     </CustomTabBarIcon>
                 ),
             }} />

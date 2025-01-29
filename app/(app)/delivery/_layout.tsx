@@ -14,7 +14,7 @@ const DeliveryLayout = () => {
                     backgroundColor: 'transparent',
 
                 },
-                headerTintColor: 'red'
+                headerTintColor: theme.icon.val
             }} />
             <Stack.Screen name='(topTabs)' options={{
 

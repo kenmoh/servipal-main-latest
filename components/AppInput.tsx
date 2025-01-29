@@ -12,7 +12,7 @@ type InputProp = {
 const AppTextInput = ({ label, placeholder, height = '$5', keyboardType = 'default', secureTextEntry = false }: InputProp) => {
     const theme = useTheme()
     return (
-        <YStack width={'90%'} justifyContent='center' alignItems='center' alignSelf='center'>
+        <YStack marginVertical={label ? 0 : '$2'} width={'90%'} justifyContent='center' alignItems='center' alignSelf='center'>
             {label && <Label color={'$text'} fontWeight={'600'} fontFamily={'$body'} alignSelf='flex-start'>{label}</Label>}
             <Input
                 height={height}
