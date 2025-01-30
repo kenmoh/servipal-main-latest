@@ -30,12 +30,24 @@ const RiderCard = () => {
                 </XStack>
             </Card.Header>
             <HDivider />
-            <Card.Footer padded>
-                <XStack alignItems='center' justifyContent='space-between' >
-                    <XStack>
-                        <Text color={'$icon'} style={{ fontFamily: 'Poppins-Light', fontSize: 12 }}>Total Delivery:</Text>
-                        <Text color={'$text'} style={{ fontFamily: 'Poppins-Bold', fontSize: 15 }}>  400</Text>
-                    </XStack>
+            <Card.Footer padded >
+                <XStack alignItems='center' width={'100%'} justifyContent='space-between' >
+                    <YStack>
+                        <Text color={'$text'} style={{ fontFamily: 'Poppins-Medium', fontSize: 15 }}>  400</Text>
+                        <Text color={'$icon'} style={{ fontFamily: 'Poppins-Light', fontSize: 12 }}>Delivered</Text>
+                    </YStack>
+                    <YStack>
+                        <Text color={'$text'} style={{ fontFamily: 'Poppins-Medium', fontSize: 15 }}>  400</Text>
+                        <Text color={'$icon'} style={{ fontFamily: 'Poppins-Light', fontSize: 12 }}>Pending</Text>
+                    </YStack>
+                    <YStack>
+                        <Text color={'$text'} style={{ fontFamily: 'Poppins-Medium', fontSize: 15 }}>  400</Text>
+                        <Text color={'$icon'} style={{ fontFamily: 'Poppins-Light', fontSize: 12 }}>Bike No.</Text>
+                    </YStack>
+                    <YStack>
+                        <Text color={'$text'} style={{ fontFamily: 'Poppins-Medium', fontSize: 15 }}>  4.5</Text>
+                        <Text color={'$icon'} style={{ fontFamily: 'Poppins-Light', fontSize: 12 }}>Rating</Text>
+                    </YStack>
 
                 </XStack>
             </Card.Footer>

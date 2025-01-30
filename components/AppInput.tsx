@@ -1,16 +1,19 @@
-import { KeyboardTypeOptions } from 'react-native'
-import { Input, YStack, Label, useTheme } from 'tamagui'
+import { KeyboardTypeOptions, TextInputProps } from 'react-native'
+import { Input, YStack, Label, useTheme, Paragraph } from 'tamagui'
 
-type InputProp = {
+interface InputProp extends TextInputProps {
     label?: string,
     keyboardType?: KeyboardTypeOptions
     secureTextEntry?: boolean
     placeholder?: string
     height?: string
+    errorMessage?: string
+
+
 
 }
-const AppTextInput = ({ label, placeholder, height = '$5', keyboardType = 'default', secureTextEntry = false }: InputProp) => {
-    const theme = useTheme()
+const AppTextInput = ({ label, placeholder, errorMessage, height = '$5', keyboardType = 'default', secureTextEntry = false }: InputProp) => {
+
     return (
         <YStack marginVertical={label ? 0 : '$2'} width={'90%'} justifyContent='center' alignItems='center' alignSelf='center'>
             {label && <Label color={'$text'} fontWeight={'600'} fontFamily={'$body'} alignSelf='flex-start'>{label}</Label>}
@@ -33,6 +36,7 @@ const AppTextInput = ({ label, placeholder, height = '$5', keyboardType = 'defau
                 }}
 
             />
+            {errorMessage && <Paragraph alignSelf='flex-start' fontSize={'$1'} color={'$error'}>{errorMessage}</Paragraph>}
         </YStack>
     )
 }

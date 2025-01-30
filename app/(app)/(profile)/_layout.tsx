@@ -1,6 +1,7 @@
-import { StyleSheet, Text, View } from 'react-native'
-import { Stack, withLayoutContext } from "expo-router";
-import { useTheme } from 'tamagui';
+import { StyleSheet, Text } from 'react-native'
+import { Link, router, Stack, withLayoutContext } from "expo-router";
+import { useTheme, XStack } from 'tamagui';
+import { Plus } from 'lucide-react-native';
 
 const ProfileLayout = () => {
     const theme = useTheme()
@@ -29,6 +30,19 @@ const ProfileLayout = () => {
             }} />
             <Stack.Screen name='riders' options={{
                 title: 'Riders',
+                animation: 'ios_from_left',
+                headerRight: () => (<Link
+                    href={'/addRider'}
+                    asChild
+                    push
+                >
+                    <XStack backgroundColor={'$transparentBtnPrimaryColor'}
+                        borderRadius={'$10'}
+                        paddingVertical={'$1.5'} paddingHorizontal={'$3'}>
+                        <Plus color={theme.text.val} />
+                        <Text style={{ color: theme.text.val, fontFamily: 'Poppins-Medium' }}>Add Rider</Text>
+                    </XStack>
+                </Link>)
 
             }} />
         </Stack>

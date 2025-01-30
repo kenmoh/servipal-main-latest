@@ -35,7 +35,7 @@ const profile = () => {
             name: "Change Password",
             icon: <SquareAsterisk color={'white'} />,
             bgColor: "rgba(255, 212, 0, 0.3)",
-            link: './profile',
+            link: './changePassword',
             condition: true,
         },
         {
