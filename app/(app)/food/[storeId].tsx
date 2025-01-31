@@ -1,13 +1,14 @@
 
 import { Dimensions, StyleSheet, View as NativeView } from 'react-native'
 import Animated, { useSharedValue, useAnimatedStyle, useAnimatedScrollHandler, interpolate } from 'react-native-reanimated'
-import { useLocalSearchParams } from 'expo-router'
-import { Heading, Image, Paragraph, ScrollView, Text, useTheme, View, XStack, YStack } from 'tamagui'
+import { router, useLocalSearchParams } from 'expo-router'
+import { Button, Heading, Image, Paragraph, ScrollView, Text, useTheme, View, XStack, YStack } from 'tamagui'
 import { AntDesign, Feather } from '@expo/vector-icons'
 import HDivider from '@/components/HDivider'
 import Category from '@/components/Category'
 import FoodCard from '@/components/FoodCard'
 import { useRef, useState } from 'react'
+import { Plus } from 'lucide-react-native'
 
 const groups = [
     { id: 1, name: 'Starters' },
@@ -152,28 +153,40 @@ const StoreDetails = () => {
                             />
                         </View>
 
-                        <YStack marginTop={'$7'} paddingHorizontal={10} >
-                            <Heading
-                                letterSpacing={0}
-                                color={'$text'}
-                                fontSize={22}
-                                fontWeight={'bold'}
-                            >{companyName}</Heading>
-                            <XStack alignItems='center' gap={'$2'}>
-                                <AntDesign name='staro' color={theme.btnPrimaryColor.val} />
-                                <Paragraph color={'$icon'} fontFamily={'$body'} fontSize={'$2'}>{rating}</Paragraph>
-                                <Paragraph color={'$icon'} fontFamily={'$body'} fontSize={'$2'}>( 300 reviews)</Paragraph>
-                            </XStack>
-                            <XStack alignItems='center' gap={'$2'}>
-                                <Feather name='map-pin' color={theme.icon.val} size={12} />
-                                <Paragraph color={'$icon'} fontFamily={'$body'} fontSize={'$2'}>{address}</Paragraph>
-                            </XStack>
-                            <XStack alignItems='center' gap={'$2'}>
-                                <AntDesign name='clockcircleo' color={theme.icon.val} />
-                                <Paragraph color={'$icon'} fontFamily={'$body'} fontSize={'$2'}>{openingHour}</Paragraph>
-                                <Paragraph color={'$icon'} fontFamily={'$body'} fontSize={'$2'}>{closingHour}</Paragraph>
-                            </XStack>
-                        </YStack>
+                        <XStack alignItems='baseline' justifyContent='space-between'>
+                            <YStack marginTop={'$7'} paddingHorizontal={10} >
+                                <Heading
+                                    letterSpacing={0}
+                                    color={'$text'}
+                                    fontSize={22}
+                                    fontWeight={'bold'}
+                                >{companyName}</Heading>
+                                <XStack alignItems='center' gap={'$2'}>
+                                    <AntDesign name='staro' color={theme.btnPrimaryColor.val} />
+                                    <Paragraph color={'$icon'} fontFamily={'$body'} fontSize={'$2'}>{rating}</Paragraph>
+                                    <Paragraph color={'$icon'} fontFamily={'$body'} fontSize={'$2'}>( 300 reviews)</Paragraph>
+                                </XStack>
+                                <XStack alignItems='center' gap={'$2'}>
+                                    <Feather name='map-pin' color={theme.icon.val} size={12} />
+                                    <Paragraph color={'$icon'} fontFamily={'$body'} fontSize={'$2'}>{address}</Paragraph>
+                                </XStack>
+                                <XStack alignItems='center' gap={'$2'}>
+                                    <AntDesign name='clockcircleo' color={theme.icon.val} />
+                                    <Paragraph color={'$icon'} fontFamily={'$body'} fontSize={'$2'}>{openingHour}</Paragraph>
+                                    <Paragraph color={'$icon'} fontFamily={'$body'} fontSize={'$2'}>{closingHour}</Paragraph>
+                                </XStack>
+                            </YStack>
+                            <Button
+                                pressStyle={{
+                                    backgroundColor: '$transparentBtnPrimaryColor'
+                                }}
+                                onPress={() => router.push({ pathname: '/food/addMenu' })}
+                                marginRight={'$2.5'}
+                                alignSelf='flex-end'
+                                borderRadius={'$10'}
+                                backgroundColor={'$transparentBtnPrimaryColor'}
+                                icon={<Plus color={theme.text.val} />}>Add Menu</Button>
+                        </XStack>
                         <HDivider />
                     </View>
 

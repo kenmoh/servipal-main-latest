@@ -1,7 +1,10 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet } from 'react-native'
 import React from 'react'
-import { Stack } from 'expo-router'
-import { useTheme } from 'tamagui'
+import { router, Stack } from 'expo-router'
+import { Circle, useTheme, View } from 'tamagui'
+import { UserRound } from 'lucide-react-native'
+import AppTextInput from '@/components/AppInput'
+import AppHeader from '@/components/AppHeader'
 
 const DeliveryLayout = () => {
     const theme = useTheme()
@@ -16,7 +19,16 @@ const DeliveryLayout = () => {
                 },
                 headerTintColor: theme.icon.val
             }} />
+            <Stack.Screen name='profile' options={{
+                headerShown: false
+
+            }} />
             <Stack.Screen name='(topTabs)' options={{
+                title: '',
+                header: () => <AppHeader icon={
+                    <UserRound />
+                } component={<AppTextInput borderRadius={50} height='$3.5' />} onPress={() => router.push({ pathname: '/(app)/delivery/profile' })} backgroundColor={theme.background.val} />,
+                animation: 'ios_from_left'
 
             }} />
         </Stack>

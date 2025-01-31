@@ -14,8 +14,9 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/android-icon.png",
-        "backgroundColor": "#ffffff"
-      }
+        "backgroundColor": "#18191c"
+      },
+      "package": "com.kenmoh.servipal"
     },
     "web": {
       "bundler": "metro",
@@ -30,12 +31,29 @@
           "image": "./assets/images/splash-dark.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#ffffff"
+          "backgroundColor": "#18191c"
+        }
+      ],
+      "react-native-bottom-tabs",
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "useFrameworks": "static"
+          }
         }
       ]
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "97b0b6a5-6ac1-4bb1-aea7-17a10adcc2d6"
+      }
     }
   }
 }

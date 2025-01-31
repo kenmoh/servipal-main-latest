@@ -8,19 +8,19 @@ interface InputProp extends TextInputProps {
     placeholder?: string
     height?: string
     errorMessage?: string
-
+    borderRadius?: number
 
 
 }
-const AppTextInput = ({ label, placeholder, errorMessage, height = '$5', keyboardType = 'default', secureTextEntry = false }: InputProp) => {
+const AppTextInput = ({ label, placeholder, errorMessage, borderRadius = 10, height = '$5', keyboardType = 'default', secureTextEntry = false }: InputProp) => {
 
     return (
         <YStack marginVertical={label ? 0 : '$2'} width={'90%'} justifyContent='center' alignItems='center' alignSelf='center'>
             {label && <Label color={'$text'} fontWeight={'600'} fontFamily={'$body'} alignSelf='flex-start'>{label}</Label>}
             <Input
                 height={height}
-                backgroundColor={'$inputBackground'}
-                borderRadius={10}
+                backgroundColor={'$cardDark'}
+                borderRadius={borderRadius}
                 width={'100%'}
                 borderWidth={0}
                 keyboardType={keyboardType}

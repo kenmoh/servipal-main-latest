@@ -37,7 +37,7 @@ const DeliveryLayout = () => {
 
             },
         }}>
-            <DeliveryTabs.Screen name="index" options={{ title: 'Packages' }} />
+            <DeliveryTabs.Screen name="index" options={{ title: 'Delivery' }} />
             <DeliveryTabs.Screen name="orders" options={{ title: 'My Orders' }} />
 
 

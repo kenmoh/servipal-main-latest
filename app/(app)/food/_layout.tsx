@@ -14,6 +14,7 @@ const FoodLayout = () => {
             }
         }}>
             <Stack.Screen name="index" options={{ title: 'Food', headerShown: false }} />
+            <Stack.Screen name="addMenu" options={{ title: 'Add Item' }} />
             <Stack.Screen name="[storeId]" options={{
                 headerTransparent: true,
                 title: '',

@@ -47,8 +47,11 @@ export default function RootLayout() {
 
       <TamaguiProvider config={tamaguiConfig} defaultTheme={colorScheme!}>
         <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-          <Stack>
+          <Stack screenOptions={{
+            navigationBarColor: '#18191c'
+          }}>
             <Stack.Screen name="(app)" options={{ headerShown: false }} />
+
             <Stack.Screen name="index" options={{ headerShown: false }} />
             <Stack.Screen name="(auth)" options={{ headerShown: false }} />
 
@@ -57,10 +60,6 @@ export default function RootLayout() {
               animation: 'slide_from_bottom',
               headerShown: false
             }} />
-            {/* <Stack.Screen name="[id]" options={{
-              title: '',
-
-            }} /> */}
 
           </Stack>
           <StatusBar style="auto" />

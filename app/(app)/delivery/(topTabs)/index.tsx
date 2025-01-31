@@ -104,14 +104,14 @@ const index = () => {
                 {renderContent()}
             </LayoutAnimationConfig>
             <Button
-                onPress={() => router.push('/modal')}
+                onPress={() => router.push({ pathname: '/(app)/(profile)/addRider' })}
                 size={'$5'}
                 circular
                 position='absolute'
                 bottom={20}
                 right={20}
                 pressStyle={{
-                    backgroundColor: '$orange10'
+                    backgroundColor: 'yellow'
                 }}
                 backgroundColor={'$orange10'}>
                 <Plus color={'white'} size={25} />
