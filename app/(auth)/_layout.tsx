@@ -9,7 +9,6 @@ const AuthLayout = () => {
         <Stack screenOptions={{
             headerShown: false,
             title: '',
-            animation: 'fade_from_bottom',
             headerStyle: {
                 backgroundColor: theme.background.val
             }

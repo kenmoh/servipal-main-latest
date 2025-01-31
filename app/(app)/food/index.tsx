@@ -8,6 +8,7 @@ import LoadingIndicator from '@/components/LoadingIndicator'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import Category from '@/components/Category'
 import AppTextInput from '@/components/AppInput'
+import AppHeader from '@/components/AppHeader'
 
 const categories = [
     { id: 1, name: 'Pizza' },
@@ -33,9 +34,9 @@ const Page = () => {
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: theme.background.val }}>
-            <View marginTop={'$4'}>
-                <AppTextInput height='$4' />
-            </View>
+
+            <AppHeader component={<AppTextInput height='$3.5' borderRadius={50} />} />
+
             <Category categories={categories} />
 
             <FlatList

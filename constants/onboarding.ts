@@ -1,7 +1,10 @@
-import rider from "@/assets/images/3dbike.jpg";
-import food from "@/assets/images/3dfood.jpg";
+// import rider from "@/assets/images/3dbike.jpg";
+import food from "@/assets/images/food3d.png";
 import store from "@/assets/images/mkt.png";
-import linen from "@/assets/images/3dlinen.jpg";
+import linen from "@/assets/images/3dlinen.png";
+import rider from "@/assets/images/3dbike.png";
+import hand from "@/assets/images/3dhand.png";
+import payment from "@/assets/images/payment.png";
 
 export const onboardingSlides = [
   {
@@ -9,7 +12,7 @@ export const onboardingSlides = [
     name: "Welcome to ServiPal",
     description:
       "Your one-stop app for item delivery, food ordering, laundry services, and secure online peer-to-peer shopping.",
-    image: rider,
+    image: hand,
   },
   {
     id: 2,
@@ -36,6 +39,6 @@ export const onboardingSlides = [
     name: "Safe & Secure Shopping",
     description:
       "Browse, buy, and sell items securely with confidence using our built-in escrow service. What you ordered is what you get! 😊",
-    image: store,
+    image: payment,
   },
 ];

@@ -104,15 +104,12 @@ const index = () => {
                 {renderContent()}
             </LayoutAnimationConfig>
             <Button
-                onPress={() => router.push({ pathname: '/(app)/(profile)/addRider' })}
+                onPress={() => router.push({ pathname: '/(auth)/onboarding' })}
                 size={'$5'}
                 circular
                 position='absolute'
                 bottom={20}
                 right={20}
-                pressStyle={{
-                    backgroundColor: 'yellow'
-                }}
                 backgroundColor={'$orange10'}>
                 <Plus color={'white'} size={25} />
             </Button>
