@@ -18,7 +18,6 @@ import { YStack, Text, useTheme, View, Button } from 'tamagui'
 
 const index = () => {
 
-
     const theme = useTheme()
     const [selectedIndex, setSelectedIndex] = useState(0)
 

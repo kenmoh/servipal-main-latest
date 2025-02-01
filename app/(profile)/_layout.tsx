@@ -43,7 +43,7 @@ const ProfileLayout = () => {
                         borderRadius={'$10'}
 
                         backgroundColor={'$transparentBtnPrimaryColor'}
-                        onPressIn={() => router.push({ pathname: '/(app)/delivery/profile/addRider' })}
+                        onPressIn={() => router.push({ pathname: '/(profile)/addRider' })}
                     >
                         <Text style={{ color: theme.text.val, fontFamily: 'Poppins-Medium', marginLeft: 5 }}>Add Rider</Text>
                     </Button>

@@ -19,17 +19,14 @@ const DeliveryLayout = () => {
                 },
                 headerTintColor: theme.icon.val
             }} />
-            <Stack.Screen name='profile' options={{
-                headerShown: false
 
-            }} />
             <Stack.Screen name='(topTabs)' options={{
                 title: '',
                 header: () => <AppHeader icon={
                     <UserRound color={'white'} size={20} />
                 } component={<AppTextInput
                     borderRadius={50} height='$3.5' />}
-                    onPress={() => router.push({ pathname: '/(app)/delivery/profile' })} />,
+                    onPress={() => router.push({ pathname: '/(profile)' })} />,
                 animation: 'ios_from_left'
 
             }} />

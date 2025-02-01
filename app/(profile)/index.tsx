@@ -20,14 +20,14 @@ const profile = () => {
             name: "Update Profile",
             icon: <UserRound color={'white'} />,
             bgColor: "rgba(0,128, 128, 0.3)",
-            link: './profile/userProfile',
+            link: './userProfile',
             condition: true,
         },
         {
             name: "Riders",
             icon: <UsersRound color={'white'} />,
             bgColor: "rgba(0, 0, 255, 0.3)",
-            link: './profile/riders',
+            link: './riders',
             condition: true,
             // condition: currentUser.role === "admin", // Only show for admins
         },
@@ -35,14 +35,14 @@ const profile = () => {
             name: "Change Password",
             icon: <SquareAsterisk color={'white'} />,
             bgColor: "rgba(255, 212, 0, 0.3)",
-            link: './profile/changePassword',
+            link: './changePassword',
             condition: true,
         },
         {
             name: "Logout",
             icon: <LogOutIcon color={'white'} />,
             bgColor: "rgba(255, 0, 0, 0.3)",
-            link: './profile/changePassword',
+            link: './changePassword',
             condition: true,
         },
     ]
@@ -56,7 +56,7 @@ const profile = () => {
                         height={'100%'}
                     />
                     <Circle
-                        onPress={() => router.push({ pathname: '/(app)/delivery/profile/userProfile' })}
+                        onPress={() => router.push({ pathname: '/userProfile' })}
                         top={'$-8'}
                         right={'$-4'}
                         height={40}
