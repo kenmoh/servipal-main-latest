@@ -3,16 +3,14 @@ import { Input, YStack, Label, useTheme, Paragraph } from 'tamagui'
 
 interface InputProp extends TextInputProps {
     label?: string,
-    keyboardType?: KeyboardTypeOptions
-    secureTextEntry?: boolean
-    placeholder?: string
+    // keyboardType?: KeyboardTypeOptions
+    // secureTextEntry?: boolean
+    // placeholder?: string
     height?: string
     errorMessage?: string
     borderRadius?: number
-
-
 }
-const AppTextInput = ({ label, placeholder, errorMessage, borderRadius = 10, height = '$5', keyboardType = 'default', secureTextEntry = false }: InputProp) => {
+const AppTextInput = ({ label, placeholder, onBlur, onChangeText, errorMessage, borderRadius = 10, height = '$5', keyboardType = 'default', secureTextEntry = false }: InputProp) => {
 
     return (
         <YStack marginVertical={label ? 0 : '$2'} width={'90%'} justifyContent='center' alignItems='center' alignSelf='center'>
@@ -26,6 +24,8 @@ const AppTextInput = ({ label, placeholder, errorMessage, borderRadius = 10, hei
                 keyboardType={keyboardType}
                 secureTextEntry={secureTextEntry}
                 fontSize={15}
+                onBlur={onBlur}
+                onChangeText={onChangeText}
                 fontFamily={'$mono'}
                 placeholder={placeholder}
                 placeholderTextColor={'#aaa'}

@@ -1,34 +1,59 @@
 import { StyleSheet } from 'react-native'
 import React from 'react'
-import { ScrollView, View } from 'tamagui'
+import { Input, ScrollView, View } from 'tamagui'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Controller, useForm } from 'react-hook-form'
 import AppTextInput from '@/components/AppInput'
 import AppButton from '@/components/AppButton'
+import ImagePickerInput from '@/components/AppImagePicker'
 
 
 const schema = z.object({
     name: z.string(),
     description: z.string(),
     price: z.number(),
-    image: z.instanceof(File),
+    image: z.object({
+        uri: z.string(),
+        type: z.string(),
+        name: z.string()
+    }).nullable().refine((val) => val !== null, {
+        message: 'Image is required'
+    })
 })
 
-type FormData = z.infer<typeof schema>
+type ImageType = {
+    uri: string
+    type: string
+    name: string
+}
+
+type FormData = z.infer<typeof schema> & {
+    image: ImageType | null
+}
 
 const addMenu = () => {
 
-    const { control, handleSubmit, formState: { errors } } = useForm<FormData>({
-        resolver: zodResolver(schema),
-        mode: 'onBlur'
-    })
+    const { control, handleSubmit, setValue,
+        watch, formState: { errors } } = useForm<FormData>({
+            resolver: zodResolver(schema),
+            mode: 'onBlur',
+            defaultValues: {
+                name: '',
+                description: '',
+                price: 0,
+                image: undefined
+            }
+        })
 
     const onSubmit = (data: FormData) => {
         console.log(data)
     }
+    // const selectedImage = watch('image') as ImageType | null
+
     return (
         <ScrollView backgroundColor={'$background'} flex={1}>
+
             <View marginTop={'$5'}>
 
                 <Controller
@@ -71,20 +96,21 @@ const addMenu = () => {
                         />
                     )}
                 />
+
                 <Controller
                     control={control}
                     name="image"
-                    render={({ field: { onChange, onBlur, value } }) => (
-                        <AppTextInput
-                            placeholder='Image'
-                            onBlur={onBlur}
-                            onChangeText={onChange}
-                            value={value instanceof File ? value.name : ''}
+                    render={({ field: { onChange, value } }) => (
+                        <ImagePickerInput
+
+                            value={value}
+                            onChange={onChange}
                             errorMessage={errors.image?.message}
+
                         />
                     )}
                 />
-                <AppButton title='Submit' onPress={handleSubmit(onSubmit)} />
+                <AppButton title='Submit' onPress={() => console.log('first')} />
             </View>
         </ScrollView>
     )

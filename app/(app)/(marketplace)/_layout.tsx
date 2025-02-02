@@ -1,12 +1,18 @@
 import { Stack } from 'expo-router'
 import { StyleSheet, Text, View } from 'react-native'
+import { useTheme } from 'tamagui'
 
 
 const MarketplaceLayout = () => {
+    const theme = useTheme()
     return (
-        <Stack>
+        <Stack screenOptions={{
+            headerStyle: {
+                backgroundColor: theme.background.val
+            }
+        }}>
             <Stack.Screen name='index' options={{
-                headerShown: false
+                title: 'Marketplace'
             }} />
             <Stack.Screen name='[itemId]' options={{
                 headerShown: true,

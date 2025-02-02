@@ -9,20 +9,28 @@ import AppTextInput from '@/components/AppInput'
 
 
 const schema = z.object({
-    fullName: z.string(),
-    email: z.string().email(),
-    phoneNumber: z.string(),
-    plateNumber: z.string(),
-    password: z.string().nonempty('Company Name is required'),
-    confirmPassword: z.string().nonempty('Account Number is required'),
+    fullName: z.string().min(1, 'Name is required'),
+    email: z.string({ message: 'Email is required.' }).email().trim(),
+    phoneNumber: z.string().min(1, { message: 'Phone number is required' }),
+    plateNumber: z.string().min(1, { message: 'Plate number is required' }),
+    password: z.string().min(1, { message: 'Password is required' }),
+    confirmPassword: z.string().min(1, { message: 'Confirm password is required' }),
+}).refine(data => data.password === data.confirmPassword, { message: "Password do not match.", path: ['confirmPassword'] })
 
-})
 type FormData = z.infer<typeof schema>
 
 const AddRider = () => {
     const { control, handleSubmit, formState: { errors } } = useForm<FormData>({
         resolver: zodResolver(schema),
-        mode: 'onBlur'
+        mode: 'onBlur',
+        defaultValues: {
+            fullName: '',
+            email: '',
+            phoneNumber: '',
+            plateNumber: '',
+            password: '',
+            confirmPassword: ''
+        }
     })
 
     const onSubmit = (data: FormData) => {
@@ -66,7 +74,21 @@ const AddRider = () => {
                         onBlur={onBlur}
                         onChangeText={onChange}
                         value={value}
+                        keyboardType={'number-pad'}
                         errorMessage={errors.phoneNumber?.message}
+                    />
+                )}
+            />
+            <Controller
+                control={control}
+                name="plateNumber"
+                render={({ field: { onChange, onBlur, value } }) => (
+                    <AppTextInput
+                        placeholder='Plate Number'
+                        onBlur={onBlur}
+                        onChangeText={onChange}
+                        value={value}
+                        errorMessage={errors.plateNumber?.message}
                     />
                 )}
             />
@@ -78,6 +100,7 @@ const AddRider = () => {
                         placeholder='Password'
                         onBlur={onBlur}
                         onChangeText={onChange}
+                        secureTextEntry
                         value={value}
                         errorMessage={errors.password?.message}
                     />
@@ -91,16 +114,21 @@ const AddRider = () => {
                         placeholder='Confirm Password'
                         onBlur={onBlur}
                         onChangeText={onChange}
+                        secureTextEntry
                         value={value}
                         errorMessage={errors.confirmPassword?.message}
                     />
                 )}
             />
 
-            <Button style={{
-                fontFamily: 'Poppins-Medium',
-                textTransform: 'uppercase'
-            }} marginVertical={'$3'} alignSelf='center' backgroundColor={'$btnPrimaryColor'} width={'90%'} onPress={handleSubmit(onSubmit)}>Submit</Button>
+            <Button
+                style={{
+                    fontFamily: 'Poppins-Medium',
+                    textTransform: 'uppercase'
+                }} marginVertical={'$3'}
+                alignSelf='center'
+                backgroundColor={'$btnPrimaryColor'}
+                width={'90%'} onPress={handleSubmit(onSubmit)}>Submit</Button>
         </ScrollView>
     )
 }

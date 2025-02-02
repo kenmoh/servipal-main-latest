@@ -143,9 +143,9 @@ export default function Marketplace() {
 
     return (
         <YStack flex={1} alignSelf='center'>
-            <Text fontSize="$6" fontWeight="bold" padding="$4">
+            {/* <Text fontSize="$6" fontWeight="bold" padding="$4">
                 Marketplace
-            </Text>
+            </Text> */}
 
             <FlatList
                 data={marketplaceItems}

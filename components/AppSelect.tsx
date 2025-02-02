@@ -31,7 +31,7 @@ const AppSelector = ({ props, items, label }: SelectorProp) => {
                     width={'90%'}
                     height={'$5'}
                     borderWidth={0}
-                    backgroundColor={'$inputBackground'}
+                    backgroundColor={'$cardDark'}
                     iconAfter={<MaterialCommunityIcons
                         name='chevron-down'
                         color={theme.icon.val}

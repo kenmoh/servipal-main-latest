@@ -9,8 +9,8 @@ import { Controller, useForm } from 'react-hook-form';
 
 const schema = z.object({
 
-    username: z.string().email().trim(),
-    password: z.string().min(1, { message: 'Password is required' }),
+    email: z.string().email().trim(),
+
 
 })
 
@@ -23,8 +23,8 @@ const SignIn = () => {
         resolver: zodResolver(schema),
         mode: 'onBlur',
         defaultValues: {
-            username: '',
-            password: '',
+            email: '',
+
         }
     })
 
@@ -52,16 +52,16 @@ const SignIn = () => {
                 <View flex={1} width={'100%'} height={'100%'}
                     alignItems='center'
                     alignContent='center'
-                    marginTop={100}
+
                     justifyContent='center'
                     backgroundColor={'$background'} >
 
                     <YStack alignSelf='center' width={'90%'} marginBottom={10} >
-                        <Text alignSelf='flex-start' fontFamily={'$heading'} fontSize={20} fontWeight={'bold'}>Welcome back,</Text>
-                        <Text alignSelf='flex-start' fontFamily={'$heading'} fontSize={12} fontWeight={'400'}>Login to continue</Text>
+                        <Text alignSelf='flex-start' fontFamily={'$heading'} fontSize={20} fontWeight={'bold'}>Recover password</Text>
+                        <Text alignSelf='flex-start' fontFamily={'$heading'} fontSize={12} fontWeight={'400'}>Enter the email you registered with.</Text>
                     </YStack>
                     <Controller
-                        name='username'
+                        name='email'
                         control={control}
                         render={({ field: { onChange, onBlur, value } }) => (
                             <AppTextInput
@@ -71,37 +71,11 @@ const SignIn = () => {
                                 onChangeText={onChange}
                                 value={value}
                                 keyboardType='email-address'
-                                errorMessage={errors.username?.message}
-                            />
-                        )}
-                    />
-                    <Controller
-                        name='password'
-                        control={control}
-                        render={({ field: { onChange, onBlur, value } }) => (
-                            <AppTextInput
-                                label={'Password'}
-                                onBlur={onBlur}
-                                onChangeText={onChange}
-                                value={value}
-                                secureTextEntry
-                                errorMessage={errors.password?.message}
+                                errorMessage={errors.email?.message}
                             />
                         )}
                     />
 
-
-                    <View marginTop={10} width={'90%'} alignSelf='center'>
-                        <Text hitSlop={50} alignSelf='flex-end'
-                            onPress={() => router.push('./forgot-password')}
-                            fontFamily={'$body'}
-                            fontSize={14}
-                            color={'$btnPrimaryColor'}
-                            textDecorationLine='underline'
-
-
-                        >Forgot password</Text>
-                    </View>
                     <Button
                         backgroundColor={'$btnPrimaryColor'}
                         height={'$5'}
@@ -113,11 +87,11 @@ const SignIn = () => {
                         fontFamily={'$heading'}
                         textAlign='center'
                         onPress={handleSubmit(onSubmit)}
-                    >Login</Button>
+                    >Submit</Button>
 
                     <XStack alignSelf='center' marginTop={25} alignItems='center' justifyContent='center' width={'90%'} marginBottom={30} >
-                        <Text color={'$text'} fontFamily={'$body'} fontSize={14} >Don't have an account? </Text>
-                        <Text hitSlop={50} onPress={() => router.navigate('/sign-up')} fontFamily={'$body'} fontSize={14} color={'$btnPrimaryColor'} textDecorationLine='underline'>Register</Text>
+                        <Text color={'$text'} fontFamily={'$body'} fontSize={14} >Or continue to </Text>
+                        <Text hitSlop={50} onPress={() => router.navigate('/sign-in')} fontFamily={'$body'} fontSize={14} color={'$btnPrimaryColor'} textDecorationLine='underline'>Login</Text>
                     </XStack>
                 </View>
             </ScrollView>

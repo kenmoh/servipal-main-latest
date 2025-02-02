@@ -7,7 +7,6 @@ import { AntDesign, Feather } from '@expo/vector-icons'
 import HDivider from '@/components/HDivider'
 import Category from '@/components/Category'
 import FoodCard from '@/components/FoodCard'
-import { useRef, useState } from 'react'
 import { Plus } from 'lucide-react-native'
 
 const groups = [
@@ -180,7 +179,7 @@ const StoreDetails = () => {
                                 pressStyle={{
                                     backgroundColor: '$transparentBtnPrimaryColor'
                                 }}
-                                onPress={() => router.push({ pathname: '/food/addMenu' })}
+                                onPress={() => router.push({ pathname: '/(app)/food/addMenu' })}
                                 marginRight={'$2.5'}
                                 alignSelf='flex-end'
                                 borderRadius={'$10'}

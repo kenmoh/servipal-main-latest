@@ -1,22 +1,24 @@
-import { StyleSheet } from 'react-native'
 import React from 'react'
 import { Button, ScrollView, Text, View } from 'tamagui'
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { z } from 'zod'
+import {Input} from 'tamagui'
 import { zodResolver } from '@hookform/resolvers/zod'
 import AppTextInput from '@/components/AppInput'
 
 
 
 const schema = z.object({
-    companyRegNo: z.string().nonempty('Company Reg No. is required'),
-    location: z.string().nonempty('Location is required'),
-    companyName: z.string().nonempty('Company Name is required'),
-    openingHour: z.string().nonempty('Opening Hour is required'),
-    closingHour: z.string().nonempty('Closing Hour is required'),
-    accountNumber: z.string().nonempty('Account Number is required'),
-    bankName: z.string().nonempty('Bank Name is required'),
-    accountName: z.string().nonempty('Account Name is required'),
+    companyRegNo: z.string().min(3, { message: 'Company(CAC) registration number is required' }),
+    location: z.string().min(3, { message: 'Location is required' }),
+    companyName: z.string().min(3, { message: 'Company Name is required' }),
+    openingHour: z.string().min(1, { message: 'Opening Hour is required' }),
+    closingHour: z.string().min(1, { message: 'Closing Hour is required' }),
+    accountNumber: z.string()
+        .min(10, { message: 'Account number MUST be a minimum of 10 characters long' })
+        .max(10, { message: 'Account number MUST be a maximum of 10 characters long' }),
+    bankName: z.string().min(1, { message: 'Bank Name is required' }),
+    accountName: z.string().min(1, { message: 'Account Name is required' }),
     // image: z.instanceof(File).optional()
 })
 type FormData = z.infer<typeof schema>
@@ -24,7 +26,18 @@ type FormData = z.infer<typeof schema>
 const Profile = () => {
     const { control, handleSubmit, formState: { errors } } = useForm<FormData>({
         resolver: zodResolver(schema),
-        mode: 'onBlur' // Validate on blur instead of on change
+        defaultValues: {
+            companyRegNo: '',
+            location: '',
+            companyName: '',
+            openingHour: '',
+            closingHour: '',
+            accountNumber: '',
+            bankName: '',
+            accountName: ''
+        },
+        mode: 'onBlur'
+
     })
 
     const onSubmit = (data: FormData) => {
@@ -107,6 +120,7 @@ const Profile = () => {
                         onBlur={onBlur}
                         onChangeText={onChange}
                         value={value}
+                        keyboardType={'number-pad'}
                         errorMessage={errors.accountNumber?.message}
                     />
                 )}
@@ -140,12 +154,13 @@ const Profile = () => {
             <Button style={{
                 fontFamily: 'Poppins-Medium',
                 textTransform: 'uppercase'
-            }} marginVertical={'$3'} alignSelf='center' backgroundColor={'$btnPrimaryColor'} width={'90%'} onPress={handleSubmit(onSubmit)}>Submit</Button>
+            }}
+                    marginVertical={'$3'} alignSelf='center'
+                    backgroundColor={'$btnPrimaryColor'}
+                    width={'90%'} onPress={handleSubmit(onSubmit)}>Submit</Button>
         </ScrollView>
     )
 }
 
 
 export default Profile
-
-const styles = StyleSheet.create({})

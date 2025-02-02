@@ -5,6 +5,9 @@ import AppTextInput from '@/components/AppInput'
 import { router } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import AppSelector from '@/components/AppSelect'
+import { z } from 'zod'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Controller, useForm } from 'react-hook-form'
 
 
 const roleData = [
@@ -14,8 +17,44 @@ const roleData = [
     { id: 4, name: 'Dispatch Provider' },
 ]
 
+
+const role = [
+    'Regular User',
+    'Restaurant Service Provider',
+    'Laundry Service Provider',
+    'Dispatch Provider',
+] as const
+
+
+
+const schema = z.object({
+
+    email: z.string({ message: 'Email is required.' }).email().trim(),
+    phoneNumber: z.string().min(1, { message: 'Phone number is required' }),
+    role: z.enum(role),
+    password: z.string().min(1, { message: 'Password is required' }),
+    confirmPassword: z.string().min(1, { message: 'Confirm password is required' }),
+}).refine(data => data.password === data.confirmPassword, { message: "Password do not match.", path: ['confirmPassword'] })
+
+type FormData = z.infer<typeof schema>
+
 const SignUp = () => {
     const theme = useTheme()
+    const { control, handleSubmit, formState: { errors } } = useForm<FormData>({
+        resolver: zodResolver(schema),
+        mode: 'onBlur',
+        defaultValues: {
+            email: '',
+            phoneNumber: '',
+            role: 'Regular User',
+            password: '',
+            confirmPassword: ''
+        }
+    })
+
+    const onSubmit = (data: FormData) => {
+        console.log(data)
+    }
     return (
         <SafeAreaView
             style={{ flex: 1, backgroundColor: theme.background.val }}
@@ -34,17 +73,85 @@ const SignUp = () => {
                 }}
 
             >
-                <View width={'100%'} marginTop={40} alignItems='center' alignContent='center' justifyContent='center' backgroundColor={'$background'}>
+                <View width={'100%'} alignItems='center' alignContent='center' justifyContent='center' backgroundColor={'$background'}>
 
                     <YStack alignSelf='center' width={'90%'} marginBottom={5} >
                         <Text alignSelf='flex-start' fontFamily={'$heading'} fontSize={24} fontWeight={'bold'}>Let's get you started</Text>
                         <Text alignSelf='flex-start' fontFamily={'$heading'} fontSize={12} fontWeight={'400'}>Create an account</Text>
                     </YStack>
-                    <AppTextInput label={'Email'} keyboardType='email-address' placeholder='email@example.com' />
-                    <AppTextInput label={'Phone'} keyboardType='phone-pad' placeholder='08077665544' />
-                    <AppSelector label='Select user role' items={roleData} />
-                    <AppTextInput label={'Password'} keyboardType='default' secureTextEntry={true} placeholder='password' />
-                    <AppTextInput label={'Confirm Password'} keyboardType='default' secureTextEntry={true} placeholder='password' />
+                    <Controller
+                        name='email'
+                        control={control}
+                        render={({ field: { onChange, onBlur, value } }) => (
+                            <AppTextInput
+                                label='Email'
+                                placeholder='Email'
+                                onBlur={onBlur}
+                                onChangeText={onChange}
+                                value={value}
+                                errorMessage={errors.email?.message}
+                            />
+                        )}
+                    />
+                    <Controller
+                        name='phoneNumber'
+                        control={control}
+                        render={({ field: { onChange, onBlur, value } }) => (
+                            <AppTextInput
+                                label='Phone'
+                                placeholder='090990099889'
+                                onBlur={onBlur}
+                                onChangeText={onChange}
+                                keyboardType='phone-pad'
+                                value={value}
+                                errorMessage={errors.phoneNumber?.message}
+                            />
+                        )}
+                    />
+                    <Controller
+                        name='role'
+                        control={control}
+                        render={() => (
+                            <AppSelector
+                                label='Select user role'
+                                items={roleData}
+                            />
+                        )}
+                    />
+                    <Controller
+                        name='password'
+                        control={control}
+                        render={({ field: { onChange, onBlur, value } }) => (
+                            <AppTextInput
+                                label={'Password'}
+                                onBlur={onBlur}
+                                value={value}
+                                onChangeText={onChange}
+                                secureTextEntry
+                                placeholder='password'
+                                errorMessage={errors.password?.message}
+                            />
+                        )}
+                    />
+                    <Controller
+                        name='confirmPassword'
+                        control={control}
+                        render={({ field: { onChange, onBlur, value } }) => (
+                            <AppTextInput
+                                label={'Confirm Password'}
+                                onBlur={onBlur}
+                                value={value}
+                                onChangeText={onChange}
+                                secureTextEntry
+                                placeholder='Confirm password'
+                                errorMessage={errors.confirmPassword?.message}
+                            />
+                        )}
+                    />
+
+
+
+
                     <Button
                         backgroundColor={'$btnPrimaryColor'}
                         height={'$5'}
@@ -54,6 +161,7 @@ const SignUp = () => {
                         fontWeight={'bold'}
                         fontSize={'$5'}
                         fontFamily={'$heading'}
+                        onPress={handleSubmit(onSubmit)}
                     >Login</Button>
 
                     <XStack alignSelf='center' marginTop={25} alignItems='center' justifyContent='center' width={'90%'} marginBottom={30} >

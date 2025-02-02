@@ -9,11 +9,10 @@ import AppTextInput from '@/components/AppInput'
 
 
 const schema = z.object({
-    oldPassword: z.string(),
-    newPassword: z.string(),
-    confirmPassword: z.string()
-
-})
+    oldPassword: z.string().min(1, 'Required'),
+    newPassword: z.string().min(1, 'Required'),
+    confirmPassword: z.string().min(1, 'Required')
+}).refine(data=> data.newPassword===data.confirmPassword, {message: "Password do not match.", path:['confirmPassword']})
 type FormData = z.infer<typeof schema>
 
 const ChangePassword = () => {
@@ -40,6 +39,7 @@ const ChangePassword = () => {
                             onBlur={onBlur}
                             onChangeText={onChange}
                             value={value}
+                            secureTextEntry
                             errorMessage={errors.oldPassword?.message}
                         />
                     )}
@@ -50,6 +50,7 @@ const ChangePassword = () => {
                     render={({ field: { onChange, onBlur, value } }) => (
                         <AppTextInput
                             placeholder='New Password'
+                            secureTextEntry
                             onBlur={onBlur}
                             onChangeText={onChange}
                             value={value}
@@ -65,6 +66,7 @@ const ChangePassword = () => {
                             placeholder='Confirm Password'
                             onBlur={onBlur}
                             onChangeText={onChange}
+                            secureTextEntry
                             value={value}
                             errorMessage={errors.confirmPassword?.message}
                         />

@@ -10,19 +10,39 @@ import {
     View,
     useTheme
 } from 'tamagui'
-import { router } from 'expo-router'
-import { MaterialCommunityIcons } from '@expo/vector-icons'
-import { useLocalSearchParams, useSearchParams } from 'expo-router/build/hooks'
-import { ChevronLeft, Store } from 'lucide-react-native'
 
+import { useLocalSearchParams } from 'expo-router/build/hooks'
+import { Store } from 'lucide-react-native'
+import { z } from 'zod'
+import { Controller, useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import AppTextInput from '@/components/AppInput'
+
+
+
+const schema = z.object({
+
+    deliveryAddress: z.string({ message: 'Delivery address is required.' }),
+
+
+})
+
+type FormData = z.infer<typeof schema>
 
 const sizes = [
-    { id: 1, value: 's', name: 'Small' },
-    { id: 2, value: 'm', name: 'Medium' },
-    { id: 3, value: 'l', name: 'Large' },
-    { id: 4, value: 'xl', name: 'X-Large' },
+    { id: 1, value: 's', name: 'S' },
+    { id: 2, value: 'm', name: 'M' },
+    { id: 3, value: 'l', name: 'L' },
+    { id: 4, value: 'xl', name: 'XL' },
+    { id: 5, value: '2xl', name: '2XL' },
 ]
 
+const colors = [
+    { id: 1, value: 'red', hex: 'yellow' },
+    { id: 2, value: 'blue', hex: '#0000FF' },
+    { id: 3, value: 'green', hex: '#008000' },
+    { id: 4, value: 'black', hex: 'tomato' },
+]
 const ItemDetail = () => {
     const theme = useTheme()
     const [quantity, setQuantity] = useState(1)
@@ -38,6 +58,19 @@ const ItemDetail = () => {
         seller,
         rating
     } = useLocalSearchParams()
+
+    const { control, handleSubmit, formState: { errors } } = useForm<FormData>({
+        resolver: zodResolver(schema),
+        mode: 'onBlur',
+        defaultValues: {
+            deliveryAddress: '',
+
+        }
+    })
+
+    const onSubmit = (data: FormData) => {
+        console.log(data)
+    }
 
     return (
         <ScrollView flex={1} backgroundColor="$background">
@@ -83,6 +116,7 @@ const ItemDetail = () => {
                         </XStack>
                     </View>
                 </XStack>
+                {/* Sizes Selector */}
                 <YStack gap="$2">
                     <Text fontWeight="bold">Select Size</Text>
                     <XStack flexWrap="wrap" gap="$2">
@@ -110,19 +144,53 @@ const ItemDetail = () => {
                     </XStack>
                 </YStack>
 
+                {/* Color Selector */}
+                <YStack gap="$2">
+                    <Text fontWeight="bold">Select Color</Text>
+                    <XStack flexWrap="wrap" gap="$2">
+                        {colors.map((colorItem) => (
+                            <Button
+                                circular
+                                borderCurve='continuous'
+                                key={colorItem.id}
+                                backgroundColor={colorItem.hex}
+                                borderColor={color === colorItem.value ? '$orange10' : ''}
+                                borderWidth={color !== colorItem.value ? 5 : 0}
+                                onPress={() => setColor(colorItem.value)}
+
+                                size={'$3.5'}
+                                fontSize={10}
+                                pressStyle={{
+                                    scale: 0.97,
+                                    opacity: 0.9
+                                }}
+                            />
+
+                        ))}
+                    </XStack>
+                </YStack>
 
 
                 {/* Delivery Address */}
                 <YStack gap="$2">
                     <Text fontWeight="bold">Delivery Address</Text>
-                    <Input
-                        value={address}
-                        onChangeText={setAddress}
-                        placeholder="Enter delivery address"
-                        multiline
-                        numberOfLines={3}
-                        backgroundColor="$gray5"
+                    <Controller
+                        name='deliveryAddress'
+                        control={control}
+                        render={({ field: { onChange, onBlur, value } }) => (
+                            <AppTextInput
+
+                                placeholder='Enter delivery address'
+                                onBlur={onBlur}
+                                onChangeText={onChange}
+                                value={value}
+
+                                errorMessage={errors.deliveryAddress?.message}
+                            />
+                        )}
+
                     />
+
                 </YStack>
 
                 {/* Add to Cart Button */}

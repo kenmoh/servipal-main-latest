@@ -7,14 +7,15 @@ const AuthLayout = () => {
     const theme = useTheme()
     return (
         <Stack screenOptions={{
-            headerShown: false,
+            // headerShown: false,
             title: '',
             headerStyle: {
                 backgroundColor: theme.background.val
             }
         }}>
-            <Stack.Screen name='sign-in' />
+            <Stack.Screen name='sign-in' options={{ headerShown: false }} />
             <Stack.Screen name='sign-up' />
+            <Stack.Screen name='forgot-password' />
         </Stack>
     )
 }
