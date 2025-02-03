@@ -2,7 +2,7 @@ import React from 'react'
 import { Button, ScrollView, Text, View } from 'tamagui'
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { z } from 'zod'
-import {Input} from 'tamagui'
+import { Input } from 'tamagui'
 import { zodResolver } from '@hookform/resolvers/zod'
 import AppTextInput from '@/components/AppInput'
 
@@ -19,7 +19,7 @@ const schema = z.object({
         .max(10, { message: 'Account number MUST be a maximum of 10 characters long' }),
     bankName: z.string().min(1, { message: 'Bank Name is required' }),
     accountName: z.string().min(1, { message: 'Account Name is required' }),
-    // image: z.instanceof(File).optional()
+
 })
 type FormData = z.infer<typeof schema>
 
@@ -155,9 +155,9 @@ const Profile = () => {
                 fontFamily: 'Poppins-Medium',
                 textTransform: 'uppercase'
             }}
-                    marginVertical={'$3'} alignSelf='center'
-                    backgroundColor={'$btnPrimaryColor'}
-                    width={'90%'} onPress={handleSubmit(onSubmit)}>Submit</Button>
+                marginVertical={'$3'} alignSelf='center'
+                backgroundColor={'$btnPrimaryColor'}
+                width={'90%'} onPress={handleSubmit(onSubmit)}>Submit</Button>
         </ScrollView>
     )
 }

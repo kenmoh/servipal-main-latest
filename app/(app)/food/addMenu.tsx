@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native'
 import React from 'react'
-import { Input, ScrollView, View } from 'tamagui'
+import { ScrollView, View, Button } from 'tamagui'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Controller, useForm } from 'react-hook-form'
@@ -10,39 +10,28 @@ import ImagePickerInput from '@/components/AppImagePicker'
 
 
 const schema = z.object({
-    name: z.string(),
-    description: z.string(),
-    price: z.number(),
-    image: z.object({
-        uri: z.string(),
-        type: z.string(),
-        name: z.string()
-    }).nullable().refine((val) => val !== null, {
-        message: 'Image is required'
+    name: z.string().min(1, 'Name is a required field'),
+    description: z.string().min(1, "Description is a required field"),
+    price: z.number().int().gt(0, 'Price MUST be greater than 0').lte(999999),
+    image: z.any().nullable().refine(val => val != null, {
+        message: "Image is required"
     })
 })
 
-type ImageType = {
-    uri: string
-    type: string
-    name: string
-}
 
-type FormData = z.infer<typeof schema> & {
-    image: ImageType | null
-}
+type FormData = z.infer<typeof schema>
 
 const addMenu = () => {
 
-    const { control, handleSubmit, setValue,
-        watch, formState: { errors } } = useForm<FormData>({
+    const { control, handleSubmit,
+        formState: { errors } } = useForm<FormData>({
             resolver: zodResolver(schema),
             mode: 'onBlur',
             defaultValues: {
                 name: '',
                 description: '',
                 price: 0,
-                image: undefined
+                image: null
             }
         })
 
@@ -55,7 +44,6 @@ const addMenu = () => {
         <ScrollView backgroundColor={'$background'} flex={1}>
 
             <View marginTop={'$5'}>
-
                 <Controller
                     control={control}
                     name="name"
@@ -69,6 +57,8 @@ const addMenu = () => {
                         />
                     )}
                 />
+
+
                 <Controller
                     control={control}
                     name="price"
@@ -88,7 +78,7 @@ const addMenu = () => {
                     name="description"
                     render={({ field: { onChange, onBlur, value } }) => (
                         <AppTextInput
-                            placeholder='Description'
+                            placeholder='Description.'
                             onBlur={onBlur}
                             onChangeText={onChange}
                             value={value}
@@ -97,20 +87,25 @@ const addMenu = () => {
                     )}
                 />
 
+
                 <Controller
                     control={control}
                     name="image"
                     render={({ field: { onChange, value } }) => (
                         <ImagePickerInput
-
                             value={value}
                             onChange={onChange}
-                            errorMessage={errors.image?.message}
-
+                            errorMessage={errors.image?.message?.toString()}
                         />
                     )}
                 />
-                <AppButton title='Submit' onPress={() => console.log('first')} />
+                <Button style={{
+                    fontFamily: 'Poppins-Medium',
+                    textTransform: 'uppercase'
+                }}
+                    marginVertical={'$3'} alignSelf='center'
+                    backgroundColor={'$btnPrimaryColor'}
+                    width={'90%'} onPress={handleSubmit(onSubmit)}>Submit</Button>
             </View>
         </ScrollView>
     )

@@ -7,7 +7,6 @@ const AuthLayout = () => {
     const theme = useTheme()
     return (
         <Stack screenOptions={{
-            // headerShown: false,
             title: '',
             headerStyle: {
                 backgroundColor: theme.background.val

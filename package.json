@@ -63,6 +63,7 @@
     "react-native-swiper": "^1.6.0",
     "react-native-web": "~0.19.13",
     "react-native-webview": "13.12.5",
+    "reanimated-color-picker": "^3.0.6",
     "tamagui": "^1.120.1",
     "zod": "^3.24.1",
     "zustand": "^5.0.3"

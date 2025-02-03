@@ -8,6 +8,7 @@ import HDivider from '@/components/HDivider'
 import Category from '@/components/Category'
 import FoodCard from '@/components/FoodCard'
 import { Plus } from 'lucide-react-native'
+import AddItemBtn from '@/components/AddItemBtn'
 
 const groups = [
     { id: 1, name: 'Starters' },
@@ -175,16 +176,7 @@ const StoreDetails = () => {
                                     <Paragraph color={'$icon'} fontFamily={'$body'} fontSize={'$2'}>{closingHour}</Paragraph>
                                 </XStack>
                             </YStack>
-                            <Button
-                                pressStyle={{
-                                    backgroundColor: '$transparentBtnPrimaryColor'
-                                }}
-                                onPress={() => router.push({ pathname: '/(app)/food/addMenu' })}
-                                marginRight={'$2.5'}
-                                alignSelf='flex-end'
-                                borderRadius={'$10'}
-                                backgroundColor={'$transparentBtnPrimaryColor'}
-                                icon={<Plus color={theme.text.val} />}>Add Menu</Button>
+                            <AddItemBtn onPress={() => router.push({ pathname: '/(app)/food/addMenu' })} />
                         </XStack>
                         <HDivider />
                     </View>

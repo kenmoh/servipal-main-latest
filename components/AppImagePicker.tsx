@@ -35,7 +35,6 @@ const ImagePickerInput = ({
             quality: 1,
         });
 
-        console.log(result)
 
         if (!result.canceled) {
             const imageData: ImageType = {
@@ -51,7 +50,7 @@ const ImagePickerInput = ({
     return (
         <TouchableOpacity onPress={pickImage}>
 
-            <View width={'95%'} padding="$3" alignSelf='center' alignItems="center">
+            <View width={'95%'} borderColor={'$gray1'} padding="$3" alignSelf='center' alignItems="center">
                 {/* Preview Image or Placeholder */}
                 {value?.uri ? (
                     <Image
@@ -80,7 +79,7 @@ const ImagePickerInput = ({
 
                 {/* Error Message */}
                 {errorMessage && (
-                    <Text color="$red10" marginTop="$2">
+                    <Text alignSelf='flex-start' color="$error" marginTop="$2" style={{fontFamily: 'Poppins-Thin', fontSize: 11}}>
                         {errorMessage}
                     </Text>
                 )}
