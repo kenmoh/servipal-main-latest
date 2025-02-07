@@ -1,20 +1,18 @@
 import { StyleSheet, TouchableOpacity } from 'react-native'
-import React, {useState} from 'react'
-import {ScrollView, View, Button, Text, Square, YStack, Circle} from 'tamagui'
+import React, { useState } from 'react'
+import { ScrollView, View, Button, Text, Square, YStack, Circle } from 'tamagui'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Controller, useForm, useFieldArray } from 'react-hook-form'
 import AppTextInput from '@/components/AppInput'
 import ImagePickerInput from '@/components/AppImagePicker'
-import {Trash, Plus} from "lucide-react-native";
+import { Trash, Plus } from "lucide-react-native";
 import AppColorPicker from "@/components/AppColorPicker";
-import {returnedResults} from "reanimated-color-picker";
+import { returnedResults } from "reanimated-color-picker";
 
 
 const schema = z.object({
     name: z.string().min(1, 'Name is a required field'),
-    //price: z.number().int().gt(0, 'Price MUST be greater than 0').lte(999999),
-    //stock: z.number().int().gt(0, 'Stock MUST be greater than 0').lte(999999),
     price: z.coerce.number().int().gt(0, 'Price MUST be greater than 0').lte(999999),
     stock: z.coerce.number().int().gt(0, 'Stock MUST be greater than 0').lte(999999),
     description: z.string().min(1, "Description is a required field"),
@@ -27,6 +25,7 @@ const schema = z.object({
 type FormData = z.infer<typeof schema>
 
 const addMenu = () => {
+    const [selectColors, setSelectedColors] = useState<string[]>([]);
 
     const { control, handleSubmit,
         formState: { errors } } = useForm<FormData>({
@@ -42,35 +41,44 @@ const addMenu = () => {
                 stock: 0
             }
         })
-        
+
     const {
-    fields: colorFields,
-    append: appendColor,
-    remove: removeColor
-  } = useFieldArray({
-    control,
-    name: 'colors'
-  });
+        fields: colorFields,
+        append: appendColor,
+        remove: removeColor
+    } = useFieldArray({
+        control,
+        name: 'colors'
+    });
+    
 
-  const {
-    fields: imageFields,
-    append: appendImage,
-    remove: removeImage
-  } = useFieldArray({
-    control,
-    name: 'image_urls'
-  });
+    const {
+        fields: imageFields,
+        append: appendImage,
+        remove: removeImage
+    } = useFieldArray({
+        control,
+        name: 'image_urls'
+    });
 
-   const onSubmit = (data: FormData) => {
-    console.log('Form Data:', data);
-    // Ensure all transformations are handled
-    const submitData = {
-        ...data,
-        price: Number(data.price),
-        stock: Number(data.stock)
-    };
-    console.log('Transformed Data:', submitData);
-}
+    const onSubmit = (data: FormData) => {
+        console.log('Form Data:', data);
+        // Ensure all transformations are handled
+        const submitData = {
+            ...data,
+            price: Number(data.price),
+            stock: Number(data.stock),
+            colors: selectColors
+        };
+        console.log('Transformed Data:', submitData);
+    }
+    
+     // Function to remove a color by its index
+	  const removeColorByIndex = (index: number) => {
+	    setSelectedColors(prev => prev.filter((_, i) => i !== index));
+	  };
+
+
 
 
 
@@ -149,7 +157,7 @@ const addMenu = () => {
                 />
 
 
-                <View width={'100%'}  alignSelf={'center'}>
+                <View width={'100%'} alignSelf={'center'}>
 
 
                     {/* Render each selected color as a circle with an optional remove button */}
@@ -163,31 +171,34 @@ const addMenu = () => {
                             marginBottom: 16,
                         }}
                     >
-                        {colorFields.map((field, index) => (
-                             <TouchableOpacity 
-      key={field.id} 
-      onPress={() => removeColor(index)}
-    >
-      <Circle 
-        size={30} 
-        backgroundColor={field.value} 
-        
-      >
-      <Trash color='white' size={15}/>
-      </Circle>
-    </TouchableOpacity>
+                        {selectColors.map((field, index) => (
+                        
+                            <TouchableOpacity
+                                key={index}
+                                onPress={() => removeColorByIndex(index)}
+                            >
+                                <Circle
+                                    size={30}
+                                    backgroundColor={field}
+
+                                >
+                                    <Trash color='white' size={15} />
+                                </Circle>
+                            </TouchableOpacity>
                         ))}
                     </View>
 
                     {/* Render the color picker button if fewer than 4 colors are selected */}
-                    {colorFields.length < 4 && (
-                        <AppColorPicker onSelectColor={(hex: string) =>  appendColor({value:hex})} />
+                    {selectColors.length < 6 && (
+                        //<AppColorPicker onSelectColor={(hex: string) => { console.log('Selected color:', hex);appendColor({ value: hex })}} />
+                      <AppColorPicker onSelectColor={(color) => setSelectedColors(prev => [...prev, color])} />
+
                     )}
                 </View>
 
 
                 {/* Image URLs Section */}
-        <View >
+                 <View >
           {imageFields.map((field, index) => (
             <View key={field.id} >
               <Controller
@@ -218,6 +229,7 @@ const addMenu = () => {
           )}
 
         </View>
+        
 
                 <Button style={{
                     fontFamily: 'Poppins-Medium',

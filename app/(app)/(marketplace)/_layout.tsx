@@ -33,6 +33,11 @@ const MarketplaceLayout = () => {
                     backgroundColor: 'transparent'
                 }
             }} />
+            <Stack.Screen name='addProduct' options={{
+
+                title: 'Add Product',
+
+            }} />
         </Stack>
     )
 }

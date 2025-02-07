@@ -15,6 +15,11 @@ import { useColorScheme } from 'react-native';
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
+SplashScreen.setOptions({
+  duration: 500,
+  fade: true
+})
+
 const queryClient = new QueryClient();
 
 export default function RootLayout() {
@@ -54,8 +59,8 @@ export default function RootLayout() {
 
             <Stack.Screen name="index" options={{ headerShown: false }} />
             <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-             <Stack.Screen name='(profile)' options={{
-                headerShown: false
+            <Stack.Screen name='(profile)' options={{
+              headerShown: false
 
             }} />
 
