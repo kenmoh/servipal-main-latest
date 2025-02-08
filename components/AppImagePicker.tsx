@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, TouchableOpacity } from 'react-native';
+import { StyleSheet, TouchableOpacity, ViewStyle } from 'react-native';
 import { Button, Image, View, Text, useTheme } from 'tamagui';
 import * as ImagePicker from 'expo-image-picker';
 import { Camera } from 'lucide-react-native';
@@ -11,17 +11,21 @@ export type ImageType = {
 }
 
 interface ImagePickerInputProps {
-    value: ImageType | null;
-    onChange: (image: ImageType | null) => void;
+    value?: ImageType | null | string;
+    onChange: (image: ImageType | null | string) => void;
     errorMessage?: string;
     imageHeight?: number;
+    iconSize?: number,
+
 }
 
 const ImagePickerInput = ({
     value,
     onChange,
     errorMessage,
-    imageHeight = 200
+    imageHeight = 200,
+    iconSize = 50,
+
 }: ImagePickerInputProps) => {
 
     const theme = useTheme()
@@ -30,7 +34,6 @@ const ImagePickerInput = ({
 
         let result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ['images'],
-            allowsEditing: true,
             aspect: [4, 3],
             quality: 1,
         });
@@ -42,8 +45,7 @@ const ImagePickerInput = ({
                 type: 'image/jpeg',
                 name: result.assets[0].uri.split('/').pop() || 'image.jpg'
             };
-
-            onChange(imageData);
+            onChange(imageData?.uri.toString());
         }
     };
 
@@ -52,9 +54,9 @@ const ImagePickerInput = ({
 
             <View width={'95%'} borderColor={'$gray1'} padding="$3" alignSelf='center' alignItems="center">
                 {/* Preview Image or Placeholder */}
-                {value?.uri ? (
+                {value ? (
                     <Image
-                        source={{ uri: value.uri }}
+                        source={{ uri: value.toString() }}
                         style={{
                             width: '100%',
                             height: imageHeight,
@@ -72,14 +74,14 @@ const ImagePickerInput = ({
                         alignItems="center"
                         justifyContent="center"
                     >
-                        <Camera color={theme.icon.val} size={50} />
+                        <Camera color={theme.icon.val} size={iconSize} />
                     </View>
                 )}
 
 
                 {/* Error Message */}
                 {errorMessage && (
-                    <Text alignSelf='flex-start' color="$error" marginTop="$2" style={{fontFamily: 'Poppins-Thin', fontSize: 11}}>
+                    <Text alignSelf='flex-start' color="$error" marginTop="$2" style={{ fontFamily: 'Poppins-Thin', fontSize: 11 }}>
                         {errorMessage}
                     </Text>
                 )}

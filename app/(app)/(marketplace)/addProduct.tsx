@@ -1,5 +1,5 @@
 import { StyleSheet, TouchableOpacity } from 'react-native'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { ScrollView, View, Button, Text, Square, YStack, Circle } from 'tamagui'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -25,9 +25,9 @@ const schema = z.object({
 type FormData = z.infer<typeof schema>
 
 const addMenu = () => {
-    const [selectColors, setSelectedColors] = useState<string[]>([]);
-
-    const { control, handleSubmit,
+    const [selectedColors, setSelectedColors] = useState<string[]>([]);
+       
+    const { control, handleSubmit, setValue,
         formState: { errors } } = useForm<FormData>({
             resolver: zodResolver(schema),
             mode: 'onBlur',
@@ -41,17 +41,15 @@ const addMenu = () => {
                 stock: 0
             }
         })
-
-    const {
-        fields: colorFields,
-        append: appendColor,
-        remove: removeColor
-    } = useFieldArray({
-        control,
-        name: 'colors'
-    });
     
-
+	 const {
+    fields: colorFields,
+    append: appendColor,
+    remove: removeColor
+  } = useFieldArray({
+    control,
+    name: 'colors'
+  });
     const {
         fields: imageFields,
         append: appendImage,
@@ -68,7 +66,8 @@ const addMenu = () => {
             ...data,
             price: Number(data.price),
             stock: Number(data.stock),
-            colors: selectColors
+            colors: [...selectedColors],
+            image_urls: selectedImages
         };
         console.log('Transformed Data:', submitData);
     }
@@ -77,9 +76,13 @@ const addMenu = () => {
 	  const removeColorByIndex = (index: number) => {
 	    setSelectedColors(prev => prev.filter((_, i) => i !== index));
 	  };
+	  
 
-
-
+	  
+	  
+	   useEffect(() => {
+    setValue("colors", selectedColors);
+  }, [selectedColors, setValue]);
 
 
     return (
@@ -171,7 +174,7 @@ const addMenu = () => {
                             marginBottom: 16,
                         }}
                     >
-                        {selectColors.map((field, index) => (
+                        {selectedColors.map((field, index) => (
                         
                             <TouchableOpacity
                                 key={index}
@@ -189,8 +192,7 @@ const addMenu = () => {
                     </View>
 
                     {/* Render the color picker button if fewer than 4 colors are selected */}
-                    {selectColors.length < 6 && (
-                        //<AppColorPicker onSelectColor={(hex: string) => { console.log('Selected color:', hex);appendColor({ value: hex })}} />
+                    {selectedColors.length < 6 && (
                       <AppColorPicker onSelectColor={(color) => setSelectedColors(prev => [...prev, color])} />
 
                     )}
@@ -208,7 +210,8 @@ const addMenu = () => {
                   <ImagePickerInput
                       iconSize={40}
                             value={value}
-                            onChange={onChange}
+                            //onChange={onChange}
+                              onChange={(newImageUri) => onChange(newImageUri)}
                             errorMessage={errors.image_urls?.message?.toString()}
                         />
 

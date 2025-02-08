@@ -1,11 +1,22 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet } from 'react-native'
 import React from 'react'
+import { Stack } from 'expo-router'
+import { useTheme } from 'tamagui'
 
 const LaundryLayout = () => {
+    const theme = useTheme()
+
     return (
-        <View>
-            <Text>LaundryLayout</Text>
-        </View>
+        <Stack screenOptions={{
+            headerStyle: {
+                backgroundColor: theme.background.val
+            }
+        }}>
+            <Stack.Screen name='index' options={{
+
+
+            }} />
+        </Stack>
     )
 }
 

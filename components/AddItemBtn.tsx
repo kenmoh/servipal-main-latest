@@ -1,6 +1,6 @@
 
 import { Button } from 'tamagui'
-import { Plus } from 'lucide-react-native'
+import { Store } from 'lucide-react-native'
 
 const AddItemBtn = ({ onPress, label = 'Add Menu' }: { label?: string, onPress: () => void }) => {
 
@@ -13,8 +13,9 @@ const AddItemBtn = ({ onPress, label = 'Add Menu' }: { label?: string, onPress: 
             marginRight={'$2.5'}
             alignSelf='flex-end'
             borderRadius={'$10'}
+            height={'$2.5'}
             backgroundColor={'$transparentBtnPrimaryColor'}
-            icon={<Plus color={'white'} />}>{label}</Button>
+            icon={<Store color={'white'} />}>{label}</Button>
     )
 }
 

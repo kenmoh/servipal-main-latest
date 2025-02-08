@@ -7,7 +7,7 @@ import Tabs from '@/components/Tabs'
 import { Order } from '@/types/order-types'
 import { useQuery } from '@tanstack/react-query'
 import { router } from 'expo-router'
-import { Plus } from 'lucide-react-native'
+import { Plus, Send } from 'lucide-react-native'
 import React, { useState } from 'react'
 import { FlatList } from 'react-native'
 import { LayoutAnimationConfig } from 'react-native-reanimated'
@@ -104,13 +104,16 @@ const index = () => {
             </LayoutAnimationConfig>
             <Button
                 onPress={() => router.push({ pathname: '/(auth)/onboarding' })}
-                size={'$5'}
+                size={'$6'}
                 circular
                 position='absolute'
-                bottom={20}
+                bottom={5}
                 right={20}
-                backgroundColor={'$orange10'}>
-                <Plus color={'white'} size={25} />
+                pressStyle={{
+                    backgroundColor: '$transparentBtnPrimaryColor'
+                }}
+                backgroundColor={'$btnPrimaryColor'}>
+                <Send color={'white'} size={35} />
             </Button>
         </YStack>
     )

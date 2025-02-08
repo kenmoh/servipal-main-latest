@@ -85,7 +85,7 @@ const SignUp = () => {
                         render={({ field: { onChange, onBlur, value } }) => (
                             <AppTextInput
                                 label='Email'
-                                placeholder='Email'
+
                                 onBlur={onBlur}
                                 onChangeText={onChange}
                                 value={value}
@@ -99,7 +99,7 @@ const SignUp = () => {
                         render={({ field: { onChange, onBlur, value } }) => (
                             <AppTextInput
                                 label='Phone'
-                                placeholder='090990099889'
+
                                 onBlur={onBlur}
                                 onChangeText={onChange}
                                 keyboardType='phone-pad'
@@ -128,7 +128,7 @@ const SignUp = () => {
                                 value={value}
                                 onChangeText={onChange}
                                 secureTextEntry
-                                placeholder='password'
+
                                 errorMessage={errors.password?.message}
                             />
                         )}
@@ -143,7 +143,7 @@ const SignUp = () => {
                                 value={value}
                                 onChangeText={onChange}
                                 secureTextEntry
-                                placeholder='Confirm password'
+
                                 errorMessage={errors.confirmPassword?.message}
                             />
                         )}

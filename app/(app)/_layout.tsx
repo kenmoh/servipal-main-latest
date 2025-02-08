@@ -148,6 +148,7 @@ const TabBarLayout = () => {
             <Tabs.Screen name='(marketplace)' options={{
                 title: '',
                 tabBarLabel: 'Store',
+
                 tabBarIcon: () => require('@/assets/images/store.svg')
                 // tabBarIcon: ({ focused }) => (
                 //     <CustomTabBarIcon focused={focused}>

@@ -4,12 +4,8 @@ import { Redirect } from 'expo-router'
 import { Text, View } from 'tamagui'
 
 const index = () => {
-    return (
-        <View backgroundColor={'$background'} flex={1}>
-            <Text>Welcome</Text>
-            <Redirect href={'/(app)/delivery'} />
-        </View>
-    )
+    return <Redirect href={'/(app)/delivery'} />
+
 }
 
 export default index

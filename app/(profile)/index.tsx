@@ -1,11 +1,12 @@
 import { StyleSheet } from 'react-native'
-import React from 'react'
+import React, { useState } from 'react'
 import ProfileCard from '@/components/ProfileCard'
 import Animated, { FadeInDown } from 'react-native-reanimated';
-import { UserRound, UsersRound, SquareAsterisk, LogOutIcon, PencilIcon } from 'lucide-react-native';
+import { UserRound, UsersRound, SquareAsterisk, LogOutIcon, Camera } from 'lucide-react-native';
 
-import { Avatar, Circle, Heading, Image, Text, useTheme, View, YStack } from 'tamagui'
+import { Avatar, Circle, Heading, Image, Text, useTheme, View, XStack, YStack } from 'tamagui'
 import { ExternalPathString, RelativePathString, router } from 'expo-router';
+import ImagePickerInput, { ImageType } from '@/components/AppImagePicker'
 
 interface ProfileCardProp {
     name: string;
@@ -15,6 +16,10 @@ interface ProfileCardProp {
     condition: boolean;
 }
 const profile = () => {
+
+    const [backdropUri, setBackdropUri] = useState<ImageType | null | string>(null)
+    const [profileUri, setProfileUri] = useState<ImageType | null | string>(null)
+
     const profileCards: ProfileCardProp[] = [
         {
             name: "Update Profile",
@@ -52,25 +57,59 @@ const profile = () => {
         <View backgroundColor={'$background'} flex={1}>
             <YStack>
                 <View height={'$12'}>
-                    <Image src={require('@/assets/images/Burge.jpg')}
-                        height={'100%'}
-                    />
+
+
+                    {backdropUri ?
+                        <Image src={backdropUri}
+                            height={'100%'}
+                        /> : <Image src={require('@/assets/images/Burge.jpg')}
+                            height={'100%'}
+                        />}
                     <Circle
                         onPress={() => router.push({ pathname: '/userProfile' })}
                         top={'$-8'}
                         right={'$-4'}
                         height={40}
-                        width={40} backgroundColor={theme.profileCard.val}>
-                        <PencilIcon color={theme.icon.val} size={20} />
-                    </Circle>
-                </View>
+                        alignItems='center'
+                        justifyContent='center'
+                        width={40}>
 
-                <Avatar circular size={'$10'} alignSelf='center' top={'$-7'} >
-                    <Avatar.Image
-                        accessibilityLabel='Profile'
-                        src={require('@/assets/images/Burge.jpg')} />
-                    <Avatar.Fallback backgroundColor={'$blue10'} />
-                </Avatar>
+                        <ImagePickerInput
+                            imageHeight={0}
+                            onChange={uri => setBackdropUri(uri)} iconSize={25} />
+                    </Circle>
+
+
+
+                </View>
+                <XStack alignSelf='center'>
+
+                    <Circle
+
+                        height={100}
+                        top={-50}
+                        alignItems='center'
+                        justifyContent='center'
+                        backgroundColor={'$cardLight'}
+                        zIndex={1000}
+                        width={100}>
+
+                        <Avatar circular size={'$10'} alignSelf='center'  >
+                            <Avatar.Image
+                                accessibilityLabel='Profile'
+                                src={profileUri || require('@/assets/images/profile.jpg')} />
+                            <Avatar.Fallback backgroundColor={'$blue10'} />
+
+                        </Avatar>
+
+                        <View position='absolute' bottom='$-3' left={'$10'}>
+                            <ImagePickerInput
+                                imageHeight={0}
+                                onChange={uri => setProfileUri(uri)} iconSize={25} />
+                        </View>
+                    </Circle>
+                </XStack>
+
 
 
                 <YStack alignSelf='center'

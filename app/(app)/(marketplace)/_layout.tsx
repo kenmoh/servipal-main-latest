@@ -9,17 +9,24 @@ const MarketplaceLayout = () => {
     return (
         <Stack screenOptions={{
             headerStyle: {
-                backgroundColor: theme.background.val
+                backgroundColor: theme.background.val,
+
             }
         }}>
             <Stack.Screen name='index' options={{
                 title: 'Marketplace',
+                headerTitleStyle: {
+                    fontSize: 16,
+                    fontFamily: 'Poppins-Medium'
+                },
+
                 headerLeft: () => <AddItemBtn label='SELL' onPress={() => router.push({ pathname: '/(app)/(marketplace)/addProduct' })} />,
                 headerRight: () => (<Text
-                    fontWeight={'700'}
                     marginRight='$2'
                     textDecorationLine='underline'
                     textDecorationColor={'grey'}
+                    color={'$gray12'}
+                    style={{ fontFamily: 'Poppins-Medium' }}
                     onPressIn={() => router.push({ pathname: '/myItems' })}
                 >
                     My Items
@@ -36,6 +43,14 @@ const MarketplaceLayout = () => {
             <Stack.Screen name='addProduct' options={{
 
                 title: 'Add Product',
+
+            }} />
+            <Stack.Screen name='myItems' options={{
+
+                title: 'Items',
+                headerStyle: {
+                    backgroundColor: theme.background.val
+                }
 
             }} />
         </Stack>

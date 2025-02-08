@@ -73,7 +73,7 @@ const ItemDetail = () => {
     }
 
     return (
-        <ScrollView flex={1} backgroundColor="$background">
+        <ScrollView flex={1} backgroundColor="$background" showsVerticalScrollIndicator={false}>
             {/* Product Image */}
             <Image
                 src={image}
@@ -195,7 +195,7 @@ const ItemDetail = () => {
 
                 {/* Add to Cart Button */}
                 <Button
-                    backgroundColor="$orange10"
+                    backgroundColor="$btnPrimaryColor"
                     color="white"
                     size="$5"
                     onPress={() => { }}
