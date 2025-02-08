@@ -102,8 +102,9 @@ const index = () => {
             <LayoutAnimationConfig skipEntering>
                 {renderContent()}
             </LayoutAnimationConfig>
-            <Button
-                onPress={() => router.push({ pathname: '/(auth)/onboarding' })}
+            {/* <Button
+                onPress={() => router.push({ pathname: '/(app)/delivery/(topTabs)/sendItem' })}
+                // onPress={() => router.push({ pathname: '/(auth)/onboarding' })}
                 size={'$6'}
                 circular
                 position='absolute'
@@ -114,7 +115,7 @@ const index = () => {
                 }}
                 backgroundColor={'$btnPrimaryColor'}>
                 <Send color={'white'} size={35} />
-            </Button>
+            </Button> */}
         </YStack>
     )
 }

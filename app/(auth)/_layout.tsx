@@ -10,6 +10,9 @@ const AuthLayout = () => {
             title: '',
             headerStyle: {
                 backgroundColor: theme.background.val
+            },
+            contentStyle: {
+                backgroundColor: theme.background.val
             }
         }}>
             <Stack.Screen name='sign-in' options={{ headerShown: false }} />

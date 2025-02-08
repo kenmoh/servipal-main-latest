@@ -53,7 +53,11 @@ export default function RootLayout() {
       <TamaguiProvider config={tamaguiConfig} defaultTheme={colorScheme!}>
         <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
           <Stack screenOptions={{
-            navigationBarColor: '#18191c'
+            navigationBarColor: '#18191c',
+            contentStyle: {
+              backgroundColor: '#18191c'
+            }
+
           }}>
             <Stack.Screen name="(app)" options={{ headerShown: false }} />
 

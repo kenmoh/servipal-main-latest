@@ -11,6 +11,9 @@ const ProfileLayout = () => {
             headerShadowVisible: false,
             headerStyle: {
                 backgroundColor: theme.background.val
+            },
+            contentStyle: {
+                backgroundColor: theme.background.val
             }
         }}>
             <Stack.Screen name='index' options={{

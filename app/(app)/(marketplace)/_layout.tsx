@@ -11,6 +11,9 @@ const MarketplaceLayout = () => {
             headerStyle: {
                 backgroundColor: theme.background.val,
 
+            },
+            contentStyle: {
+                backgroundColor: theme.background.val
             }
         }}>
             <Stack.Screen name='index' options={{
