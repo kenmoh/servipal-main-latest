@@ -63,4 +63,54 @@ export interface Order {
   updated_at: string;
 }
 
+export interface ItemOrder {
+  id: string;
+  order_number: string;
+  package_name: string;
+  delivery_fee: string;
+  item_id: string;
+  origin: string;
+  destination: string;
+  distance: string;
+  duration: number;
+  destination_coords: [number | null, number | null];
+  origin_coords: [number | null, number | null];
+  image_url: string;
+  description: string;
+  commission_rate_delivery: string;
+  total_cost: string;
+  amount_due_dispatch: string;
+  order_status: string;
+  payment_status: string;
+  payment_url: string;
+  order_owner_phone_number: string;
+  dispatch_company_name: string;
+  rider_phone_number: string;
+  rider_name: string;
+  order_type: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Item {
+  item_id: string;
+  name: string;
+  description: string;
+  image_url: string;
+  item_order: ItemOrder;
+}
+
+export interface SendItem {
+  name: string;
+  description: string;
+  origin: string;
+  destination: string;
+  duration: string;
+  originCoords: Coordinates;
+  destinationCoord: Coordinates;
+  distance: number;
+  imageUrl: string;
+}
+
 export type ApiResponse = Order[];
+export type SendOrderApiResponse = Item;
