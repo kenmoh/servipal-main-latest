@@ -108,14 +108,23 @@ const SignUp = () => {
                             />
                         )}
                     />
-                    <Controller
+                    {/* <Controller
                         name='role'
                         control={control}
                         render={() => (
                             <AppSelector
-                                label='Select user role'
+                                label='Select role'
                                 items={roleData}
                             />
+                        )}
+                    /> */}
+
+                    <Controller
+                        name="role"
+                        control={control}
+                        defaultValue="Regular User"
+                        render={({ field: { value, onChange } }) => (
+                            <AppSelector label="Select role" items={roleData} value={value} onValueChange={onChange} />
                         )}
                     />
                     <Controller

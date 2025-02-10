@@ -9,8 +9,8 @@ import ImagePickerInput from '@/components/AppImagePicker'
 
 
 const coordinatesSchema = z.tuple([
-    z.number().nullable(),
-    z.number().nullable(),
+    z.number({ message: 'Required' }).nullable(),
+    z.number({ message: 'Required' }).nullable(),
 ]);
 
 export const sendItemSchema = z.object({
@@ -21,7 +21,7 @@ export const sendItemSchema = z.object({
     duration: z.string().nonempty({ message: "Duration is required" }),
     originCoords: coordinatesSchema,
     destinationCoord: coordinatesSchema,
-    distance: z.number(),
+    distance: z.number({ message: 'Distance is required' }),
     imageUrl: z.string().nonempty({ message: "Image is required" }),
 });
 
@@ -36,14 +36,9 @@ const sendItem = () => {
             defaultValues: {
                 name: '',
                 description: '',
-                // distance: 0,
                 imageUrl: '',
-                duration: '',
                 origin: '',
                 destination: '',
-                destinationCoord: [],
-                originCoords: []
-
             }
         })
 
@@ -53,7 +48,7 @@ const sendItem = () => {
 
 
     return (
-        <ScrollView backgroundColor={'$background'} flex={1}>
+        <ScrollView backgroundColor={'$background'} flex={1} showsVerticalScrollIndicator={false}>
 
             <View marginTop={'$5'}>
                 <Controller
@@ -98,7 +93,7 @@ const sendItem = () => {
                         />
                     )}
                 />
-                <XStack>
+                <XStack width={'95%'} alignSelf='center'>
                     <View width={'50%'}>
 
                         <Controller
@@ -131,7 +126,7 @@ const sendItem = () => {
                         />
                     </View>
                 </XStack>
-                <XStack width={'100%'}>
+                <XStack width={'95%'} alignSelf='center'>
                     <View width={'50%'}>
                         <Controller
                             control={control}
@@ -145,7 +140,7 @@ const sendItem = () => {
 
                                 return (
                                     <AppTextInput
-                                        placeholder="Destination Coords (lat, lng)"
+                                        placeholder="Destination Coords"
                                         onBlur={onBlur}
                                         onChangeText={(text) => {
                                             // Split the text into parts based on comma separation
@@ -182,7 +177,7 @@ const sendItem = () => {
 
                                 return (
                                     <AppTextInput
-                                        placeholder="Destination Coords (lat, lng)"
+                                        placeholder="Destination Coords"
                                         onBlur={onBlur}
                                         onChangeText={(text) => {
 

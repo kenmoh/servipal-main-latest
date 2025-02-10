@@ -17,7 +17,7 @@ const DeliveryLayout = () => {
                 fontFamily: 'Poppins-Bold',
 
             },
-
+            swipeEnabled: false,
             tabBarActiveTintColor: theme.text.val,
             tabBarInactiveTintColor: theme.icon.val,
             tabBarAndroidRipple: { borderless: false, color: theme.icon.val },
