@@ -1,8 +1,9 @@
 import { StyleSheet, TouchableOpacity } from 'react-native'
 import React from 'react'
 import { router, Stack } from 'expo-router'
-import { Circle, useTheme, View } from 'tamagui'
-import { Search, Settings, UserRound } from 'lucide-react-native'
+import { Circle, Input, useTheme, View, XStack } from 'tamagui'
+import { BellIcon, Search, UserRound } from 'lucide-react-native'
+
 
 
 const HeaderLeft = ({ onPress }: { onPress: () => void }) => {
@@ -11,16 +12,48 @@ const HeaderLeft = ({ onPress }: { onPress: () => void }) => {
             <TouchableOpacity
                 hitSlop={50}
                 onPressIn={onPress} >
-                <Settings color={'#fff'} />
+                <UserRound color={'#fff'} />
             </TouchableOpacity>
         </Circle>
     )
 }
 
+const HeaderRight = ({ onPressSearch, onPressNotification }: { onPressSearch: () => void, onPressNotification: () => void }) => {
+    return (
+        <XStack gap={'$3'}>
+            <Circle backgroundColor={'$cardDark'} width={'$4'} height={'$4'}>
+                <TouchableOpacity
+
+                    onPressIn={onPressSearch} >
+                    <Search color={'#fff'} />
+                </TouchableOpacity>
+            </Circle>
+            <Circle backgroundColor={'$cardDark'} width={'$4'} height={'$4'}>
+                <TouchableOpacity
+
+                    onPressIn={onPressNotification} >
+                    <BellIcon color={'#fff'} />
+                </TouchableOpacity>
+            </Circle>
+
+        </XStack>
+
+    )
+}
+
 const DeliveryLayout = () => {
     const theme = useTheme()
+
+
     return (
-        <Stack>
+        <Stack screenOptions={{
+            headerStyle: {
+                backgroundColor: theme.background.val,
+            },
+            contentStyle: {
+                backgroundColor: theme.background.val
+            }
+        }}>
             <Stack.Screen name='[id]' options={{
                 headerTransparent: true,
                 title: '',
@@ -28,15 +61,25 @@ const DeliveryLayout = () => {
                     backgroundColor: 'trasparent',
 
                 },
-                headerTintColor: theme.icon.val
+                headerTintColor: theme.icon.val,
+
+
             }} />
 
             <Stack.Screen name='(topTabs)' options={{
                 title: '',
-                headerStyle: { backgroundColor: theme.btnPrimaryColor.val },
+                headerStyle: { backgroundColor: theme.background.val },
                 headerLeft: () => <HeaderLeft onPress={() => router.push({ pathname: '/sign-up' })} />,
+                headerRight: () => <HeaderRight onPressNotification={() => router.push({ pathname: '/(app)/delivery/notification' })} onPressSearch={() => router.push({ pathname: '/(app)/delivery/search' })} />,
                 animation: 'ios_from_left'
 
+            }} />
+            <Stack.Screen name='search' options={{
+                title: '',
+                headerShown: false
+            }} />
+            <Stack.Screen name='notification' options={{
+                title: 'Notifications'
             }} />
         </Stack>
     )

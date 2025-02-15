@@ -4,6 +4,7 @@ import HDivider from '@/components/HDivider'
 import ItemCard from '@/components/ItemCard'
 import LoadingIndicator from '@/components/LoadingIndicator'
 import Tabs from '@/components/Tabs'
+import SelectDemo from '@/components/SelectDemo'
 import { Order } from '@/types/order-types'
 import { useQuery } from '@tanstack/react-query'
 import { router } from 'expo-router'
@@ -81,6 +82,7 @@ const index = () => {
             case 2:
                 return (
                     <View flex={1}>
+                    <SelectDemo/>
                         <FlatList
                             {...commonFlatListProps}
                             data={data?.laundries}
