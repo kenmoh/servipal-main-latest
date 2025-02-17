@@ -29,7 +29,7 @@
         "expo-splash-screen",
         {
           "image": "./assets/images/android-icon.png",
-          "imageWidth": 200,
+          "imageWidth": 150,
           "resizeMode": "contain",
           "backgroundColor": "#18191c"
         }
@@ -47,6 +47,25 @@
         "expo-image-picker",
         {
           "photosPermission": "The app accesses your photos to let you upload them."
+        }
+      ],
+      [
+        "@react-native-community/datetimepicker",
+        {
+          "android": {
+            "datePicker": {
+              "colorAccent": {
+                "light": "#FF5722"
+              },
+              "textColorPrimary": {
+                "light": "#FF5722"
+              }
+            },
+            "timePicker": {
+              "background": {"light": "#FF5722", "dark": "#18191c"},
+              "numbersBackgroundColor": {"light": "#FF5722", "dark": "#FF5722"}
+            }
+          }
         }
       ]
     ],

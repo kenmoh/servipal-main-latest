@@ -8,6 +8,7 @@ import AppSelector from '@/components/AppSelect'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Controller, useForm } from 'react-hook-form'
+import AppPicker from '@/components/AppPicker'
 
 
 const roleData = [
@@ -124,9 +125,17 @@ const SignUp = () => {
                         control={control}
                         defaultValue="Regular User"
                         render={({ field: { value, onChange } }) => (
-                            <AppSelector label="Select role" items={roleData} value={value} onValueChange={onChange} />
+                            <AppPicker label="Select role" items={roleData} value={value} onValueChange={onChange} />
                         )}
                     />
+                    {/* <Controller
+                        name="role"
+                        control={control}
+                        defaultValue="Regular User"
+                        render={({ field: { value, onChange } }) => (
+                            <AppSelector label="Select role" items={roleData} value={value} onValueChange={onChange} />
+                        )}
+                    /> */}
                     <Controller
                         name='password'
                         control={control}
