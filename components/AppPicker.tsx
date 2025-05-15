@@ -5,6 +5,7 @@ import { Label, useTheme } from 'tamagui';
 import { View } from 'tamagui';
 
 
+
 type ItemProp = {
     id: number;
     name: string;
@@ -18,18 +19,20 @@ type PickerProps = {
 
 };
 const AppPicker = ({ label, items, value, onValueChange }: PickerProps) => {
+
     const theme = useTheme()
     return (
-        <View width={'90%'} overflow='hidden'>
+        <View width={'90%'} overflow='hidden' alignSelf='center' marginVertical={'$1.5'}>
             {label && <Label fontWeight={'bold'}>{label}</Label>}
             <View borderRadius={10} backgroundColor={theme.cardDark.val} overflow='hidden' >
                 <Picker
                     style={{
                         backgroundColor: theme.cardDark.val,
-                        borderRadius: 100,
+                        borderRadius: 10,
                         width: '100%',
                         color: theme.text.val,
-                        fontSize: 12
+                        fontSize: 12,
+
 
                     }}
                     mode='dropdown'

@@ -73,7 +73,8 @@ const TabBarLayout = () => {
 
             screenOptions={{
 
-                tabBarActiveTintColor: theme.btnPrimaryColor.val
+                tabBarActiveTintColor: theme.btnPrimaryColor.val,
+
                 // headerShown: false,
 
 

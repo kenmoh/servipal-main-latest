@@ -1,125 +1,143 @@
-import { DeliveryInfo } from "@/types/cart";
-import { Food, Laundry } from "@/types/order-types";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
-interface CartStore {
-  items: (Food | Laundry)[];
-  cartType: "food" | "laundry" | null;
-  deliveryInfo: DeliveryInfo | null;
+type CartItem = {
+  vendorId: string;
+  itemId: string;
+  quantity: number;
+};
 
-  // Actions
-  addItem: (item: Food | Laundry, type: "food" | "laundry") => void;
+type CartType = {
+  orderItems: CartItem[];
+  pickupCoordinates: [number | null, number | null];
+  dropOffCoordinates: [number | null, number | null];
+  distance: number;
+  requireDelivery: 'pickup' | 'delivery';
+  duration: number;
+  additionalInfo: string;
+};
+
+type CartState = {
+  cart: CartType;
+  addItem: (vendorId: string, itemId: string, quantity: number) => void;
   removeItem: (itemId: string) => void;
-  updateQuantity: (itemId: string, quantity: number) => void;
-  setDeliveryInfo: (info: DeliveryInfo) => void;
+  updateItemQuantity: (itemId: string, quantity: number) => void;
+  setPickupCoordinates: (lat: number | null, lng: number | null) => void;
+  setDropOffCoordinates: (lat: number | null, lng: number | null) => void;
+  setDeliveryOption: (option: 'pickup' | 'delivery') => void;
+  updateDistance: (distance: number) => void;
+  updateDuration: (duration: number) => void;
+  setAdditionalInfo: (info: string) => void;
   clearCart: () => void;
+};
 
-  // Getters
-  getTotalAmount: () => number;
-  getItemCount: () => number;
-}
-
-const useCartStore = create<CartStore>()(
-  persist(
-    (set, get) => ({
-      items: [],
-      cartType: null,
-      deliveryInfo: null,
-
-      addItem: (item, type) =>
-        set((state) => {
-          // If cart is empty, set the type
-          if (state.items.length === 0) {
-            return {
-              cartType: type,
-              items: [
-                {
-                  ...item,
-                  price: Number(item.price),
-                  quantity: Number(item.quantity),
-                },
-              ],
-            };
-          }
-
-          // If trying to add different type, return current state
-          if (state.cartType !== type) {
-            return state;
-          }
-
-          const existingItem = state.items.find((i) => i.id === item.id);
-          if (existingItem) {
-            return {
-              ...state,
-              items: state.items.map((i) =>
-                i.id === item.id
-                  ? { ...i, quantity: i.quantity + Number(item.quantity) }
-                  : i
-              ),
-            };
-          }
-
-          return {
-            ...state,
-            items: [
-              ...state.items,
-              {
-                ...item,
-                price: Number(item.price),
-                quantity: Number(item.quantity),
-              },
-            ],
-          };
-        }),
-
-      removeItem: (itemId) =>
-        set((state) => {
-          const newItems = state.items.filter((item) => item.id !== itemId);
-          // If removing last item, reset cart type
-          return {
-            ...state,
-            items: newItems,
-            cartType: newItems.length === 0 ? null : state.cartType,
-          };
-        }),
-
-      updateQuantity: (itemId) =>
-        set((state) => ({
-          ...state,
-          items: state.items.map((item) =>
-            item.id === itemId ? { ...item, quantity: item.quantity + 1 } : item
-          ),
-        })),
-
-      setDeliveryInfo: (info) => set({ deliveryInfo: info }),
-
-      clearCart: () =>
-        set({
-          items: [],
-          cartType: null,
-          deliveryInfo: null,
-        }),
-
-      getTotalAmount: () => {
-        const state = get();
-        return state.items.reduce(
-          (sum, item) => sum + Number(item.price) * Number(item.quantity),
-          0
-        );
-      },
-
-      getItemCount: () => {
-        const state = get();
-        return state.items.reduce(
-          (sum, item) => sum + Number(item.quantity),
-          0
-        );
-      },
+export const useCartStore = create<CartState>((set) => ({
+  cart: {
+    orderItems: [],
+    pickupCoordinates: [null, null],
+    dropOffCoordinates: [null, null],
+    distance: 0,
+    requireDelivery: 'pickup',
+    duration: 0,
+    additionalInfo: '',
+  },
+  addItem: (vendorId, item_id, quantity) =>
+    set((state) => {
+      const existingItem = state.cart.orderItems.find(
+        (item) => item.itemId === item_id && item.vendorId === vendorId
+      );
+      if (existingItem) {
+        return {
+          cart: {
+            ...state.cart,
+            order_items: state.cart.orderItems.map((item) =>
+              item.itemId === item_id && item.vendorId === vendorId
+                ? { ...item, quantity: item.quantity + quantity }
+                : item
+            ),
+          },
+        };
+      }
+      return {
+        cart: {
+          ...state.cart,
+          order_items: [
+            ...state.cart.orderItems,
+            { vendorId, item_id, quantity },
+          ],
+        },
+      };
     }),
-    {
-      name: "cart-storage",
-      //   storage: createJSONStorage(() => AsyncStorage)
-    }
-  )
-);
+  removeItem: (itemId) =>
+    set((state) => ({
+      cart: {
+        ...state.cart,
+        order_items: state.cart.orderItems.filter(
+          (item) => item.itemId !== itemId
+        ),
+      },
+    })),
+  updateItemQuantity: (item_id, quantity) =>
+    set((state) => ({
+      cart: {
+        ...state.cart,
+        order_items: state.cart.orderItems.map((item) =>
+          item.itemId === item_id ? { ...item, quantity } : item
+        ),
+      },
+    })),
+  setPickupCoordinates: (lat, lng) =>
+    set((state) => ({
+      cart: {
+        ...state.cart,
+        pickupCoordinates: [lat, lng],
+      },
+    })),
+  setDropOffCoordinates: (lat, lng) =>
+    set((state) => ({
+      cart: {
+        ...state.cart,
+        dropOffCoordinates: [lat, lng],
+      },
+    })),
+  setDeliveryOption: (option) =>
+    set((state) => ({
+      cart: {
+        ...state.cart,
+        require_delivery: option,
+      },
+    })),
+  updateDistance: (distance) =>
+    set((state) => ({
+      cart: {
+        ...state.cart,
+        distance,
+      },
+    })),
+  updateDuration: (duration) =>
+    set((state) => ({
+      cart: {
+        ...state.cart,
+        duration,
+      },
+    })),
+  setAdditionalInfo: (info) =>
+    set((state) => ({
+      cart: {
+        ...state.cart,
+        additionalInfo: info,
+      },
+    })),
+  clearCart: () =>
+    set(() => ({
+        cart: {
+            orderItems: [],
+            pickupCoordinates: [null, null],
+            dropOffCoordinates: [null, null],
+            distance: 0,
+            requireDelivery: 'pickup',
+            duration: 0,
+            additionalInfo: '',
+        },
+    })),
+}));

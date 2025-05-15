@@ -1,11 +1,18 @@
-import { StatusBar } from 'expo-status-bar'
 import { SafeAreaView, } from 'react-native-safe-area-context'
-import { View, Text, useTheme, Input, YStack, Button, Image, XStack, ScrollView } from 'tamagui'
+import { View, Text, useTheme, YStack, Button, XStack, ScrollView } from 'tamagui'
 import AppTextInput from "@/components/AppInput";
 import { router } from 'expo-router';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm } from 'react-hook-form';
+import { useAuth } from '@/context/authContext';
+import { jwtDecode } from 'jwt-decode';
+
+import { Login, UserReturn } from '@/types/user-types';
+import authStorage from '@/storage/authStorage';
+import { useMutation } from '@tanstack/react-query';
+import { loginApi } from '@/api/auth';
+import { useToastController } from '@tamagui/toast';
 
 const schema = z.object({
 
@@ -19,6 +26,8 @@ type FormData = z.infer<typeof schema>
 
 const SignIn = () => {
     const theme = useTheme()
+    const authContext = useAuth()
+    // const toast = useToastController()
     const { control, handleSubmit, formState: { errors } } = useForm<FormData>({
         resolver: zodResolver(schema),
         mode: 'onBlur',
@@ -28,9 +37,37 @@ const SignIn = () => {
         }
     })
 
+
+    const { mutate, isPending } = useMutation({
+        mutationFn: ({ username, password }: Login) => loginApi(username, password),
+        onError: (error) => {
+            // toast.show(error?.message);
+            router.replace('/sign-in');
+
+        },
+        onSuccess: async (data) => {
+            const user = jwtDecode(data?.access_token) as UserReturn;
+
+            if (user?.account_status === 'confirmed') {
+                authContext.setUser(user);
+                await authStorage.storeToken(data?.access_token);
+            }
+            if (user?.account_status === 'pending') {
+                // toast.show('Please verify your email and phone number.');
+                router.replace("/(auth)/confirmAccount");
+                return;
+            }
+            // toast.show('Login Successful.');
+            router.replace({ pathname: '/(app)/delivery/(topTabs)' });
+            return;
+        }
+    });
+
     const onSubmit = (data: FormData) => {
-        console.log(data)
+        mutate(data);
     }
+
+
     return (
 
         <SafeAreaView
@@ -81,6 +118,7 @@ const SignIn = () => {
                         render={({ field: { onChange, onBlur, value } }) => (
                             <AppTextInput
                                 label={'Password'}
+                                placeholder='************'
                                 onBlur={onBlur}
                                 onChangeText={onChange}
                                 value={value}

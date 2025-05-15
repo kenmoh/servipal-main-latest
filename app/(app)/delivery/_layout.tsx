@@ -52,7 +52,8 @@ const DeliveryLayout = () => {
             },
             contentStyle: {
                 backgroundColor: theme.background.val
-            }
+            },
+
         }}>
             <Stack.Screen name='[id]' options={{
                 headerTransparent: true,
@@ -64,22 +65,27 @@ const DeliveryLayout = () => {
                 headerTintColor: theme.icon.val,
 
 
+
             }} />
 
             <Stack.Screen name='(topTabs)' options={{
                 title: '',
                 headerStyle: { backgroundColor: theme.background.val },
-                headerLeft: () => <HeaderLeft onPress={() => router.push({ pathname: '/sign-up' })} />,
+                headerLeft: () => <HeaderLeft onPress={() => router.push({ pathname: '/(profile)' })} />,
                 headerRight: () => <HeaderRight onPressNotification={() => router.push({ pathname: '/(app)/delivery/notification' })} onPressSearch={() => router.push({ pathname: '/(app)/delivery/search' })} />,
                 animation: 'ios_from_left'
 
             }} />
             <Stack.Screen name='search' options={{
                 title: '',
-                headerShown: false
+                headerShown: false,
+
             }} />
             <Stack.Screen name='notification' options={{
                 title: 'Notifications'
+            }} />
+             <Stack.Screen name='itemInfo' options={{
+                title: ''
             }} />
         </Stack>
     )

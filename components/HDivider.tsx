@@ -2,11 +2,11 @@ import { StyleSheet } from "react-native"
 import { View } from "tamagui"
 
 
-const HDivider = () => {
+const HDivider = ({ width = '95%' }: { width?: string }) => {
 
 
     return (
-        <View width={'95%'}
+        <View width={width}
             backgroundColor={'$inputBackground'}
             alignSelf="center"
             style={{ height: StyleSheet.hairlineWidth }} />

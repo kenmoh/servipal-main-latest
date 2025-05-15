@@ -14,7 +14,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/android-icon.png",
-        "backgroundColor": "#18191c" 
+        "backgroundColor": "#18191c"
       },
       "package": "com.kenmoh.servipal"
     },
@@ -43,6 +43,14 @@
           }
         }
       ],
+      
+      [
+        "expo-secure-store",
+        {
+         "configureAndroidBackup": true,
+         "faceIdPermission": "Allow ${PRODUCT_NAME} to access your Face ID biometric data."
+        }
+      ],
       [
         "expo-image-picker",
         {
@@ -62,12 +70,19 @@
               }
             },
             "timePicker": {
-              "background": {"light": "#FF5722", "dark": "#18191c"},
-              "numbersBackgroundColor": {"light": "#FF5722", "dark": "#FF5722"}
+              "background": {
+                "light": "#FF5722",
+                "dark": "#18191c"
+              },
+              "numbersBackgroundColor": {
+                "light": "#FF5722",
+                "dark": "#FF5722"
+              }
             }
           }
         }
-      ]
+      ],
+      "expo-secure-store"
     ],
     "experiments": {
       "typedRoutes": true

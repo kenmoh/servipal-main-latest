@@ -1,35 +1,30 @@
 import { StyleSheet, Platform, TouchableOpacity } from 'react-native'
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useLayoutEffect, useRef } from 'react'
 import Constants from 'expo-constants'
 import { Input, useTheme, View, XStack } from 'tamagui'
 import { ArrowLeft, ChevronLeft } from 'lucide-react-native'
-import { router, useNavigation } from 'expo-router'
-import { useIsFocused } from '@react-navigation/native'
+import { router } from 'expo-router'
+
+import { usePathname, useNavigation } from 'expo-router'
+
+
 
 const search = () => {
     const theme = useTheme()
-    const isFocused = useIsFocused()
-    const navigation = useNavigation()
     const inputRef = useRef(null)
+    const path = usePathname()
+    const navigation = useNavigation()
 
-    useEffect(() => {
-        if (isFocused && inputRef.current) {
-            inputRef.current?.focus()
+    useLayoutEffect(() => {
+
+        if (path === '/delivery/search') {
+
+            navigation.setOptions({ tabBarItemHidden: true })
+
         }
-    }, [isFocused])
+    }, [path])
 
-    useEffect(() => {
-        if (isFocused) {
-            // Hide bottom navigation bar
-            navigation.setOptions({
-                tabBarVisible: false
-            })
 
-        } else {
-            // Show bottom navigation bar
-            navigation.setOptions({ tabBarVisible: true })
-        }
-    }, [isFocused])
 
     return (
         <View marginTop={Constants.statusBarHeight + 5} >
@@ -53,9 +48,16 @@ const search = () => {
                 </TouchableOpacity>
                 <View flex={1} marginRight={'$2.5'} height={50} alignItems='center' justifyContent='center'>
 
-                    <Input ref={inputRef} focusStyle={{
-                        borderColor: theme.btnPrimaryColor.val
-                    }} backgroundColor={'$cardDark'} width={'95%'} borderRadius={'$12'} height={'$3.5'} />
+                    <Input ref={inputRef}
+                        focusStyle={{
+                            borderColor: theme.btnPrimaryColor.val
+                        }}
+                        backgroundColor={'$cardDark'}
+                        width={'95%'} borderRadius={'$12'}
+                        height={'$3.5'}
+                        autoFocus
+
+                    />
                 </View>
             </XStack>
         </View>

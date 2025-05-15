@@ -1,18 +1,20 @@
 import { StyleSheet } from 'react-native'
 import React from 'react'
 import { ScrollView, View, Button } from 'tamagui'
-import { z } from 'zod'
+import { number, z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Controller, useForm } from 'react-hook-form'
 import AppTextInput from '@/components/AppInput'
-import AppButton from '@/components/AppButton'
 import ImagePickerInput from '@/components/AppImagePicker'
+import AppPicker from '@/components/AppPicker'
 
 
 const schema = z.object({
     name: z.string().min(1, 'Name is a required field'),
-    description: z.string().min(1, "Description is a required field"),
     price: z.number().int().gt(0, 'Price MUST be greater than 0').lte(999999),
+    ingredients: z.string().min(1, "Ingredients is a required field"),
+    category: z.string({ message: 'Category is a required field' }),
+    side: z.string().optional(),
     image: z.any().nullable().refine(val => val != null, {
         message: "Image is required"
     })
@@ -20,6 +22,16 @@ const schema = z.object({
 
 
 type FormData = z.infer<typeof schema>
+
+const categories = [
+    { id: 1, name: 'Burger' },
+    { id: 2, name: 'Sandwiches' },
+    { id: 3, name: 'Steak' },
+    { id: 4, name: 'Pizza' },
+    { id: 5, name: 'Soup' },
+    { id: 6, name: 'Chicken' },
+    { id: 7, name: 'Others' },
+]
 
 const addMenu = () => {
 
@@ -29,9 +41,11 @@ const addMenu = () => {
             mode: 'onBlur',
             defaultValues: {
                 name: '',
-                description: '',
+                ingredients: '',
                 price: 0,
-                image: null
+                image: null,
+                category: '',
+                side: ''
             }
         })
 
@@ -75,14 +89,34 @@ const addMenu = () => {
                 />
                 <Controller
                     control={control}
-                    name="description"
+                    name="ingredients"
                     render={({ field: { onChange, onBlur, value } }) => (
                         <AppTextInput
-                            placeholder='Description.'
+                            placeholder='Ingredients'
                             onBlur={onBlur}
                             onChangeText={onChange}
                             value={value}
-                            errorMessage={errors.description?.message}
+                            errorMessage={errors.ingredients?.message}
+                        />
+                    )}
+                />
+                <Controller
+                    control={control}
+                    name="category"
+                    render={({ field: { onChange, value } }) => (
+                        <AppPicker items={categories} onValueChange={onChange} value={value} />
+                    )}
+                />
+                <Controller
+                    control={control}
+                    name="side"
+                    render={({ field: { onChange, onBlur, value } }) => (
+                        <AppTextInput
+                            placeholder='Side'
+                            onBlur={onBlur}
+                            onChangeText={onChange}
+                            value={value}
+                            errorMessage={errors.side?.message}
                         />
                     )}
                 />

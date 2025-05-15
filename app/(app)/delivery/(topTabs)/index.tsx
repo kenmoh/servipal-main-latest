@@ -12,6 +12,7 @@ import { Plus, Send } from 'lucide-react-native'
 import React, { useState } from 'react'
 import { FlatList } from 'react-native'
 import { LayoutAnimationConfig } from 'react-native-reanimated'
+import SegmentedControl from '@react-native-segmented-control/segmented-control';
 
 import { YStack, Text, useTheme, View, Button } from 'tamagui'
 
@@ -27,6 +28,8 @@ const index = () => {
         { label: 'Food', iconName: "food-outline" },
         { label: 'Laundry', iconName: "washing-machine" },
     ]
+
+    const segments = ['Packages', 'Foods', 'Laundries']
 
     const { data, isLoading, error, refetch, isFetching } = useQuery({
         queryKey: ['item-orders'],
@@ -82,7 +85,7 @@ const index = () => {
             case 2:
                 return (
                     <View flex={1}>
-                    <SelectDemo/>
+                        <SelectDemo />
                         <FlatList
                             {...commonFlatListProps}
                             data={data?.laundries}
@@ -99,25 +102,26 @@ const index = () => {
     return (
         <YStack backgroundColor={theme.background} flex={1}>
 
-            <Tabs data={tabs} onChange={(index) => setSelectedIndex(index)} selectedIndex={selectedIndex} />
+
+            <SegmentedControl
+                values={segments}
+                selectedIndex={selectedIndex}
+                onChange={(event: { nativeEvent: { selectedSegmentIndex: number } }) => {
+                    setSelectedIndex(event.nativeEvent.selectedSegmentIndex);
+                }}
+                style={{ height: 42.5, marginHorizontal: 10 }}
+                backgroundColor={theme.background.val}
+                tintColor={theme.transparentBtnPrimaryColor.val}
+
+
+
+            />
+            <HDivider width='100%' />
 
             <LayoutAnimationConfig skipEntering>
                 {renderContent()}
             </LayoutAnimationConfig>
-            {/* <Button
-                onPress={() => router.push({ pathname: '/(app)/delivery/(topTabs)/sendItem' })}
-                // onPress={() => router.push({ pathname: '/(auth)/onboarding' })}
-                size={'$6'}
-                circular
-                position='absolute'
-                bottom={5}
-                right={20}
-                pressStyle={{
-                    backgroundColor: '$transparentBtnPrimaryColor'
-                }}
-                backgroundColor={'$btnPrimaryColor'}>
-                <Send color={'white'} size={35} />
-            </Button> */}
+
         </YStack>
     )
 }

@@ -2,14 +2,13 @@ import { StyleSheet, TouchableOpacity, Dimensions, ScrollView } from 'react-nati
 import React from 'react'
 import { Card, Text, XStack, Circle, Avatar, YStack, Paragraph, useTheme, Button } from 'tamagui'
 import { AntDesign, Feather, FontAwesome6 } from '@expo/vector-icons'
-import { SafeAreaView } from 'react-native-safe-area-context'
 import { Stack, useLocalSearchParams } from 'expo-router'
 import { useQuery } from '@tanstack/react-query'
-import MapView from 'react-native-maps';
 import { Phone, Wallet2Icon, MapPin, Wallet, Info } from 'lucide-react-native'
 import LoadingIndicator from '@/components/LoadingIndicator'
 import { orderItemDetails } from '@/api/order'
 import { Status } from '@/components/ItemCard'
+import Map from "@/components/Map";
 
 
 
@@ -36,13 +35,8 @@ const ItemDetails = () => {
     return (
 
         <>
+            <Map />
 
-            <MapView initialRegion={{
-                longitude: 8.6753,
-                latitude: 9.0820,
-                latitudeDelta: 0.0922,
-                longitudeDelta: 0.0421,
-            }} style={{ height: MAP_HEIGHT }} />
             <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1, paddingBottom: 25 }} >
 
                 <Card marginVertical={5} width={'95%'} alignSelf='center' backgroundColor={'$profileCard'} bordered borderColor={'$inputBackground'} paddingRight={10}>

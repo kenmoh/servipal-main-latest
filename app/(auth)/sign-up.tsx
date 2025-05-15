@@ -89,6 +89,7 @@ const SignUp = () => {
 
                                 onBlur={onBlur}
                                 onChangeText={onChange}
+                                keyboardType='email-address'
                                 value={value}
                                 errorMessage={errors.email?.message}
                             />
@@ -109,16 +110,7 @@ const SignUp = () => {
                             />
                         )}
                     />
-                    {/* <Controller
-                        name='role'
-                        control={control}
-                        render={() => (
-                            <AppSelector
-                                label='Select role'
-                                items={roleData}
-                            />
-                        )}
-                    /> */}
+
 
                     <Controller
                         name="role"
@@ -128,14 +120,7 @@ const SignUp = () => {
                             <AppPicker label="Select role" items={roleData} value={value} onValueChange={onChange} />
                         )}
                     />
-                    {/* <Controller
-                        name="role"
-                        control={control}
-                        defaultValue="Regular User"
-                        render={({ field: { value, onChange } }) => (
-                            <AppSelector label="Select role" items={roleData} value={value} onValueChange={onChange} />
-                        )}
-                    /> */}
+
                     <Controller
                         name='password'
                         control={control}
