@@ -7,6 +7,7 @@ import { UserRound, UsersRound, SquareAsterisk, LogOutIcon, Camera } from 'lucid
 import { Avatar, Circle, Heading, Image, Text, useTheme, View, XStack, YStack } from 'tamagui'
 import { ExternalPathString, RelativePathString, router } from 'expo-router';
 import ImagePickerInput, { ImageType } from '@/components/AppImagePicker'
+import { useAuth } from '@/context/authContext';
 
 interface ProfileCardProp {
     name: string;
@@ -43,16 +44,11 @@ const profile = () => {
             link: './changePassword',
             condition: true,
         },
-        {
-            name: "Logout",
-            icon: <LogOutIcon color={'white'} />,
-            bgColor: "rgba(255, 0, 0, 0.3)",
-            link: './changePassword',
-            condition: true,
-        },
+
     ]
 
     const theme = useTheme()
+    const { signOut } = useAuth()
     return (
         <View backgroundColor={'$background'} flex={1}>
             <YStack>
@@ -135,6 +131,15 @@ const profile = () => {
                         />
                     </Animated.View>
                 ))}
+
+                <Animated.View entering={FadeInDown.duration(300).delay(100)}>
+                    <ProfileCard
+                        name={'Logout'}
+                        onPress={() => signOut()}
+                        bgColor={'rgba(255, 0, 0, 0.3)'}
+                        icon={<LogOutIcon color={'white'} />}
+                    />
+                </Animated.View>
             </YStack>
 
         </View>

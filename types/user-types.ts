@@ -44,7 +44,7 @@ interface Review {
   created_at: string;
 }
 
-export interface Company {
+export interface CompanyProfile {
   id: string;
   company_name: string;
   email: string;
@@ -61,10 +61,43 @@ export interface Company {
   };
 }
 
-// Type for an array of companies
-export type CompanyResponse = Company[];
-
 export type Login = {
   username: string;
   password: string;
 };
+
+export interface Prfile {
+  full_name?: string;
+  phone_number: string;
+  bank_name?: string;
+  bank_account_number?: string;
+  bike_number?: string;
+  business_name?: string;
+  business_redistration_number?: string;
+  business_address?: string;
+  closing_hours?: string;
+  openning_hours?: string;
+}
+
+type TransactionType = "credit" | "debit";
+
+interface Transaction {
+  amount: number;
+  transaction_type: TransactionType;
+}
+interface Wallet {
+  id: string;
+  balance: number;
+  escrow_balance: number;
+  transactions: Transaction[];
+}
+
+export interface UserDetails {
+  id: string;
+  email: string;
+  user_type: string;
+  profile: Prfile;
+}
+export interface CurrentUserDetails extends UserDetails {
+  wallet: Wallet;
+}

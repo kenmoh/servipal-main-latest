@@ -3,6 +3,7 @@ import { View, Text, useTheme, YStack, Button, XStack, ScrollView } from 'tamagu
 import AppTextInput from "@/components/AppInput";
 import { router } from 'expo-router';
 import { z } from 'zod';
+import { Notifier, NotifierComponents } from 'react-native-notifier';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm } from 'react-hook-form';
 import { useAuth } from '@/context/authContext';
@@ -12,7 +13,7 @@ import { Login, UserReturn } from '@/types/user-types';
 import authStorage from '@/storage/authStorage';
 import { useMutation } from '@tanstack/react-query';
 import { loginApi } from '@/api/auth';
-import { useToastController } from '@tamagui/toast';
+import { ActivityIndicator } from 'react-native';
 
 const schema = z.object({
 
@@ -41,7 +42,14 @@ const SignIn = () => {
     const { mutate, isPending } = useMutation({
         mutationFn: ({ username, password }: Login) => loginApi(username, password),
         onError: (error) => {
-            // toast.show(error?.message);
+            Notifier.showNotification({
+                title: 'Error',
+                description: `${error.message}`,
+                Component: NotifierComponents.Alert,
+                componentProps: {
+                    alertType: 'error'
+                }
+            })
             router.replace('/sign-in');
 
         },
@@ -53,13 +61,33 @@ const SignIn = () => {
                 await authStorage.storeToken(data?.access_token);
             }
             if (user?.account_status === 'pending') {
-                // toast.show('Please verify your email and phone number.');
-                router.replace("/(auth)/confirmAccount");
+                Notifier.showNotification({
+                    title: 'Confirm Account',
+                    description: 'Please confirm your account',
+                    Component: NotifierComponents.Alert,
+                    duration: 1000,
+                    componentProps: {
+                        alertType: 'info'
+                    }
+
+
+                })
+                router.replace("/(auth)/confirm-account");
                 return;
+
             }
-            // toast.show('Login Successful.');
+            Notifier.showNotification({
+                title: 'Success',
+                description: 'Login successful',
+                Component: NotifierComponents.Alert,
+                componentProps: {
+                    alertType: 'success'
+                }
+
+
+            })
             router.replace({ pathname: '/(app)/delivery/(topTabs)' });
-            return;
+
         }
     });
 
@@ -94,7 +122,7 @@ const SignIn = () => {
                     backgroundColor={'$background'} >
 
                     <YStack alignSelf='center' width={'90%'} marginBottom={10} >
-                        <Text alignSelf='flex-start' fontFamily={'$heading'} fontSize={20} fontWeight={'bold'}>Welcome back,</Text>
+                        <Text alignSelf='flex-start' fontFamily={'$heading'} fontSize={20} fontWeight={'bold'}>Welcome,</Text>
                         <Text alignSelf='flex-start' fontFamily={'$heading'} fontSize={12} fontWeight={'400'}>Login to continue</Text>
                     </YStack>
                     <Controller
@@ -109,6 +137,7 @@ const SignIn = () => {
                                 value={value}
                                 keyboardType='email-address'
                                 errorMessage={errors.username?.message}
+                                editable={!isPending}
                             />
                         )}
                     />
@@ -124,6 +153,8 @@ const SignIn = () => {
                                 value={value}
                                 secureTextEntry
                                 errorMessage={errors.password?.message}
+                                editable={!isPending}
+
                             />
                         )}
                     />
@@ -141,7 +172,7 @@ const SignIn = () => {
                         >Forgot password</Text>
                     </View>
                     <Button
-                        backgroundColor={'$btnPrimaryColor'}
+                        backgroundColor={isPending ? '$cardDark' : '$btnPrimaryColor'}
                         height={'$5'}
                         width={'90%'}
                         marginTop={40}
@@ -151,7 +182,7 @@ const SignIn = () => {
                         fontFamily={'$heading'}
                         textAlign='center'
                         onPress={handleSubmit(onSubmit)}
-                    >Login</Button>
+                    >{isPending ? <ActivityIndicator size={'large'} color={theme.text.val} /> : 'Login'}</Button>
 
                     <XStack alignSelf='center' marginTop={25} alignItems='center' justifyContent='center' width={'90%'} marginBottom={30} >
                         <Text color={'$text'} fontFamily={'$body'} fontSize={14} >Don't have an account? </Text>

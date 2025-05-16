@@ -1,11 +1,17 @@
 
+import { useEffect, useState } from 'react';
 import { SafeAreaView, } from 'react-native-safe-area-context'
-import { View, Text, useTheme, YStack, Button, ScrollView } from 'tamagui'
+import { View, Text, useTheme, YStack, Button, ScrollView, XStack } from 'tamagui'
 import AppTextInput from "@/components/AppInput";
 import { router } from 'expo-router';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm } from 'react-hook-form';
+import { Notifier, NotifierComponents } from 'react-native-notifier';
+import { useMutation } from '@tanstack/react-query';
+import { resendVerification, verifyContact } from '@/api/auth';
+import { ActivityIndicator } from 'react-native';
+import { X } from 'lucide-react-native';
 
 const schema = z.object({
 
@@ -18,16 +24,88 @@ const schema = z.object({
 type FormData = z.infer<typeof schema>
 
 
-const SignIn = () => {
+const ConfirmAccount = () => {
     const theme = useTheme()
+    const [countdown, setCountdown] = useState(60);
+    const [canResend, setCanResend] = useState(false);
+
     const { control, handleSubmit, formState: { errors } } = useForm<FormData>({
         resolver: zodResolver(schema),
         mode: 'onBlur',
 
     })
 
+    const { mutate, isPending } = useMutation({
+        mutationFn: verifyContact,
+        onSuccess: (data) => {
+            Notifier.showNotification({
+                title: 'Success',
+                description: 'Account creation successful',
+                Component: NotifierComponents.Alert,
+                duration: 1000,
+                componentProps: {
+                    alertType: 'success'
+                }
+
+
+            })
+            router.replace('/(auth)/sign-in');
+        },
+        onError: (error) => {
+            Notifier.showNotification({
+                title: 'Error',
+                description: `${error.message}`,
+                Component: NotifierComponents.Alert,
+                componentProps: {
+                    alertType: 'error'
+                }
+            })
+        }
+    })
+
+    const { mutate: resend, isPending: isResending } = useMutation({
+        mutationFn: resendVerification,
+        onSuccess: () => {
+            Notifier.showNotification({
+                title: 'Success',
+                description: 'Verification codes sent successfully',
+                Component: NotifierComponents.Alert,
+                componentProps: {
+                    alertType: 'success'
+                }
+            });
+            setCountdown(120);
+            setCanResend(false);
+        },
+        onError: (error) => {
+            Notifier.showNotification({
+                title: 'Error',
+                description: error.message,
+                Component: NotifierComponents.Alert,
+                componentProps: {
+                    alertType: 'error'
+                }
+            });
+        }
+    });
+
+    // Countdown timer effect
+    useEffect(() => {
+        let timer: NodeJS.Timeout;
+        if (countdown > 0 && !canResend) {
+            timer = setInterval(() => {
+                setCountdown((prev) => prev - 1);
+            }, 1000);
+        } else {
+            setCanResend(true);
+        }
+
+        return () => clearInterval(timer);
+    }, [countdown, canResend]);
+
     const onSubmit = (data: FormData) => {
-        console.log(data)
+        mutate(data)
+
     }
     return (
 
@@ -67,9 +145,11 @@ const SignIn = () => {
                                 placeholder='234534'
                                 onBlur={onBlur}
                                 onChangeText={onChange}
-                                value={value.toString()}
+                                value={value?.toString().trim()}
                                 keyboardType='numeric'
                                 errorMessage={errors.phoneCode?.message}
+                                editable={!isPending}
+
                             />
                         )}
                     />
@@ -82,25 +162,51 @@ const SignIn = () => {
                                 placeholder='123466'
                                 onBlur={onBlur}
                                 onChangeText={onChange}
-                                value={value.toString()}
+                                value={value?.toString().trim()}
                                 keyboardType='numeric'
                                 errorMessage={errors.emailCode?.message}
+                                editable={!isPending}
+
                             />
                         )}
                     />
+                    <XStack alignSelf='center' marginTop={40} alignItems='center' justifyContent='center' width={'90%'} gap={5}>
 
-                    <Button
-                        backgroundColor={'$btnPrimaryColor'}
-                        height={'$5'}
-                        width={'90%'}
-                        marginTop={40}
-                        color={'$text'}
-                        fontWeight={'bold'}
-                        fontSize={'$5'}
-                        fontFamily={'$heading'}
-                        textAlign='center'
-                        onPress={handleSubmit(onSubmit)}
-                    >Verify</Button>
+                        <Button
+                            backgroundColor={isPending ? '$cardDark' : '$btnPrimaryColor'}
+                            height={'$5'}
+                            width={'50%'}
+                            color={'$text'}
+                            fontWeight={'bold'}
+                            fontSize={'$4'}
+                            fontFamily={'$heading'}
+                            textAlign='center'
+                            disabled={isPending}
+                            onPress={handleSubmit(onSubmit)}
+                        >
+
+                            {isPending ? <ActivityIndicator size={'large'} color={theme.text.val} /> : 'Verify'}
+                        </Button>
+                        <Button
+                            backgroundColor={'transparent'}
+                            height={'$5'}
+                            width={'50%'}
+                            color={canResend ? '$btnPrimaryColor' : '$gray11'}
+                            fontWeight={'bold'}
+                            fontSize={'$4'}
+                            fontFamily={'$heading'}
+                            textAlign='center'
+                            disabled={!canResend || isResending}
+                            onPress={() => resend()}
+                        >
+                            {isResending ?
+                                <ActivityIndicator size={'small'} color={theme.btnPrimaryColor.val} /> :
+                                canResend ?
+                                    'Resend' :
+                                    `Resend in ${countdown}s`
+                            }
+                        </Button>
+                    </XStack>
 
 
                 </View>
@@ -110,5 +216,5 @@ const SignIn = () => {
     )
 }
 
-export default SignIn
+export default ConfirmAccount
 

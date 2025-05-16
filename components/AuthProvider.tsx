@@ -11,11 +11,26 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
         // Implement signIn logic
     };
 
+
+
     const restoreToken = async () => {
         const token = await authStorage.getToken()
         if (!token) return
         setUser(jwtDecode(token))
     }
+
+    useEffect(() => {
+        const checkAuth = async () => {
+            const token = await authStorage.getToken();
+            if (!token) {
+                signOut();
+            }
+        };
+
+        // Check auth status every minute
+        const interval = setInterval(checkAuth, 60000);
+        return () => clearInterval(interval);
+    }, []);
 
     useEffect(() => {
         restoreToken()

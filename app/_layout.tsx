@@ -9,6 +9,8 @@ import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
 import { TamaguiProvider } from 'tamagui'
+import { NotifierWrapper } from 'react-native-notifier'
+import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { ToastProvider, ToastViewport } from '@tamagui/toast'
 
 import tamaguiConfig from '@/tamagui.config';
@@ -48,41 +50,47 @@ export default function RootLayout() {
 
   return (
     <QueryClientProvider client={queryClient}>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <TamaguiProvider config={tamaguiConfig} defaultTheme={colorScheme!}>
+          <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+            {/* <ToastProvider native={false}> */}
 
-      <TamaguiProvider config={tamaguiConfig} defaultTheme={colorScheme!}>
-        <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-          {/* <ToastProvider native={false}> */}
+            <NotifierWrapper>
+              <AuthProvider>
+                <Stack screenOptions={{
+                  navigationBarColor: '#18191c',
+                  contentStyle: {
+                    backgroundColor: '#18191c'
+                  }
 
-          <AuthProvider>
-            <Stack screenOptions={{
-              navigationBarColor: '#18191c',
-              contentStyle: {
-                backgroundColor: '#18191c'
-              }
+                }}>
 
-            }}>
-              <Stack.Screen name="(app)" options={{ headerShown: false }} />
 
-              <Stack.Screen name="index" options={{ headerShown: false }} />
-              <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-              <Stack.Screen name='(profile)' options={{
-                headerShown: false
 
-              }} />
+                  <Stack.Screen name="(app)" options={{ headerShown: false }} />
 
-              <Stack.Screen name="modal" options={{
-                presentation: 'modal',
-                animation: 'slide_from_bottom',
-                headerShown: false
-              }} />
+                  <Stack.Screen name="index" options={{ headerShown: false }} />
+                  <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+                  <Stack.Screen name='(profile)' options={{
+                    headerShown: false
 
-            </Stack>
-            <StatusBar style="auto" />
-          </AuthProvider>
-          {/* <ToastViewport flexDirection="column" bottom={0} left={0} right={0} />
-          </ToastProvider > */}
-        </ThemeProvider>
-      </TamaguiProvider>
+                  }} />
+
+                  <Stack.Screen name="modal" options={{
+                    presentation: 'modal',
+                    animation: 'slide_from_bottom',
+                    headerShown: false
+                  }} />
+
+                </Stack>
+                <StatusBar style="auto" />
+
+              </AuthProvider>
+
+            </NotifierWrapper>
+          </ThemeProvider>
+        </TamaguiProvider>
+      </GestureHandlerRootView>
     </QueryClientProvider>
   );
 }
