@@ -1,10 +1,14 @@
 import * as SecureStore from "expo-secure-store";
-import jwtDecode from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 
 const key = "authToken";
 
 interface JWTPayload {
   exp: number;
+  iat: number;
+  sub: string;
+  account_status: "pending" | "confirmed";
+  user_type: string;
 }
 
 const storeToken = async (authToken: string) => {
@@ -17,17 +21,24 @@ const storeToken = async (authToken: string) => {
 
 const isTokenExpired = (token: string): boolean => {
   try {
-    const decoded = jwtDecode.jwtDecode<JWTPayload>(token);
+    const decoded = jwtDecode<JWTPayload>(token);
     const currentTime = Date.now() / 1000;
-    return decoded.exp < currentTime;
-  } catch {
+
+    return decoded.exp < currentTime + 60;
+  } catch (error) {
+    console.error("Token validation error:", error);
     return true;
   }
 };
 
-const getUser = async () => {
+const getUser = async (): Promise<JWTPayload | null> => {
   const token = await getToken();
-  return token ? jwtDecode.jwtDecode(token) : null;
+  try {
+    return token ? jwtDecode<JWTPayload>(token) : null;
+  } catch (error) {
+    console.error("Error decoding user token:", error);
+    return null;
+  }
 };
 
 const getToken = async () => {
@@ -40,6 +51,8 @@ const getToken = async () => {
       await removeToken();
       return null;
     }
+
+    return token;
   } catch (error) {
     throw new Error("Error getting auth token", error!);
   }

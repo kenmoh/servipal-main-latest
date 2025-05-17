@@ -3,12 +3,13 @@ import { StyleSheet, TouchableOpacity, ViewStyle } from 'react-native';
 import { Button, Image, View, Text, useTheme } from 'tamagui';
 import * as ImagePicker from 'expo-image-picker';
 import { Camera } from 'lucide-react-native';
+import { ImageType } from '@/types/order-types';
 
-export type ImageType = {
-    uri: string;
-    type: string;
-    name: string;
-}
+// export type ImageType = {
+//     url: string;
+//     type: string;
+//     name: string;
+// }
 
 interface ImagePickerInputProps {
     value?: ImageType | null | string;
@@ -41,11 +42,11 @@ const ImagePickerInput = ({
 
         if (!result.canceled) {
             const imageData: ImageType = {
-                uri: result.assets[0].uri,
+                url: result.assets[0].uri,
                 type: 'image/jpeg',
                 name: result.assets[0].uri.split('/').pop() || 'image.jpg'
             };
-            onChange(imageData?.uri.toString());
+            onChange(imageData?.url.toString());
         }
     };
 

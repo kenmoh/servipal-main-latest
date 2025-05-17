@@ -9,9 +9,17 @@
     "userInterfaceStyle": "dark",
     "newArchEnabled": true,
     "ios": {
+      "config": {
+        "googleMapsApiKey":"process.env.GOOGLE_MAP_API_KEY"
+      },
       "supportsTablet": true
     },
     "android": {
+      "config":{
+        "googleMaps":{
+          "apiKey":"process.env.GOOGLE_MAP_API_KEY"
+        },
+      },
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/android-icon.png",
         "backgroundColor": "#18191c"

@@ -1,8 +1,6 @@
 import authStorage from "@/storage/authStorage";
 import { create } from "apisauce";
 
-// import authStorage from "@/storage/authStorage";
-
 export const apiClient = create({
   baseURL: "https://servipalbackend.onrender.com/api",
 });

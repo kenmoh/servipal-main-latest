@@ -3,11 +3,11 @@ export type OrderType = "delivery" | "food" | "laundry";
 export type OrderStatus = "pending" | "in-transit" | "delivered";
 export type RequireDelivery = "pickup" | "delivery";
 
-type ItemImage = {
-  id: string;
-  item_id: string;
+export interface ImageType {
   url: string;
-};
+  type: string;
+  name: string;
+}
 export interface SendItem {
   name: string;
   description: string;
@@ -17,7 +17,7 @@ export interface SendItem {
   pickup_coordinates: Coordinates;
   dropoff_coordinates: Coordinates;
   distance: number;
-  imageUrl: ItemImage[];
+  imageUrl: string;
 }
 
 interface Delivery {
@@ -41,7 +41,7 @@ interface OrderItemResponse {
   price: string;
   description: string;
   quantity: 0;
-  images: ItemImage[];
+  images: ImageType[];
 }
 
 export interface OrderResponse {

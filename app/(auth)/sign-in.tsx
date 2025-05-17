@@ -56,38 +56,41 @@ const SignIn = () => {
         onSuccess: async (data) => {
             const user = jwtDecode(data?.access_token) as UserReturn;
 
-            if (user?.account_status === 'confirmed') {
-                authContext.setUser(user);
-                await authStorage.storeToken(data?.access_token);
-            }
             if (user?.account_status === 'pending') {
+                await authStorage.storeToken(data?.access_token);
                 Notifier.showNotification({
                     title: 'Confirm Account',
                     description: 'Please confirm your account',
                     Component: NotifierComponents.Alert,
-                    duration: 1000,
                     componentProps: {
                         alertType: 'info'
                     }
-
-
-                })
+                });
                 router.replace("/(auth)/confirm-account");
                 return;
-
             }
-            Notifier.showNotification({
-                title: 'Success',
-                description: 'Login successful',
-                Component: NotifierComponents.Alert,
-                componentProps: {
-                    alertType: 'success'
+
+            if (user?.account_status === 'confirmed') {
+                try {
+                    await authStorage.storeToken(data?.access_token);
+                    authContext.setUser(user);
+
+
+
+                    Notifier.showNotification({
+                        title: 'Success',
+                        description: 'Login successful',
+                        Component: NotifierComponents.Alert,
+                        componentProps: {
+                            alertType: 'success'
+                        }
+                    });
+
+                    router.replace('/(app)/delivery/(topTabs)');
+                } catch (error) {
+                    console.error('Error storing token:', error);
                 }
-
-
-            })
-            router.replace({ pathname: '/(app)/delivery/(topTabs)' });
-
+            }
         }
     });
 

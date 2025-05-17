@@ -1,7 +1,10 @@
-import { StyleSheet } from 'react-native'
+import { StyleSheet, ActivityIndicator } from 'react-native'
+
 import React, { useEffect, useState } from 'react'
 import { ScrollView, View, Button, XStack, YStack, Text, useTheme, Separator, Square } from 'tamagui'
 import { z } from 'zod'
+import { Notifier, NotifierComponents } from 'react-native-notifier'
+import { useMutation } from '@tanstack/react-query'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Controller, useForm, useWatch } from 'react-hook-form'
 import AppTextInput from '@/components/AppInput'
@@ -10,11 +13,25 @@ import GoogleTextInput from "@/components/GoogleTextInput";
 import { useLocationStore } from '@/store/locationStore'
 import { Feather, MaterialCommunityIcons, AntDesign } from '@expo/vector-icons'
 import { Clock, Dot } from 'lucide-react-native'
+import { sendItem } from '@/api/order'
+import { router } from 'expo-router'
+import { ImageType } from '@/types/order-types'
 
 const coordinatesSchema = z.tuple([
     z.number({ message: 'Required' }).nullable(),
     z.number({ message: 'Required' }).nullable(),
 ]);
+
+const imageSchema = z.object({
+    name: z.string(),
+    type: z.string(),
+    url: z.string()
+}).transform((data): ImageType => ({
+    name: data.name,
+    type: data.type,
+    url: data.url
+
+}));
 
 export const sendItemSchema = z.object({
     name: z.string().nonempty({ message: "Name is required" }),
@@ -22,10 +39,11 @@ export const sendItemSchema = z.object({
     origin: z.string().nonempty({ message: "Origin is required" }),
     destination: z.string().nonempty({ message: "Destination is required" }),
     duration: z.string().nonempty({ message: "Duration is required" }),
-    originCoords: coordinatesSchema,
-    destinationCoords: coordinatesSchema,
+    pickup_coordinates: coordinatesSchema,
+    dropoff_coordinates: coordinatesSchema,
     distance: z.number({ message: 'Distance is required' }),
     imageUrl: z.string().nonempty({ message: "Image is required" }),
+    // imageUrl: z.array(imageSchema).min(1, { message: "At least one image is required" })
 });
 
 type FormData = z.infer<typeof sendItemSchema>
@@ -55,8 +73,8 @@ const ItemInfo = () => {
             destination: '',
             distance: 0,
             duration: '',
-            originCoords: [null, null],
-            destinationCoords: [null, null],
+            pickup_coordinates: [null, null],
+            dropoff_coordinates: [null, null],
         }
     });
 
@@ -64,14 +82,46 @@ const ItemInfo = () => {
     const [formValues, setFormValues] = useState({
         origin: '',
         destination: '',
-        originCoords: [null, null] as [number | null, number | null],
-        destinationCoords: [null, null] as [number | null, number | null],
+        pickup_coordinates: [null, null] as [number | null, number | null],
+        dropoff_coordinates: [null, null] as [number | null, number | null],
         distance: 0,
         duration: '',
     });
 
+
+    const { mutate, isPending } = useMutation({
+        mutationFn: sendItem,
+        onSuccess: (data) => {
+            Notifier.showNotification({
+                title: 'Pending Payment Confirmation',
+                description: 'Delivery order create. Your order will be listed for delivery when your payment is confirmed',
+                Component: NotifierComponents.Alert,
+                duration: 1000,
+                componentProps: {
+                    alertType: 'info'
+                }
+
+
+            })
+            router.replace('/(app)/delivery');
+            return;
+        },
+        onError: (error) => {
+            const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
+            Notifier.showNotification({
+                title: 'Error',
+                description: `${errorMessage}`,
+                Component: NotifierComponents.Alert,
+                componentProps: {
+                    alertType: 'error'
+                }
+            })
+        }
+    })
+
     const onSubmit = (data: FormData) => {
         console.log('Form submitted with data:', data);
+        mutate(data)
     }
 
     // Update form from Zustand state
@@ -90,13 +140,13 @@ const ItemInfo = () => {
         }
 
         if (originCoords && originCoords.length === 2) {
-            setValue('originCoords', originCoords as [number | null, number | null]);
-            setFormValues(prev => ({ ...prev, originCoords: originCoords as [number | null, number | null] }));
+            setValue('pickup_coordinates', originCoords as [number | null, number | null]);
+            setFormValues(prev => ({ ...prev, pickup_coordinates: originCoords as [number | null, number | null] }));
         }
 
         if (destinationCoords && destinationCoords.length === 2) {
-            setValue('destinationCoords', destinationCoords as [number | null, number | null]);
-            setFormValues(prev => ({ ...prev, destinationCoords: destinationCoords as [number | null, number | null] }));
+            setValue('dropoff_coordinates', destinationCoords as [number | null, number | null]);
+            setFormValues(prev => ({ ...prev, dropoff_coordinates: destinationCoords as [number | null, number | null] }));
         }
     }, [origin, destination, originCoords, destinationCoords, setValue]);
 
@@ -113,7 +163,7 @@ const ItemInfo = () => {
             const originQuery = encodeURIComponent(formValues.origin);
             const destinationQuery = encodeURIComponent(formValues.destination);
 
-            const url = `https://maps.googleapis.com/maps/api/distancematrix/json?destinations=${destinationQuery}&origins=${originQuery}&units=metric&key=${process.env.EXPO_PUBLIC_GOOGLE_MAP_API_KEY}`;
+            const url = `https://maps.googleapis.com/maps/api/distancematrix/json?destinations=${destinationQuery}&origins=${originQuery}&units=metric&key=${process.env.GOOGLE_MAP_API_KEY}`;
 
             try {
                 const response = await fetch(url);
@@ -238,7 +288,7 @@ const ItemInfo = () => {
                                     editable={false}
                                     placeholder='Distance'
                                     onBlur={field.onBlur}
-                                    value={formValues.distance ? formValues.distance.toString() : ''}
+                                    value={formValues.distance ? formValues?.distance?.toString() : ''}
                                     errorMessage={errors.distance?.message}
                                 />
                             )}
@@ -253,7 +303,7 @@ const ItemInfo = () => {
                                     placeholder="Duration"
                                     onBlur={field.onBlur}
                                     editable={false}
-                                    value={formatCoords(formValues.originCoords)}
+                                    value={formatCoords(formValues.pickup_coordinates)}
                                     errorMessage={errors.duration?.message}
                                 />
                             )}
@@ -265,14 +315,14 @@ const ItemInfo = () => {
                     <View width={'50%'}>
                         <Controller
                             control={control}
-                            name="originCoords"
+                            name="pickup_coordinates"
                             render={({ field }) => (
                                 <AppTextInput
                                     placeholder="Origin Coords"
                                     onBlur={field.onBlur}
                                     editable={false}
-                                    value={formatCoords(formValues.originCoords)}
-                                    errorMessage={errors.originCoords?.message}
+                                    value={formatCoords(formValues.pickup_coordinates)}
+                                    errorMessage={errors.pickup_coordinates?.message}
                                 />
                             )}
                         />
@@ -280,14 +330,14 @@ const ItemInfo = () => {
                     <View width={'50%'}>
                         <Controller
                             control={control}
-                            name="destinationCoords"
+                            name="dropoff_coordinates"
                             render={({ field }) => (
                                 <AppTextInput
                                     editable={false}
                                     placeholder="Dest Coords"
                                     onBlur={field.onBlur}
-                                    value={formatCoords(formValues.destinationCoords)}
-                                    errorMessage={errors.destinationCoords?.message}
+                                    value={formatCoords(formValues.dropoff_coordinates)}
+                                    errorMessage={errors.dropoff_coordinates?.message}
                                 />
                             )}
                         />
@@ -316,6 +366,7 @@ const ItemInfo = () => {
                         <ImagePickerInput
                             value={value}
                             onChange={onChange}
+
                             errorMessage={errors.imageUrl?.message?.toString()}
                         />
                     )}
@@ -328,11 +379,11 @@ const ItemInfo = () => {
                     }}
                     marginVertical={'$3'}
                     alignSelf='center'
-                    backgroundColor={'$btnPrimaryColor'}
+                    backgroundColor={isPending ? '$cardDark' : '$btnPrimaryColor'}
                     width={'90%'}
                     onPress={handleSubmit(onSubmit)}
                 >
-                    Submit
+                    {isPending ? <ActivityIndicator size={'large'} color={theme.text.val} /> : 'Send'}
                 </Button>
             </View>
         </ScrollView>

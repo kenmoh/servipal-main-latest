@@ -19,6 +19,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
         setUser(jwtDecode(token))
     }
 
+/*
     useEffect(() => {
         const checkAuth = async () => {
             const token = await authStorage.getToken();
@@ -35,6 +36,8 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
     useEffect(() => {
         restoreToken()
     }, [])
+    
+    */
 
 
     const signOut = () => {
