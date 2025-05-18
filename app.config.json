@@ -15,10 +15,11 @@
       "supportsTablet": true
     },
     "android": {
+      "googleServicesFile": "./google-services.json",
       "config":{
         "googleMaps":{
           "apiKey":"process.env.GOOGLE_MAP_API_KEY"
-        },
+        }
       },
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/android-icon.png",
@@ -59,6 +60,21 @@
          "faceIdPermission": "Allow ${PRODUCT_NAME} to access your Face ID biometric data."
         }
       ],
+      [
+        "@rnmapbox/maps",
+         {
+           "RNMapboxMapsDownloadToken": "sk.eyJ1Ijoia2VubW9oIiwiYSI6ImNtM2ZsNHRjMDA0MG4ya3NjM3p2ZXFoNnUifQ.N4lJo-GrsP4tvIYWH7cPHw",
+           "RNMapboxMapsVersion": "11.0.0"
+         }
+       ],
+       
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location."
+        }
+      ],
+          
       [
         "expo-image-picker",
         {

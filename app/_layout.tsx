@@ -66,21 +66,30 @@ export default function RootLayout() {
                 }}>
 
 
-
                   <Stack.Screen name="(app)" options={{ headerShown: false }} />
-
                   <Stack.Screen name="index" options={{ headerShown: false }} />
                   <Stack.Screen name="(auth)" options={{ headerShown: false }} />
                   <Stack.Screen name='(profile)' options={{
                     headerShown: false
 
                   }} />
-
-                  <Stack.Screen name="modal" options={{
-                    presentation: 'modal',
-                    animation: 'slide_from_bottom',
+                  <Stack.Screen name='delivery-detail' options={{
                     headerShown: false
+
                   }} />
+
+                  <Stack.Screen name="user-details" options={{
+                    presentation: 'transparentModal',
+                    animation: 'slide_from_bottom',
+                    headerShown: false,
+                    contentStyle: {
+                      backgroundColor: 'rgba(0,0,0,0.7)',
+                    }
+
+
+                  }} />
+
+
 
                 </Stack>
                 <StatusBar style="auto" />

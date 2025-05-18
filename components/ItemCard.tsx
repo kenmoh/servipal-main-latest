@@ -28,7 +28,7 @@ const ItemCard = ({ data, isHomeScreen = false }: CardProp) => {
     // };
     return (
         <TouchableOpacity activeOpacity={0.6} onPress={() => router.push({
-            pathname: '/(app)/delivery/[id]',
+            pathname: '/delivery-detail/[id]',
             params: {
                 id: data?.delivery.id,
                 orderNumber: data?.order.id
@@ -59,20 +59,21 @@ const ItemCard = ({ data, isHomeScreen = false }: CardProp) => {
                                     <Text color={'$text'} fontFamily={'$body'} fontSize={11}>{data?.order.order_items[0].name}</Text>
                                 </XStack>
                                 <XStack gap={5} alignItems='center'>
-                                    <Feather name='map-pin' color={theme.icon.val} size={10} />
-                                    <Text color={'$text'} fontFamily={'$body'} fontSize={11}>{data?.delivery.origin}</Text>
+                                    <MaterialCommunityIcons name='circle' color={theme.icon.val} size={10} />
+                                    <Text flexWrap='wrap' color={'$text'} fontFamily={'$body'} fontSize={11}>{data?.delivery.origin}</Text>
                                 </XStack>
                                 <XStack gap={5} alignItems='center'>
+
                                     <Feather name='map-pin' color={theme.icon.val} size={10} />
-                                    <Text color={'$text'} fontFamily={'$body'} fontSize={11} textWrap='wrap'>{data?.delivery.destination}</Text>
+                                    <Text flex={1} flexWrap='wrap' color={'$text'} fontFamily={'$body'} fontSize={11} textWrap='wrap'>{data?.delivery.destination}</Text>
                                 </XStack>
                                 <XStack gap={5} alignItems='center'>
                                     <XStack gap={5} alignItems='center'>
                                         <Feather name='clock' color={theme.icon.val} size={10} />
                                         <Text color={'$text'} fontFamily={'$body'} fontSize={11}>{data?.delivery.duration} mins</Text>
                                     </XStack>
-                                    <XStack gap={5} alignItems='center'>
-                                        <MaterialCommunityIcons name='circle' color={theme.icon.val} size={10} />
+                                    <XStack gap={2} alignItems='center'>
+                                        <MaterialCommunityIcons name='road-variant' color={theme.icon.val} size={11} />
                                         <Text color={'$text'} fontFamily={'$body'} fontSize={11}>{data?.delivery.distance} km</Text>
                                     </XStack>
                                 </XStack>

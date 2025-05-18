@@ -25,6 +25,7 @@
     "@react-navigation/bottom-tabs": "^7.2.0",
     "@react-navigation/material-top-tabs": "^7.1.0",
     "@react-navigation/native": "^7.0.14",
+    "@rnmapbox/maps": "^10.1.38",
     "@tamagui/config": "^1.120.1",
     "@tamagui/toast": "^1.125.8",
     "@tanstack/react-query": "^5.64.2",
@@ -41,7 +42,6 @@
     "expo-image-picker": "~16.0.5",
     "expo-linear-gradient": "~14.0.2",
     "expo-linking": "~7.0.5",
-    "expo-location": "~18.0.5",
     "expo-navigation-bar": "~4.0.7",
     "expo-print": "~14.0.3",
     "expo-router": "~4.0.17",
@@ -75,7 +75,8 @@
     "reanimated-color-picker": "^3.0.6",
     "tamagui": "^1.120.1",
     "zod": "^3.24.1",
-    "zustand": "^5.0.3"
+    "zustand": "^5.0.3",
+    "expo-location": "~18.0.10"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

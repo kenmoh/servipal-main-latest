@@ -55,19 +55,7 @@ const DeliveryLayout = () => {
             },
 
         }}>
-            <Stack.Screen name='[id]' options={{
-                headerTransparent: true,
-                title: '',
-                headerShown: false,
-                headerStyle: {
-                    backgroundColor: 'trasparent',
 
-                },
-                headerTintColor: theme.icon.val,
-
-
-
-            }} />
 
             <Stack.Screen name='(topTabs)' options={{
                 title: '',
@@ -85,7 +73,7 @@ const DeliveryLayout = () => {
             <Stack.Screen name='notification' options={{
                 title: 'Notifications'
             }} />
-             <Stack.Screen name='itemInfo' options={{
+            <Stack.Screen name='itemInfo' options={{
                 title: ''
             }} />
         </Stack>
