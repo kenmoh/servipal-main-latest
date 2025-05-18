@@ -163,7 +163,7 @@ const ItemInfo = () => {
             const originQuery = encodeURIComponent(formValues.origin);
             const destinationQuery = encodeURIComponent(formValues.destination);
 
-            const url = `https://maps.googleapis.com/maps/api/distancematrix/json?destinations=${destinationQuery}&origins=${originQuery}&units=metric&key=${process.env.GOOGLE_MAP_API_KEY}`;
+            const url = `https://maps.googleapis.com/maps/api/distancematrix/json?destinations=${destinationQuery}&origins=${originQuery}&units=metric&key=${process.env.EXPO_PUBLIC_GOOGLE_MAP_API_KEY}`;
 
             try {
                 const response = await fetch(url);

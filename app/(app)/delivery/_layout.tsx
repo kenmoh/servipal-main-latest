@@ -58,6 +58,7 @@ const DeliveryLayout = () => {
             <Stack.Screen name='[id]' options={{
                 headerTransparent: true,
                 title: '',
+                headerShown: false,
                 headerStyle: {
                     backgroundColor: 'trasparent',
 

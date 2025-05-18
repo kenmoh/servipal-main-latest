@@ -3,10 +3,10 @@ import React from 'react'
 import { Card, View, XStack, YStack, Image, useTheme, Text, Square } from 'tamagui'
 import { Feather, MaterialCommunityIcons, AntDesign } from '@expo/vector-icons'
 import { router } from 'expo-router'
-import { Order, OrderStatus } from '@/types/order-types'
+import { DeliveryDetail, OrderStatus } from '@/types/order-types'
 
 type CardProp = {
-    data: Order
+    data: DeliveryDetail
     isHomeScreen?: boolean
 }
 
@@ -14,24 +14,24 @@ const ItemCard = ({ data, isHomeScreen = false }: CardProp) => {
 
     const theme = useTheme()
 
-    const getImageUrl = (data: Order) => {
-        switch (data.order_type) {
-            case 'food':
-                return data?.foods?.[0]?.image_url;
-            case 'delivery':
-                return data?.image_url;
-            case 'laundry':
-                return data?.laundries?.[0]?.image_url;
-            default:
-                return require('@/assets/images/mkt.png');
-        }
-    };
+    // const getImageUrl = (data: DeliveryDetail) => {
+    //     switch (data.order_type) {
+    //         case 'food':
+    //             return data?.foods?.[0]?.image_url;
+    //         case 'delivery':
+    //             return data?.image_url;
+    //         case 'laundry':
+    //             return data?.laundries?.[0]?.image_url;
+    //         default:
+    //             return require('@/assets/images/mkt.png');
+    //     }
+    // };
     return (
         <TouchableOpacity activeOpacity={0.6} onPress={() => router.push({
             pathname: '/(app)/delivery/[id]',
             params: {
-                id: data?.id,
-                orderNumber: data?.order_number
+                id: data?.delivery.id,
+                orderNumber: data?.order.id
 
             }
         })}>
@@ -46,34 +46,34 @@ const ItemCard = ({ data, isHomeScreen = false }: CardProp) => {
                                 style={{ overflow: 'hidden' }}
                             >
                                 <Image
-                                    src={getImageUrl(data)}
+                                    src={data?.order.order_items[0].images[0].url}
                                     height={'100%'}
                                     width={'100%'}
-                                    alt={data?.package_name || 'Order item'}
+                                    alt={data?.order.order_items[0].name || 'Order item'}
 
                                 />
                             </Square>
                             <YStack gap={5}>
                                 <XStack gap={5} alignItems='center'>
                                     <Feather name='package' color={theme.icon.val} size={10} />
-                                    <Text color={'$text'} fontFamily={'$body'} fontSize={11}>{data?.package_name || data?.order_owner_username}</Text>
+                                    <Text color={'$text'} fontFamily={'$body'} fontSize={11}>{data?.order.order_items[0].name}</Text>
                                 </XStack>
                                 <XStack gap={5} alignItems='center'>
                                     <Feather name='map-pin' color={theme.icon.val} size={10} />
-                                    <Text color={'$text'} fontFamily={'$body'} fontSize={11}>{data?.origin}</Text>
+                                    <Text color={'$text'} fontFamily={'$body'} fontSize={11}>{data?.delivery.origin}</Text>
                                 </XStack>
                                 <XStack gap={5} alignItems='center'>
                                     <Feather name='map-pin' color={theme.icon.val} size={10} />
-                                    <Text color={'$text'} fontFamily={'$body'} fontSize={11} textWrap='wrap'>{data?.destination}</Text>
+                                    <Text color={'$text'} fontFamily={'$body'} fontSize={11} textWrap='wrap'>{data?.delivery.destination}</Text>
                                 </XStack>
                                 <XStack gap={5} alignItems='center'>
                                     <XStack gap={5} alignItems='center'>
                                         <Feather name='clock' color={theme.icon.val} size={10} />
-                                        <Text color={'$text'} fontFamily={'$body'} fontSize={11}>{data?.duration} mins</Text>
+                                        <Text color={'$text'} fontFamily={'$body'} fontSize={11}>{data?.delivery.duration} mins</Text>
                                     </XStack>
                                     <XStack gap={5} alignItems='center'>
                                         <MaterialCommunityIcons name='circle' color={theme.icon.val} size={10} />
-                                        <Text color={'$text'} fontFamily={'$body'} fontSize={11}>{data?.distance} km</Text>
+                                        <Text color={'$text'} fontFamily={'$body'} fontSize={11}>{data?.delivery.distance} km</Text>
                                     </XStack>
                                 </XStack>
 
@@ -85,10 +85,10 @@ const ItemCard = ({ data, isHomeScreen = false }: CardProp) => {
                 <XStack justifyContent='space-between' marginLeft={80} marginRight={'2.5%'} marginTop={5}>
                     <XStack gap={5} alignItems='center'>
                         <AntDesign name='wallet' color={theme.icon.val} size={10} />
-                        <Text color={'$text'} fontFamily={'$heading'} fontSize={12} fontWeight={'700'}>₦ {data?.delivery_fee}</Text>
+                        <Text color={'$text'} fontFamily={'$heading'} fontSize={12} fontWeight={'700'}>₦ {data?.delivery.delivery_fee}</Text>
                     </XStack>
 
-                    {!isHomeScreen && <Status status={data?.order_status} />}
+                    {!isHomeScreen && <Status status={data?.order.order_status} />}
                 </XStack>
             </Card>
         </TouchableOpacity>

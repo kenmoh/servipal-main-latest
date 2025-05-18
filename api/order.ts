@@ -11,26 +11,43 @@ import {
 
 const BASE_URL = "/orders";
 
-type DeliveryType = "food" | "laundry" | "package";
+export type DeliveryType = "food" | "laundry" | "package";
+
+interface FetchDeliveriesParams {
+  deliveryType?: DeliveryType;
+  skip?: number;
+  limit?: number;
+}
 
 // Fetch Deliveries
-export const fetchDeliveries = async (
-  deliveryType: DeliveryType,
-  skip: number = 0,
-  limit: number = 25
-): Promise<DeliveryDetail[]> => {
-  const params = new URLSearchParams({
-    delivery_type: deliveryType?.toString(),
-    skip: skip.toString(),
-    limit: limit.toString(),
-  });
+export const fetchDeliveries = async ({
+  deliveryType,
+  skip = 0,
+  limit = 25,
+}: FetchDeliveriesParams = {}): Promise<DeliveryDetail[]> => {
+  const params = new URLSearchParams();
+
+  if (deliveryType) {
+    params.append("delivery_type", deliveryType.toString());
+  }
+  if (typeof skip === "number") {
+    params.append("skip", skip.toString());
+  }
+  if (typeof limit === "number") {
+    params.append("limit", limit.toString());
+  }
   try {
     const response: ApiResponse<DeliveryDetail[] | ErrorResponse> =
-      await apiClient.get(`${BASE_URL}/deliveries?${params.toString()}`, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      await apiClient.get(
+        `${BASE_URL}/deliveries${
+          params.toString() ? `?${params.toString()}` : ""
+        }`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
     if (!response.ok || !response.data || "detail" in response.data) {
       const errorMessage =
@@ -39,6 +56,8 @@ export const fetchDeliveries = async (
           : "Error fetching deliveries.";
       throw new Error(errorMessage);
     }
+    console.log(response.data);
+    console.log(response.problem, response.originalError);
     return response.data;
   } catch (error) {
     if (error instanceof Error) {
@@ -107,7 +126,6 @@ export const sendItem = async (itemData: SendItem): Promise<DeliveryDetail> => {
     data.append("image_url", imageInfo as any);
   }
 
-
   try {
     const response: ApiResponse<DeliveryDetail | ErrorResponse> =
       await apiClient.post(`${BASE_URL}/send-item`, data, {
@@ -117,7 +135,6 @@ export const sendItem = async (itemData: SendItem): Promise<DeliveryDetail> => {
       });
 
     if (!response.ok || !response.data || "detail" in response.data) {
-     
       const errorMessage =
         response.data && "detail" in response.data
           ? response.data.detail
@@ -287,7 +304,6 @@ export const createReview = async (
     throw new Error("An unexpected error occurred");
   }
 };
-
 
 /*
 

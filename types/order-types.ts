@@ -29,6 +29,9 @@ interface Delivery {
   dispatch_id: string;
   rider_id: string;
   distance: string;
+  origin?: string;
+  duration?: string;
+  destination?: string;
   delivery_fee: string;
   amount_due_dispatch: string;
   created_at: string;
@@ -49,12 +52,13 @@ export interface OrderResponse {
   user_id: string;
   vendor_id: string;
   order_type: string;
+  order_number: string;
   total_price: string;
   order_payment_status: string;
   order_status: OrderStatus;
   amount_due_vendor: string;
   payment_link: string;
-  order_items: OrderItemResponse;
+  order_items: OrderItemResponse[];
 }
 
 export interface DeliveryDetail {
