@@ -2,11 +2,11 @@ import React, { ReactNode, useEffect, useState } from "react";
 import { jwtDecode } from "jwt-decode";
 import { AuthContext, useProtectedRoute } from "@/context/authContext";
 import authStorage from '@/storage/authStorage'
-import { UserReturn } from "@/types/user-types";
+import { User, UserReturn } from "@/types/user-types";
 
 
 const AuthProvider = ({ children }: { children: ReactNode }) => {
-    const [user, setUser] = useState<UserReturn | null | {}>(null);
+    const [user, setUser] = useState<User | null>(null);
     const signIn = () => {
         // Implement signIn logic
     };
@@ -19,25 +19,26 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
         setUser(jwtDecode(token))
     }
 
-/*
-    useEffect(() => {
-        const checkAuth = async () => {
-            const token = await authStorage.getToken();
-            if (!token) {
-                signOut();
-            }
-        };
-
-        // Check auth status every minute
-        const interval = setInterval(checkAuth, 60000);
-        return () => clearInterval(interval);
-    }, []);
-
     useEffect(() => {
         restoreToken()
     }, [])
-    
-    */
+
+
+    // useEffect(() => {
+    //     const checkAuth = async () => {
+    //         const token = await authStorage.getToken();
+    //         if (!token) {
+    //             signOut();
+    //         }
+    //     };
+
+    //     // Check auth status every minute
+    //     const interval = setInterval(checkAuth, 60000);
+    //     return () => clearInterval(interval);
+    // }, []);
+
+
+
 
 
     const signOut = () => {

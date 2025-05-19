@@ -4,12 +4,13 @@ import { Card, Text, XStack, Circle, Avatar, YStack, Paragraph, useTheme, Button
 import { AntDesign, Feather, FontAwesome6 } from '@expo/vector-icons'
 import { router, Stack, useLocalSearchParams } from 'expo-router'
 import { useQuery } from '@tanstack/react-query'
-import { Phone, Wallet2Icon, MapPin, Wallet, Info, User } from 'lucide-react-native'
+import { Phone, Wallet2Icon, MapPin, Wallet, Info, User, DollarSign } from 'lucide-react-native'
 import LoadingIndicator from '@/components/LoadingIndicator'
 import { Status } from '@/components/ItemCard'
 import { fetchDelivery } from '@/api/order'
 import { useNavigation } from 'expo-router'
 import DeliveryWrapper from '@/components/DeliveryWrapper'
+import { useAuth } from '@/context/authContext'
 
 
 
@@ -20,8 +21,7 @@ const MAP_HEIGHT = Dimensions.get('window').height * 0.35
 const ItemDetails = () => {
     const { id, orderNumber } = useLocalSearchParams()
     const theme = useTheme()
-    const bottomSheetRef = React.useRef(null)
-    const navigation = useNavigation()
+    const { user } = useAuth()
 
     const { data, isLoading } = useQuery({
         queryKey: ['order', id],
@@ -41,9 +41,16 @@ const ItemDetails = () => {
 
             <DeliveryWrapper>
 
-                <Card marginVertical={10} backgroundColor={'$profileCard'} width={'95%'} alignSelf='center' bordered borderColor={'$inputBackground'}>
-                    <Button width={'100%'} icon={User} color={'white'} onPress={() => router.push({ pathname: '/user-details/[userId]', params: { userId: 1 } })}>Contack Rider</Button>
-                </Card>
+                {user?.sub === data?.delivery.sender_id && (
+                    <Card marginVertical={10} backgroundColor={'$profileCard'} width={'95%'} alignSelf='center' bordered borderColor={'$inputBackground'}>
+                        <Button width={'100%'} icon={User} color={'white'} onPress={() => router.push({ pathname: '/user-details/[userId]', params: { userId: 1 } })}>CONTACT RIDER</Button>
+                    </Card>
+                )}
+                {(user?.sub === data?.delivery.sender_id && data?.order.order_payment_status !== 'paid') && (
+                    <Card marginVertical={10} backgroundColor={'$profileCard'} width={'95%'} alignSelf='center' bordered borderColor={'$inputBackground'}>
+                        <Button width={'100%'} icon={DollarSign} color={'white'} onPress={() => router.push({ pathname: '/payment/[orderId]', params: { orderId: data?.order.id } })}>PAY</Button>
+                    </Card>
+                )}
 
 
                 <Card marginVertical={5} width={'95%'} paddingHorizontal={5} alignSelf='center' backgroundColor={'$profileCard'} bordered borderColor={'$inputBackground'} >

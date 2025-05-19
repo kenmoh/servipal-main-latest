@@ -17,6 +17,9 @@ const DeliveryScreen = () => {
         queryFn: () => fetchDeliveries({
             deliveryType: selectedType === 'all' ? undefined : selectedType
         }),
+        // select: (data) => {
+        //     return data?.filter(order => order.order.order_payment_status === 'paid') || []
+        // }
     })
 
     if (isLoading) return <LoadingIndicator />
@@ -24,21 +27,6 @@ const DeliveryScreen = () => {
 
     return (
         <YStack backgroundColor={theme.background} flex={1} padding="$2">
-            {/* <Select
-                value={selectedType}
-                onValueChange={setSelectedType}
-                defaultValue="all"
-            >
-                <Select.Trigger>
-                    <Select.Value placeholder="Filter by type" />
-                </Select.Trigger>
-                <Select.Content>
-                    <Select.Item value="all" text="All Items" />
-                    <Select.Item value="delivery" text="Packages" />
-                    <Select.Item value="food" text="Food" />
-                    <Select.Item value="laundry" text="Laundry" />
-                </Select.Content>
-            </Select> */}
 
             <HDivider width='100%' />
 

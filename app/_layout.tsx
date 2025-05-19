@@ -77,6 +77,10 @@ export default function RootLayout() {
                     headerShown: false
 
                   }} />
+                  {/* <Stack.Screen name='payment' options={{
+                    headerShown: false
+
+                  }} /> */}
 
                   <Stack.Screen name="user-details" options={{
                     presentation: 'transparentModal',

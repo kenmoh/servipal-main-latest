@@ -9,7 +9,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { useAuth } from '@/context/authContext';
 import { jwtDecode } from 'jwt-decode';
 
-import { Login, UserReturn } from '@/types/user-types';
+import { Login, User } from '@/types/user-types';
 import authStorage from '@/storage/authStorage';
 import { useMutation } from '@tanstack/react-query';
 import { loginApi } from '@/api/auth';
@@ -54,7 +54,7 @@ const SignIn = () => {
 
         },
         onSuccess: async (data) => {
-            const user = jwtDecode(data?.access_token) as UserReturn;
+            const user = jwtDecode(data?.access_token) as User;
 
             if (user?.account_status === 'pending') {
                 await authStorage.storeToken(data?.access_token);

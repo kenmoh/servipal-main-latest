@@ -1,13 +1,13 @@
 import { router, useSegments } from "expo-router";
 import { createContext, useContext, useEffect, useState } from "react";
 import * as SecureStore from "expo-secure-store";
-import { UserReturn } from "@/types/user-types";
+import { User } from "@/types/user-types";
 
 type AuthContextType = {
   signIn: () => {} | void;
   signOut: () => void;
-  setUser: (user: {} | null | UserReturn) => void;
-  user?: UserReturn | null | {};
+  setUser: (user: User | null) => void;
+  user?: User | null;
 };
 
 export const AuthContext = createContext<AuthContextType>({

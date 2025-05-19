@@ -1,10 +1,4 @@
-type Role =
-  | "Dispatch Provider"
-  | "Rider"
-  | "staff"
-  | "Regular User"
-  | "Restaurant Service Provider"
-  | "Laundry Service Provider";
+type Role = "dispatch" | "rider" | "customer" | "vendor";
 
 type AccountStatus = "pending" | "confirmed";
 
@@ -100,4 +94,10 @@ export interface UserDetails {
 }
 export interface CurrentUserDetails extends UserDetails {
   wallet: Wallet;
+}
+
+export interface User {
+  account_status: AccountStatus;
+  sub: string;
+  user_type: Role;
 }

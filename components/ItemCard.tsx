@@ -4,11 +4,30 @@ import { Card, View, XStack, YStack, Image, useTheme, Text, Square } from 'tamag
 import { Feather, MaterialCommunityIcons, AntDesign } from '@expo/vector-icons'
 import { router } from 'expo-router'
 import { DeliveryDetail, OrderStatus } from '@/types/order-types'
+import { Package, Shirt, Utensils, UtensilsCrossed } from 'lucide-react-native'
 
 type CardProp = {
     data: DeliveryDetail
     isHomeScreen?: boolean
 }
+
+type DeliveryIconProps = {
+    type: string;
+    size?: number;
+    theme: any;
+}
+
+const DeliveryTypeIcon = ({ type, size = 12, theme }: DeliveryIconProps) => {
+    switch (type) {
+        case 'food':
+            return <Utensils size={size} color={theme.orange10.val} />;
+        case 'laundry':
+            return <Shirt size={size} color={theme.blue10.val} />;
+        case 'package':
+        default:
+            return <Package size={size} color={theme.green10.val} />;
+    }
+};
 
 const ItemCard = ({ data, isHomeScreen = false }: CardProp) => {
 
@@ -55,8 +74,13 @@ const ItemCard = ({ data, isHomeScreen = false }: CardProp) => {
                             </Square>
                             <YStack gap={5}>
                                 <XStack gap={5} alignItems='center'>
-                                    <Feather name='package' color={theme.icon.val} size={10} />
-                                    <Text color={'$text'} fontFamily={'$body'} fontSize={11}>{data?.order.order_items[0].name}</Text>
+                                    <DeliveryTypeIcon
+                                        type={data?.delivery.delivery_type}
+                                        theme={theme}
+                                    />
+                                    <Text color={'$text'} fontFamily={'$body'} fontSize={11}>
+                                        {data?.order.order_items[0].name}
+                                    </Text>
                                 </XStack>
                                 <XStack gap={5} alignItems='center'>
                                     <MaterialCommunityIcons name='circle' color={theme.icon.val} size={10} />

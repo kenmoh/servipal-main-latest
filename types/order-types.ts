@@ -8,6 +8,7 @@ export interface ImageType {
   type: string;
   name: string;
 }
+type PaymentStatus = "pending" | "paid" | "failed" | "cancelled";
 export interface SendItem {
   name: string;
   description: string;
@@ -54,7 +55,7 @@ export interface OrderResponse {
   order_type: string;
   order_number: string;
   total_price: string;
-  order_payment_status: string;
+  order_payment_status: PaymentStatus;
   order_status: OrderStatus;
   amount_due_vendor: string;
   payment_link: string;
