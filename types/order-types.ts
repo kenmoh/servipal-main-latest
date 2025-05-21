@@ -8,7 +8,7 @@ export interface ImageType {
   type: string;
   name: string;
 }
-type PaymentStatus = "pending" | "paid" | "failed" | "cancelled";
+export type PaymentStatus = "pending" | "paid" | "failed" | "cancelled";
 export interface SendItem {
   name: string;
   description: string;
@@ -38,7 +38,7 @@ interface Delivery {
   created_at: string;
 }
 
-interface OrderItemResponse {
+export interface OrderItemResponse {
   id: string;
   user_id: string;
   name: string;

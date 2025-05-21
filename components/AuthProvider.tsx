@@ -24,18 +24,18 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
     }, [])
 
 
-    // useEffect(() => {
-    //     const checkAuth = async () => {
-    //         const token = await authStorage.getToken();
-    //         if (!token) {
-    //             signOut();
-    //         }
-    //     };
+    useEffect(() => {
+         const checkAuth = async () => {
+            const token = await authStorage.getToken();
+           if (!token) {
+                 signOut();
+            }
+       };
 
-    //     // Check auth status every minute
-    //     const interval = setInterval(checkAuth, 60000);
-    //     return () => clearInterval(interval);
-    // }, []);
+      // Check auth status every minute
+       const interval = setInterval(checkAuth, 60000);
+        return () => clearInterval(interval);
+    }, []);
 
 
 

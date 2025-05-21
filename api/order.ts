@@ -86,6 +86,8 @@ export const fetchDelivery = async (
           : "Error fetching delivery.";
       throw new Error(errorMessage);
     }
+    console.log(response.data, "=XXXXXXXXXXXXXX");
+    console.log(response.problem, response.originalError);
     return response.data;
   } catch (error) {
     if (error instanceof Error) {

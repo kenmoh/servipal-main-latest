@@ -1,22 +1,32 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 import { Stack } from 'expo-router'
+import { useTheme } from 'tamagui'
 
-const DeliveryDetailLayout = () => {
+const PaymentStatusLayout = () => {
+
+    const theme = useTheme()
     return (
         <Stack>
 
             <Stack.Screen name='[orderId]' options={{
-                headerTransparent: true,
+
                 title: '',
-                headerShown: false,
+
                 headerStyle: {
-                    backgroundColor: 'trasparent',
+                    backgroundColor: theme.background.val,
 
                 },
-                // headerTintColor: theme.icon.val,
 
+            }} />
 
+            <Stack.Screen name='payment-complete' options={{
+                presentation: 'modal',
+                headerShown: false,
+                headerStyle: {
+                    backgroundColor: theme.background.val,
+
+                },
 
             }} />
 
@@ -24,6 +34,6 @@ const DeliveryDetailLayout = () => {
     )
 }
 
-export default DeliveryDetailLayout
+export default PaymentStatusLayout
 
 const styles = StyleSheet.create({})

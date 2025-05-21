@@ -1,28 +1,54 @@
-import React from 'react'
-import { ScrollView } from 'react-native'
+import React, { useEffect, useState } from 'react'
+import { Dimensions, ScrollView, StyleSheet } from 'react-native'
+import { WebView } from "react-native-webview";
+import { Notifier, NotifierComponents } from 'react-native-notifier';
 import { YStack, XStack, Text, Card, Button, View, useTheme } from 'tamagui'
 import { router, useLocalSearchParams } from 'expo-router'
-import { useQuery } from '@tanstack/react-query'
-import { fetchDelivery } from '@/api/order'
-import LoadingIndicator from '@/components/LoadingIndicator'
 import { Package, Shirt, CreditCard, Utensils } from 'lucide-react-native'
+import { OrderItemResponse } from '@/types/order-types';
+import LoadingIndicator from '@/components/LoadingIndicator';
 
 const Payment = () => {
-    const { orderId } = useLocalSearchParams()
+    const { orderId, deliveryType, paymentLink, deliveryFee, orderItems } = useLocalSearchParams()
     const theme = useTheme()
+    const [showWebView, setShowWebView] = useState(false);
+    const [redirectedUrl, setRedirectedUrl] = useState<{ url?: string } | null>(null);
+    const [isLoading, setIsLoading] = useState(false);
+    const status = redirectedUrl?.url ? redirectedUrl?.url?.split("?")[1]?.split("&") : null;
+    // Parse the stringified orderItems back to an array
+    const parsedOrderItems: OrderItemResponse[] = orderItems ? JSON.parse(orderItems as string) : []
 
-    const { data, isLoading } = useQuery({
-        queryKey: ['order', orderId],
-        queryFn: () => fetchDelivery(orderId as string),
-        enabled: !!orderId,
-    })
 
-    console.log(orderId, '====')
 
-    if (isLoading) return <LoadingIndicator />
+    const handleOpenWebView = () => {
+        if (!paymentLink) {
+            return;
+        }
+        setShowWebView(true);
+
+    };
+
+
+    useEffect(() => {
+        if (!status) return;
+
+        // Add paymentStatus to the redirect
+        if (status[0] === "status=successful") {
+            router.replace({
+                pathname: "/payment/payment-complete",
+                params: { paymentStatus: 'success' }
+            });
+        }
+        if (status[0] === "status=failed" || status[0] === "status=cancelled") {
+            router.replace({
+                pathname: "/payment/payment-complete",
+                params: { paymentStatus: 'failed' }
+            });
+        }
+    }, [status]);
 
     const renderIcon = () => {
-        switch (data?.delivery.delivery_type) {
+        switch (deliveryType) {
             case 'food':
                 return <Utensils size={24} color={theme.orange10.val} />
             case 'laundry':
@@ -32,8 +58,49 @@ const Payment = () => {
         }
     }
 
+    // const renderWebView = () => (
+    //     <View style={[styles.webviewContainer, { backgroundColor: theme.background.val }]}>
+    //         <WebView
+    //             style={styles.webview}
+    //             source={{ uri: Array.isArray(paymentLink) ? paymentLink[0] : paymentLink as string }}
+    //             onNavigationStateChange={setRedirectedUrl}
+    //             onLoadStart={() => setIsLoading(true)}
+    //             onLoadEnd={() => setIsLoading(false)}
+    //         />
+    //         {isLoading && <LoadingIndicator />}
+    //     </View>
+    // )
+
+    const renderWebView = () => (
+        <View style={[styles.webviewContainer, { backgroundColor: theme.background.val }]}>
+            <YStack padding="$4">
+                <XStack alignItems="center" gap={10}>
+                    {renderIcon()}
+                    <Text fontSize={20} fontWeight="600" color="$text">
+                        Processing Payment
+                    </Text>
+                </XStack>
+            </YStack>
+
+
+            <WebView
+                style={styles.webview}
+                source={{ uri: Array.isArray(paymentLink) ? paymentLink[0] : paymentLink as string }}
+                onNavigationStateChange={setRedirectedUrl}
+                onLoadStart={() => setIsLoading(true)}
+                onLoadEnd={() => setIsLoading(false)}
+            />
+
+        </View>
+    )
+
+
+
+    if (showWebView) {
+        return renderWebView()
+    }
     const renderOrderItems = () => {
-        if (data?.order.order_type === 'package') {
+        if (deliveryType === 'package') {
             return (
                 <Card
                     bordered
@@ -45,48 +112,58 @@ const Payment = () => {
                     <XStack justifyContent="space-between" alignItems="center">
                         <Text fontSize={16} color="$gray11">Total Amount</Text>
                         <Text fontSize={18} fontWeight="600" color="$text">
-                            ₦{Number(data?.delivery.delivery_fee).toFixed(2)}
+                            ₦{Number(deliveryFee).toFixed(2)}
                         </Text>
                     </XStack>
                 </Card>
             )
         }
 
+
         return (
-            <Card
-                bordered
-                borderRadius={15}
-                backgroundColor="$cardDark"
-                padding="$4"
-                marginTop="$4"
-            >
-                {data?.order.order_items.map((item, index) => (
-                    <XStack
-                        key={index}
-                        justifyContent="space-between"
-                        marginBottom="$3"
+            <View flex={1} alignItems='center' justifyContent='center' backgroundColor={'$background'}>
+
+                {/* <CustomActivityIndicator visible={isPending || isLoading} /> */}
+                {/* <LoadingIndicator /> */}
+
+
+                {showWebView ? renderWebView() : (
+                    <Card
+                        bordered
+                        borderRadius={15}
+                        backgroundColor="$cardDark"
+                        padding="$4"
+                        marginTop="$4"
                     >
-                        <YStack flex={1} gap={4}>
-                            <Text fontSize={16} color="$text">{item.name}</Text>
-                            <Text fontSize={14} color="$gray11">Qty: {item.quantity}</Text>
-                        </YStack>
-                        <Text fontSize={16} fontWeight="500" color="$text">
-                            ₦{Number(item.price).toFixed(2)}
-                        </Text>
-                    </XStack>
-                ))}
-                <View
-                    backgroundColor="$gray8"
-                    height={1}
-                    marginVertical="$3"
-                />
-                <XStack justifyContent="space-between">
-                    <Text fontSize={16} color="$gray11">Total</Text>
-                    <Text fontSize={18} fontWeight="600" color="$text">
-                        ₦{Number(data?.delivery.delivery_fee).toFixed(2)}
-                    </Text>
-                </XStack>
-            </Card>
+                        {parsedOrderItems.map((item) => (
+                            <XStack
+                                key={item.id}
+                                justifyContent="space-between"
+                                marginBottom="$3"
+                            >
+                                <YStack flex={1} gap={4}>
+                                    <Text fontSize={16} color="$text">{item.name}</Text>
+                                    <Text fontSize={14} color="$gray11">Qty: {item.quantity}</Text>
+                                </YStack>
+                                <Text fontSize={16} fontWeight="500" color="$text">
+                                    ₦{Number(item.price).toFixed(2)}
+                                </Text>
+                            </XStack>
+                        ))}
+                        <View
+                            backgroundColor="$gray8"
+                            height={1}
+                            marginVertical="$3"
+                        />
+                        <XStack justifyContent="space-between">
+                            <Text fontSize={16} color="$gray11">Total</Text>
+                            <Text fontSize={18} fontWeight="600" color="$text">
+                                ₦{Number(deliveryFee).toFixed(2)}
+                            </Text>
+                        </XStack>
+                    </Card>
+                )}
+            </View>
         )
     }
 
@@ -109,9 +186,9 @@ const Payment = () => {
                     padding="$4"
                 >
                     <YStack gap={10}>
-                        <Text fontSize={16} color="$gray11">Order #{data?.order.id}</Text>
+                        <Text fontSize={16} color="$gray11">ORD #: {orderId}</Text>
                         <Text fontSize={14} color="$gray11">
-                            {data?.delivery.delivery_type.toUpperCase()}
+                            {`${deliveryType}`.toUpperCase()}
                         </Text>
                     </YStack>
                 </Card>
@@ -122,13 +199,12 @@ const Payment = () => {
                 {/* Payment Button */}
                 <Button
                     backgroundColor="$btnPrimaryColor"
-                    color="$text"
                     size="$5"
                     marginTop="$4"
-                    icon={CreditCard}
                     pressStyle={{ opacity: 0.8 }}
-                    onPress={() => router.push({ pathname: '/payment/paymnt-complete', params: { paymentStatus: 'success' } })}
+                    onPress={handleOpenWebView}
                 >
+                    <CreditCard size={20} color={theme.text.val} />
                     Pay Now
                 </Button>
             </YStack>
@@ -137,3 +213,16 @@ const Payment = () => {
 }
 
 export default Payment
+
+const styles = StyleSheet.create({
+    webviewContainer: {
+        flex: 1,
+        backgroundColor: '$background',
+    },
+    webview: {
+        flex: 1,
+        width: Dimensions.get('window').width,
+        height: Dimensions.get('window').height,
+
+    }
+})
