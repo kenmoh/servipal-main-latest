@@ -32,14 +32,13 @@ import {
 import LoadingIndicator from "@/components/LoadingIndicator";
 import { Status } from "@/components/ItemCard";
 import { fetchDelivery } from "@/api/order";
-import { useNavigation } from "expo-router";
 import DeliveryWrapper from "@/components/DeliveryWrapper";
 import { useAuth } from "@/context/authContext";
 
 const MAP_HEIGHT = Dimensions.get("window").height * 0.35;
 
 const ItemDetails = () => {
-    const { id, orderNumber } = useLocalSearchParams();
+    const { id } = useLocalSearchParams();
     const theme = useTheme();
     const { user } = useAuth();
 
@@ -58,60 +57,52 @@ const ItemDetails = () => {
         <>
             <DeliveryWrapper>
                 {user?.sub === data?.delivery.sender_id && (
-                    <Card
-                        marginVertical={10}
-                        backgroundColor={"$profileCard"}
-                        width={"95%"}
+
+                    <Button
                         alignSelf="center"
-                        bordered
-                        borderColor={"$inputBackground"}
+                        marginVertical={'$2'}
+                        variant="outlined"
+                        width={"90%"}
+                        icon={User}
+                        color={"white"}
+                        onPress={() =>
+                            router.push({
+                                pathname: "/user-details/[userId]",
+                                params: { userId: 1 },
+                            })
+                        }
                     >
-                        <Button
-                            width={"100%"}
-                            icon={User}
-                            color={"white"}
-                            onPress={() =>
-                                router.push({
-                                    pathname: "/user-details/[userId]",
-                                    params: { userId: 1 },
-                                })
-                            }
-                        >
-                            CONTACT RIDER
-                        </Button>
-                    </Card>
+                        CONTACT RIDER
+                    </Button>
+
                 )}
                 {user?.sub === data?.delivery.sender_id &&
                     data?.order.order_payment_status !== "paid" && (
-                        <Card
-                            marginVertical={10}
-                            backgroundColor={"$profileCard"}
-                            width={"95%"}
+
+                        <Button
                             alignSelf="center"
-                            bordered
-                            borderColor={"$inputBackground"}
+                            marginVertical={'$2'}
+                            variant="outlined"
+                            width={"90%"}
+                            icon={DollarSign}
+                            color={"white"}
+                            onPress={() =>
+                                router.push({
+                                    pathname: "/payment/[orderId]",
+                                    params: {
+                                        orderId: data?.order.id ?? "",
+                                        deliveryFee: data?.delivery.delivery_fee,
+                                        orderNumber: data?.order.order_number,
+                                        deliveryType: data?.delivery.delivery_type,
+                                        orderItems: JSON.stringify(data?.order.order_items ?? []),
+                                        paymentLink: data?.order.payment_link,
+                                    },
+                                })
+                            }
                         >
-                            <Button
-                                width={"100%"}
-                                icon={DollarSign}
-                                color={"white"}
-                                onPress={() =>
-                                    router.push({
-                                        pathname: "/payment/[orderId]",
-                                        params: {
-                                            orderId: data?.order.id ?? "",
-                                            deliveryFee: data?.delivery.delivery_fee,
-                                            orderNumber: data?.order.order_number,
-                                            deliveryType: data?.delivery.delivery_type,
-                                            orderItems: JSON.stringify(data?.order.order_items ?? []),
-                                            paymentLink: data?.order.payment_link,
-                                        },
-                                    })
-                                }
-                            >
-                                PAY
-                            </Button>
-                        </Card>
+                            MAKE PAYMENT
+                        </Button>
+
                     )}
 
                 <Card

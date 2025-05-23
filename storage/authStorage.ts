@@ -1,6 +1,8 @@
+import { UserDetails } from "@/types/user-types";
 import * as SecureStore from "expo-secure-store";
 import { jwtDecode } from "jwt-decode";
 
+const profileKey = "userProfile";
 const key = "authToken";
 
 interface JWTPayload {
@@ -66,9 +68,42 @@ const removeToken = async () => {
   }
 };
 
+const storeProfile = async (profile: UserDetails) => {
+  try {
+    const profileString = JSON.stringify(profile);
+    await SecureStore.setItemAsync(profileKey, profileString);
+  } catch (error) {
+    console.error("Error storing user profile:", error);
+    throw new Error("Error storing user profile");
+  }
+};
+
+const getProfile = async (): Promise<UserDetails | null> => {
+  try {
+    const profileString = await SecureStore.getItemAsync(profileKey);
+    if (!profileString) return null;
+    return JSON.parse(profileString) as UserDetails;
+  } catch (error) {
+    console.error("Error getting user profile:", error);
+    return null;
+  }
+};
+
+const removeProfile = async () => {
+  try {
+    await SecureStore.deleteItemAsync(profileKey);
+  } catch (error) {
+    console.error("Error removing user profile:", error);
+    throw new Error("Error removing user profile");
+  }
+};
+
 export default {
   getToken,
   getUser,
   removeToken,
   storeToken,
+  getProfile,
+  removeProfile,
+  storeProfile,
 };

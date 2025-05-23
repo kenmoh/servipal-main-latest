@@ -1,4 +1,4 @@
-import { Company } from '@/types/user-types'
+import { CompanyProfile } from '@/types/user-types'
 import { AntDesign } from '@expo/vector-icons'
 import { router } from 'expo-router'
 import { StyleSheet, Dimensions, TouchableOpacity } from 'react-native'
@@ -7,7 +7,7 @@ import { Card, Paragraph, Image, YStack, XStack, useTheme, View } from 'tamagui'
 const IMAGET_HEIGHT = Dimensions.get('window').height * 0.16
 
 
-const StoreCard = ({ item }: { item: Company }) => {
+const StoreCard = ({ item }: { item: CompanyProfile }) => {
     const theme = useTheme()
     return (
         <TouchableOpacity
@@ -17,7 +17,7 @@ const StoreCard = ({ item }: { item: Company }) => {
                 params: {
                     storeId: item?.id,
                     companyName: item?.company_name,
-                    backDrop: item?.company_background_image,
+                    backDrop: item?.backdrop_image_url,
                     openingHour: item?.opening_hour,
                     closingHour: item?.closing_hour,
                     address: item?.location,
@@ -32,7 +32,7 @@ const StoreCard = ({ item }: { item: Company }) => {
                 overflow='hidden'
                 marginVertical={5}
             >
-                <Image src={item?.company_background_image} objectFit='cover' height={IMAGET_HEIGHT} />
+                <Image src={item?.backdrop_image_url} objectFit='cover' height={IMAGET_HEIGHT} />
                 <Card.Footer padded backgroundColor={'$background'}>
                     <YStack>
                         <XStack alignItems='center' >

@@ -110,9 +110,16 @@ export const registerApi = async (
 export const registerRiderApi = async (
   userData: RegisterRider
 ): Promise<RegisterResponse> => {
+  const data = {
+    full_name: userData.fullName,
+    email: userData.email,
+    password: userData.password,
+    bike_number: userData.phoneNumber,
+    phone_number: userData.phoneNumber
+  }
   try {
     const response: ApiResponse<RegisterRider | ErrorResponse> =
-      await apiClient.post("/auth/register-rider", userData, {
+      await apiClient.post("/auth/register-rider", data, {
         headers: {
           "Content-Type": "application/json",
         },

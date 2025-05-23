@@ -14,12 +14,26 @@ import { ActivityIndicator } from 'react-native';
 import { X } from 'lucide-react-native';
 
 const schema = z.object({
+  emailCode: z
+    .string()
+    .min(6, { message: "Email code must be 6 digits" })
+    .max(6, { message: "Email code must be 6 digits" })
+    .regex(/^\d+$/, { message: "Email code must contain only digits" }),
+  phoneCode: z
+    .union([
+      z.string(),
+      z.number().transform((val) => val.toString()),
+    ])
+    .transform((val) => val.toString())
+    .pipe(
+      z
+        .string()
+        .min(6, { message: "Phone code must be 6 digits" })
+        .max(6, { message: "Phone code must be 6 digits" })
+        .regex(/^\d+$/, { message: "Phone code must contain only digits" })
+    ),
+});
 
-    emailCode: z.number().min(6).max(6),
-    phoneCode: z.number().min(6).max(6),
-
-
-})
 
 type FormData = z.infer<typeof schema>
 
@@ -144,8 +158,8 @@ const ConfirmAccount = () => {
                                 label={'Phone Code'}
                                 placeholder='234534'
                                 onBlur={onBlur}
-                                onChangeText={onChange}
-                                value={value?.toString().trim()}
+                                onChangeText={(text) => onChange(text)} 
+                                value={Number(value?.toString().trim())}
                                 keyboardType='numeric'
                                 errorMessage={errors.phoneCode?.message}
                                 editable={!isPending}
@@ -161,7 +175,7 @@ const ConfirmAccount = () => {
                                 label={'Email Code'}
                                 placeholder='123466'
                                 onBlur={onBlur}
-                                onChangeText={onChange}
+                                onChangeText={(text) => onChange(text)}
                                 value={value?.toString().trim()}
                                 keyboardType='numeric'
                                 errorMessage={errors.emailCode?.message}

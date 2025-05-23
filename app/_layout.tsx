@@ -11,7 +11,6 @@ import 'react-native-reanimated';
 import { TamaguiProvider } from 'tamagui'
 import { NotifierWrapper } from 'react-native-notifier'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
-import { ToastProvider, ToastViewport } from '@tamagui/toast'
 
 import tamaguiConfig from '@/tamagui.config';
 import AuthProvider from "@/components/AuthProvider";
@@ -78,6 +77,10 @@ export default function RootLayout() {
 
                   }} />
                   <Stack.Screen name='payment' options={{
+                    headerShown: false
+
+                  }} />
+                  <Stack.Screen name='cart' options={{
                     headerShown: false
 
                   }} />

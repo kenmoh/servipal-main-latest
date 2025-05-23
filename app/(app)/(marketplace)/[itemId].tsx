@@ -172,7 +172,7 @@ const ItemDetail = () => {
 
 
                 {/* Delivery Address */}
-                <YStack gap="$2">
+                <YStack gap="$2" paddingHorizontal={0}>
                     <Text fontWeight="bold">Delivery Address</Text>
                     <Controller
                         name='deliveryAddress'
@@ -180,7 +180,7 @@ const ItemDetail = () => {
                         render={({ field: { onChange, onBlur, value } }) => (
                             <AppTextInput
 
-                                placeholder='Enter delivery address'
+                                placeholder='Enter delivery address/additinal information'
                                 onBlur={onBlur}
                                 onChangeText={onChange}
                                 value={value}

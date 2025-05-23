@@ -120,13 +120,13 @@ const ItemInfo = () => {
     })
 
     const onSubmit = (data: FormData) => {
-        console.log('Form submitted with data:', data);
+
         mutate(data)
     }
 
     // Update form from Zustand state
     useEffect(() => {
-        console.log('Zustand state updated:', { origin, destination, originCoords, destinationCoords });
+
 
         // Only update if the values exist and are different from current values
         if (origin) {
@@ -155,7 +155,7 @@ const ItemInfo = () => {
         const fetchAndUseTravelInfo = async () => {
             // Only proceed if we have both origin and destination
             if (!formValues.origin || !formValues.destination) {
-                console.log('Missing origin or destination:', formValues);
+
                 return;
             }
 
@@ -169,7 +169,6 @@ const ItemInfo = () => {
                 const response = await fetch(url);
                 const data = await response.json();
 
-                console.log('Google API response:', data);
 
                 const distanceText = data?.rows?.[0]?.elements?.[0]?.distance?.text;
                 const durationText = data?.rows?.[0]?.elements?.[0]?.duration?.text;

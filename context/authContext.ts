@@ -1,20 +1,23 @@
 import { router, useSegments } from "expo-router";
 import { createContext, useContext, useEffect, useState } from "react";
 import * as SecureStore from "expo-secure-store";
-import { User } from "@/types/user-types";
+import { User, UserDetails } from "@/types/user-types";
 
 type AuthContextType = {
-  signIn: () => {} | void;
+  // signIn: () => {} | void;
   signOut: () => void;
   setUser: (user: User | null) => void;
+  setProfile: (profile: UserDetails | null) => void;
   user?: User | null;
+  profile: UserDetails | null;
 };
 
 export const AuthContext = createContext<AuthContextType>({
-  signIn: () => {},
   signOut: () => null,
   setUser: () => {},
+  setProfile: () => {},
   user: null,
+  profile: null,
 });
 
 // This hook is used to access the user info.

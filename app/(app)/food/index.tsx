@@ -3,12 +3,13 @@ import React from 'react'
 import StoreCard from '@/components/StoreCard'
 import { Button, useTheme, View } from 'tamagui'
 import { useQuery } from '@tanstack/react-query'
-import { getUsersByMealCategory } from '@/api/user'
+import { fetchRestaurants } from '@/api/user'
 import LoadingIndicator from '@/components/LoadingIndicator'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import Category from '@/components/Category'
 import AppTextInput from '@/components/AppInput'
 import AppHeader from '@/components/AppHeader'
+import { CompanyProfile } from '@/types/user-types'
 
 const categories = [
     { id: 1, name: 'Pizza' },
@@ -25,7 +26,7 @@ const Page = () => {
 
     const { data, isPending } = useQuery({
         queryKey: ['restaurants'],
-        queryFn: getUsersByMealCategory
+        queryFn: fetchRestaurants
     })
 
     if (isPending) {
@@ -43,7 +44,7 @@ const Page = () => {
                 data={data}
                 showsVerticalScrollIndicator={false}
                 keyExtractor={item => item.id}
-                renderItem={({ item }) => <StoreCard item={item} />}
+                renderItem={({ item }: { item: CompanyProfile }) => <StoreCard item={item} />}
                 contentContainerStyle={{
                     paddingBottom: 10
                 }}

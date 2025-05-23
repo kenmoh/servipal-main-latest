@@ -54,63 +54,117 @@ const ItemCard = ({ data, isHomeScreen = false }: CardProp) => {
 
             }
         })}>
-            <Card padding={10} >
-                <XStack justifyContent='space-between'>
-                    <XStack justifyContent='center' >
-                        <XStack gap={10} >
-                            <Square height={70} width={70}
-                                borderRadius={10}
-                                gap={20}
 
-                                style={{ overflow: 'hidden' }}
-                            >
-                                <Image
-                                    src={data?.order.order_items[0].images[0].url}
-                                    height={'100%'}
-                                    width={'100%'}
-                                    alt={data?.order.order_items[0].name || 'Order item'}
+            <Card padding={10}>
+                <XStack flex={1}>
+                    {/* Left side container */}
+                    <XStack flex={1} gap={10}>
+                        {/* Image container with fixed dimensions */}
+                        <Square
+                            height={70}
+                            width={70}
+                            borderRadius={10}
+                            flexShrink={0}  // Prevent shrinking
+                            overflow="hidden"
+                        >
+                            <Image
+                                src={data?.order.order_items[0].images[0].url}
+                                height="100%"
+                                width="100%"
+                                alt={data?.order.order_items[0].name || 'Order item'}
+                                resizeMode="cover"  // Maintain aspect ratio
+                            />
+                        </Square>
 
+                        {/* Content container */}
+                        <YStack flex={1} gap={5}>
+                            <XStack gap={5} alignItems="center">
+                                <DeliveryTypeIcon
+                                    type={data?.delivery.delivery_type}
+                                    theme={theme}
                                 />
-                            </Square>
-                            <YStack gap={5}>
-                                <XStack gap={5} alignItems='center'>
-                                    <DeliveryTypeIcon
-                                        type={data?.delivery.delivery_type}
-                                        theme={theme}
-                                    />
-                                    <Text color={'$text'} fontFamily={'$body'} fontSize={11}>
-                                        {data?.order.order_items[0].name}
+                                <Text
+                                    color="$text"
+                                    fontFamily="$body"
+                                    fontSize={11}
+                                    numberOfLines={1}
+                                    flex={1}
+                                >
+                                    {data?.order.order_items[0].name}
+                                </Text>
+                            </XStack>
+
+                            <XStack gap={5} alignItems="flex-start">
+                                <MaterialCommunityIcons
+                                    name="circle"
+                                    color={theme.icon.val}
+                                    size={10}
+                                    style={{ marginTop: 4 }}  // Align with first line
+                                />
+                                <Text
+                                    flex={1}
+                                    color="$text"
+                                    fontFamily="$body"
+                                    fontSize={11}
+                                    numberOfLines={2}
+                                >
+                                    {data?.delivery.origin}
+                                </Text>
+                            </XStack>
+
+                            <XStack gap={5} alignItems="flex-start">
+                                <Feather
+                                    name="map-pin"
+                                    color={theme.icon.val}
+                                    size={10}
+                                    style={{ marginTop: 4 }}
+                                />
+                                <Text
+                                    flex={1}
+                                    color="$text"
+                                    fontFamily="$body"
+                                    fontSize={11}
+                                    numberOfLines={2}
+                                >
+                                    {data?.delivery.destination}
+                                </Text>
+                            </XStack>
+
+                            <XStack gap={5} alignItems="center" flexWrap="wrap">
+                                <XStack gap={5} alignItems="center" flexShrink={0}>
+                                    <Feather name="clock" color={theme.icon.val} size={10} />
+                                    <Text color="$text" fontFamily="$body" fontSize={11}>
+                                        {data?.delivery.duration} mins
                                     </Text>
                                 </XStack>
-                                <XStack gap={5} alignItems='center'>
-                                    <MaterialCommunityIcons name='circle' color={theme.icon.val} size={10} />
-                                    <Text flexWrap='wrap' color={'$text'} fontFamily={'$body'} fontSize={11}>{data?.delivery.origin}</Text>
+                                <XStack gap={2} alignItems="center" flexShrink={0}>
+                                    <MaterialCommunityIcons name="road-variant" color={theme.icon.val} size={11} />
+                                    <Text color="$text" fontFamily="$body" fontSize={11}>
+                                        {data?.delivery.distance} km
+                                    </Text>
                                 </XStack>
-                                <XStack gap={5} alignItems='center'>
-
-                                    <Feather name='map-pin' color={theme.icon.val} size={10} />
-                                    <Text flex={1} flexWrap='wrap' color={'$text'} fontFamily={'$body'} fontSize={11} textWrap='wrap'>{data?.delivery.destination}</Text>
-                                </XStack>
-                                <XStack gap={5} alignItems='center'>
-                                    <XStack gap={5} alignItems='center'>
-                                        <Feather name='clock' color={theme.icon.val} size={10} />
-                                        <Text color={'$text'} fontFamily={'$body'} fontSize={11}>{data?.delivery.duration} mins</Text>
-                                    </XStack>
-                                    <XStack gap={2} alignItems='center'>
-                                        <MaterialCommunityIcons name='road-variant' color={theme.icon.val} size={11} />
-                                        <Text color={'$text'} fontFamily={'$body'} fontSize={11}>{data?.delivery.distance} km</Text>
-                                    </XStack>
-                                </XStack>
-
-                            </YStack>
-                        </XStack>
+                            </XStack>
+                        </YStack>
                     </XStack>
-                    <Feather name='chevron-right' size={20} color={theme.icon.val} />
+
+                    {/* Right chevron */}
+                    <XStack width={20} justifyContent="center" flexShrink={0}>
+                        <Feather name="chevron-right" size={20} color={theme.icon.val} />
+                    </XStack>
                 </XStack>
-                <XStack justifyContent='space-between' marginLeft={80} marginRight={'2.5%'} marginTop={5}>
-                    <XStack gap={5} alignItems='center'>
-                        <AntDesign name='wallet' color={theme.icon.val} size={10} />
-                        <Text color={'$text'} fontFamily={'$heading'} fontSize={12} fontWeight={'700'}>₦ {data?.delivery.delivery_fee}</Text>
+
+                {/* Bottom info */}
+                <XStack
+                    justifyContent="space-between"
+                    marginTop={10}
+                    paddingLeft={80}  // Align with content
+                    paddingRight={10}
+                >
+                    <XStack gap={5} alignItems="center">
+                        <AntDesign name="wallet" color={theme.icon.val} size={10} />
+                        <Text color="$text" fontFamily="$heading" fontSize={12} fontWeight="700">
+                            ₦ {data?.delivery.delivery_fee}
+                        </Text>
                     </XStack>
 
                     {!isHomeScreen && <Status status={data?.order.order_status} />}

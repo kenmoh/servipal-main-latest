@@ -70,6 +70,12 @@ const DeliveryLayout = () => {
                 headerShown: false,
 
             }} />
+            <Stack.Screen name='sendItem' options={{
+                title: 'Enter Location',
+                presentation: 'modal',
+
+
+            }} />
             <Stack.Screen name='notification' options={{
                 title: 'Notifications'
             }} />

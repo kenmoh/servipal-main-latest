@@ -36,12 +36,7 @@ const SendItem = () => {
 
       return
     }
-    console.log({
-      origin,
-      originCoords,
-      destination,
-      destinationCoords,
-    })
+
 
     router.push('/delivery/itemInfo')
   }

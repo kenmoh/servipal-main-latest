@@ -17,14 +17,14 @@ const DeliveryLayout = () => {
                 fontFamily: 'Poppins-Bold',
 
             },
-            swipeEnabled: false,
+            // swipeEnabled: false,
             tabBarActiveTintColor: theme.text.val,
             tabBarInactiveTintColor: theme.icon.val,
             tabBarAndroidRipple: { borderless: false, color: theme.icon.val },
 
             tabBarIndicatorStyle: {
                 backgroundColor: theme.btnPrimaryColor.val,
-                height: StyleSheet.hairlineWidth
+                height: 2
             },
             tabBarContentContainerStyle: {
                 backgroundColor: theme.background.val,
@@ -40,7 +40,6 @@ const DeliveryLayout = () => {
 
         }}>
             <DeliveryTabs.Screen name="index" options={{ title: 'Delivery' }} />
-            <DeliveryTabs.Screen name="sendItem" options={{ title: 'Send Item' }} />
             <DeliveryTabs.Screen name="orders" options={{ title: 'My Orders' }} />
 
 

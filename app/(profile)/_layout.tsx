@@ -34,7 +34,7 @@ const ProfileLayout = () => {
 
                 }}
             />
-            <Stack.Screen name='userProfile' options={{
+            <Stack.Screen name='vendorProfile' options={{
                 title: 'Update Profile',
 
             }} />

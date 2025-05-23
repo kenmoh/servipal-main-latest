@@ -43,11 +43,13 @@ export interface CompanyProfile {
   company_name: string;
   email: string;
   phone_number: string;
-  profile_image: string;
+  profile_image_url: string;
   location: string;
-  company_background_image: string;
+  backdrop_image_url: string;
   opening_hour: string;
   closing_hour: string;
+  total_items: number;
+  total_orders: number;
   rating: {
     average_rating: string;
     number_of_ratings: number;
@@ -71,6 +73,17 @@ export interface Prfile {
   business_address?: string;
   closing_hours?: string;
   openning_hours?: string;
+}
+
+export interface UserProfileUpdate {
+  phoneNumber: string;
+  companyRegNo: string;
+  location: string;
+  companyName: string;
+  openingHour: string;
+  closingHour: string;
+  accountNumber: string;
+  bankName: string;
 }
 
 type TransactionType = "credit" | "debit";
@@ -100,4 +113,17 @@ export interface User {
   account_status: AccountStatus;
   sub: string;
   user_type: Role;
+}
+
+export interface RiderResponse {
+  id: string;
+  full_name: string;
+  email: string;
+  phone_number: string;
+  bike_number: string;
+  stats: {
+    total_deliveries: number;
+    pending_deliveries: number;
+    completed_deliveries: number;
+  };
 }

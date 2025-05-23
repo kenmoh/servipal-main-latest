@@ -1,10 +1,12 @@
-import { StyleSheet } from 'react-native'
+import { StyleSheet, TouchableOpacity } from 'react-native'
 import React from 'react'
-import { Avatar, Button, Card, Label, Separator, Switch, Text, useTheme, View, XStack, YStack } from 'tamagui'
-import { Edit, Trash, Trash2 } from 'lucide-react-native'
+import { Avatar, Card, Label, Switch, Text, useTheme, View, XStack, YStack } from 'tamagui'
+import { Edit, Trash2 } from 'lucide-react-native'
 import HDivider from './HDivider'
+import { RiderResponse } from '@/types/user-types'
+import { router } from 'expo-router'
 
-const RiderCard = () => {
+const RiderCard = ({ rider }: { rider: RiderResponse }) => {
     const theme = useTheme()
     return (
         <Card marginVertical={'$2'} borderWidth={StyleSheet.hairlineWidth} bordered width={'90%'} alignSelf='center'>
@@ -15,38 +17,42 @@ const RiderCard = () => {
                             <Avatar.Image accessibilityLabel='Rider' src={require('@/assets/images/profile.jpg')} />
                             <Avatar.Fallback backgroundColor={'$blue10'} />
                         </Avatar>
-                        <YStack>
-                            <Text>Kenneth</Text>
-                            <Text>09099889988</Text>
+                        <YStack alignItems='center'>
+                            <Text>{rider.full_name}</Text>
+                            <Text>{rider.phone_number} 09099889988</Text>
                         </YStack>
                     </XStack>
                     <XStack gap={'$3.5'}>
 
-                        <Edit color={theme.icon.val} size={20} />
+                        <TouchableOpacity onPress={() => router.push({ pathname: '/addRider', params: { riderParams: JSON.stringify(rider), isEditing: 'true' } })}>
+                            <Edit color={theme.icon.val} size={20} />
+                        </TouchableOpacity>
 
-                        <Trash2 color={theme.error.val} size={20} />
+                        <TouchableOpacity>
+                            <Trash2 color={theme.icon.val} size={20} />
+                        </TouchableOpacity>
 
                     </XStack>
                 </XStack>
             </Card.Header>
             <HDivider />
             <Card.Footer padded >
-                <XStack alignItems='center' width={'100%'} justifyContent='space-between' >
-                    <YStack>
-                        <Text color={'$text'} style={{ fontFamily: 'Poppins-Medium', fontSize: 15 }}>  400</Text>
+                <XStack justifyContent='space-between' width={'100%'} >
+                    <YStack alignItems='center' >
+                        <Text color={'$text'} style={{ fontFamily: 'Poppins-Medium', fontSize: 15 }}>  {rider?.stats?.total_deliveries}</Text>
                         <Text color={'$icon'} style={{ fontFamily: 'Poppins-Light', fontSize: 12 }}>Delivered</Text>
                     </YStack>
-                    <YStack>
-                        <Text color={'$text'} style={{ fontFamily: 'Poppins-Medium', fontSize: 15 }}>  400</Text>
+                    <YStack alignItems='center' >
+                        <Text color={'$text'} style={{ fontFamily: 'Poppins-Medium', fontSize: 15 }}>  {rider?.stats?.completed_deliveries}</Text>
+                        <Text color={'$icon'} style={{ fontFamily: 'Poppins-Light', fontSize: 12 }}>Completed</Text>
+                    </YStack>
+                    <YStack alignItems='center' >
+                        <Text color={'$text'} style={{ fontFamily: 'Poppins-Medium', fontSize: 15 }}>  {rider?.stats?.pending_deliveries}</Text>
                         <Text color={'$icon'} style={{ fontFamily: 'Poppins-Light', fontSize: 12 }}>Pending</Text>
                     </YStack>
-                    <YStack>
-                        <Text color={'$text'} style={{ fontFamily: 'Poppins-Medium', fontSize: 15 }}>  400</Text>
+                    <YStack alignItems='center' >
+                        <Text color={'$text'} style={{ fontFamily: 'Poppins-Medium', fontSize: 15 }}>  LAG 500</Text>
                         <Text color={'$icon'} style={{ fontFamily: 'Poppins-Light', fontSize: 12 }}>Bike No.</Text>
-                    </YStack>
-                    <YStack>
-                        <Text color={'$text'} style={{ fontFamily: 'Poppins-Medium', fontSize: 15 }}>  4.5</Text>
-                        <Text color={'$icon'} style={{ fontFamily: 'Poppins-Light', fontSize: 12 }}>Rating</Text>
                     </YStack>
 
                 </XStack>

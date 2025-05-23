@@ -9,11 +9,12 @@ import { Controller, useForm } from 'react-hook-form';
 import { useAuth } from '@/context/authContext';
 import { jwtDecode } from 'jwt-decode';
 
-import { Login, User } from '@/types/user-types';
+import { Login, User, UserDetails } from '@/types/user-types';
 import authStorage from '@/storage/authStorage';
 import { useMutation } from '@tanstack/react-query';
 import { loginApi } from '@/api/auth';
 import { ActivityIndicator } from 'react-native';
+import { getCurrentUser } from '@/api/user';
 
 const schema = z.object({
 
@@ -55,6 +56,7 @@ const SignIn = () => {
         },
         onSuccess: async (data) => {
             const user = jwtDecode(data?.access_token) as User;
+            const profile = await getCurrentUser() as UserDetails
 
             if (user?.account_status === 'pending') {
                 await authStorage.storeToken(data?.access_token);
@@ -73,7 +75,9 @@ const SignIn = () => {
             if (user?.account_status === 'confirmed') {
                 try {
                     await authStorage.storeToken(data?.access_token);
+                    await authStorage.storeProfile(profile);
                     authContext.setUser(user);
+                    authContext.setProfile(profile);
 
 
 

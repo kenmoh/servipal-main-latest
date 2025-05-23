@@ -5,12 +5,6 @@ import * as ImagePicker from 'expo-image-picker';
 import { Camera } from 'lucide-react-native';
 import { ImageType } from '@/types/order-types';
 
-// export type ImageType = {
-//     url: string;
-//     type: string;
-//     name: string;
-// }
-
 interface ImagePickerInputProps {
     value?: ImageType | null | string;
     onChange: (image: ImageType | null | string) => void;
@@ -82,7 +76,7 @@ const ImagePickerInput = ({
 
                 {/* Error Message */}
                 {errorMessage && (
-                    <Text alignSelf='flex-start' color="$error" marginTop="$2" style={{ fontFamily: 'Poppins-Thin', fontSize: 11 }}>
+                    <Text alignSelf='flex-start' color="$error11" marginTop="$2" style={{ fontFamily: 'Poppins-Thin', fontSize: 11 }}>
                         {errorMessage}
                     </Text>
                 )}

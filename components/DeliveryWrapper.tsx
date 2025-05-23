@@ -1,8 +1,7 @@
 import React from 'react'
-import { Dimensions, StyleSheet, TouchableOpacity } from 'react-native'
-import { Text, View, YStack, useTheme } from 'tamagui'
-import { router } from 'expo-router'
-import { ArrowLeft } from 'lucide-react-native'
+import { StyleSheet } from 'react-native'
+import { View, useTheme } from 'tamagui'
+
 import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet'
 import Map from './Map'
 
@@ -22,7 +21,7 @@ const DeliveryWrapper = ({ children }: DeliveryWrapperProps) => {
 
     <View backgroundColor={'$background'} flex={1}>
       <Map />
-      <BottomSheet style={{ flex: 1 }} handleStyle={{ backgroundColor: theme.btnPrimaryColor.val }} snapPoints={['25%', '45%']} index={0} ref={bottomSheetRef}>
+      <BottomSheet handleIndicatorStyle={{ backgroundColor: 'white' }} style={{ flex: 1 }} handleStyle={{ backgroundColor: theme.background.val }} snapPoints={['25%', '45%']} index={0} ref={bottomSheetRef}>
         <BottomSheetScrollView style={{ flex: 1, backgroundColor: theme.background.val }} >
           {children}
         </BottomSheetScrollView>

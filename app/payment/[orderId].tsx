@@ -9,7 +9,8 @@ import { OrderItemResponse } from '@/types/order-types';
 import LoadingIndicator from '@/components/LoadingIndicator';
 
 const Payment = () => {
-    const { orderId, deliveryType, paymentLink, deliveryFee, orderItems } = useLocalSearchParams()
+    const { orderNumber, deliveryType, paymentLink, deliveryFee, orderItems
+    } = useLocalSearchParams()
     const theme = useTheme()
     const [showWebView, setShowWebView] = useState(false);
     const [redirectedUrl, setRedirectedUrl] = useState<{ url?: string } | null>(null);
@@ -26,6 +27,15 @@ const Payment = () => {
         }
         setShowWebView(true);
 
+    };
+
+    // function to calculate total
+    const calculateTotal = () => {
+        const itemsTotal = parsedOrderItems.reduce((sum, item) => {
+            return sum + (Number(item.price) * Number(item.quantity))
+        }, 0);
+
+        return Number(deliveryFee) + itemsTotal;
     };
 
 
@@ -58,18 +68,6 @@ const Payment = () => {
         }
     }
 
-    // const renderWebView = () => (
-    //     <View style={[styles.webviewContainer, { backgroundColor: theme.background.val }]}>
-    //         <WebView
-    //             style={styles.webview}
-    //             source={{ uri: Array.isArray(paymentLink) ? paymentLink[0] : paymentLink as string }}
-    //             onNavigationStateChange={setRedirectedUrl}
-    //             onLoadStart={() => setIsLoading(true)}
-    //             onLoadEnd={() => setIsLoading(false)}
-    //         />
-    //         {isLoading && <LoadingIndicator />}
-    //     </View>
-    // )
 
     const renderWebView = () => (
         <View style={[styles.webviewContainer, { backgroundColor: theme.background.val }]}>
@@ -104,7 +102,7 @@ const Payment = () => {
             return (
                 <Card
                     bordered
-                    borderRadius={15}
+                    borderRadius={'$5'}
                     backgroundColor="$cardDark"
                     padding="$4"
                     marginTop="$4"
@@ -121,44 +119,61 @@ const Payment = () => {
 
 
         return (
+
             <View flex={1} alignItems='center' justifyContent='center' backgroundColor={'$background'}>
-
-                {/* <CustomActivityIndicator visible={isPending || isLoading} /> */}
-                {/* <LoadingIndicator /> */}
-
-
                 {showWebView ? renderWebView() : (
                     <Card
                         bordered
-                        borderRadius={15}
+                        borderRadius={'$5'}
                         backgroundColor="$cardDark"
                         padding="$4"
                         marginTop="$4"
+                        width={'100%'}
                     >
                         {parsedOrderItems.map((item) => (
-                            <XStack
+                            <YStack
+                                flex={1}
                                 key={item.id}
                                 justifyContent="space-between"
                                 marginBottom="$3"
                             >
-                                <YStack flex={1} gap={4}>
-                                    <Text fontSize={16} color="$text">{item.name}</Text>
-                                    <Text fontSize={14} color="$gray11">Qty: {item.quantity}</Text>
-                                </YStack>
-                                <Text fontSize={16} fontWeight="500" color="$text">
-                                    ₦{Number(item.price).toFixed(2)}
-                                </Text>
-                            </XStack>
+                                <XStack width={'100%'} alignItems='center' justifyContent='space-between'>
+                                    <XStack gap={4} alignItems="center">
+                                        <Text fontSize={12} color="$text">{item.quantity} X </Text>
+                                        <Text fontSize={12} color="$text">{item.name}</Text>
+                                    </XStack>
+                                    <Text fontSize={12} fontWeight="500" color="$text">
+                                        ₦{(Number(item.price) * Number(item.quantity)).toFixed(2)}
+                                    </Text>
+                                </XStack>
+                            </YStack>
                         ))}
                         <View
                             backgroundColor="$gray8"
                             height={1}
                             marginVertical="$3"
                         />
-                        <XStack justifyContent="space-between">
-                            <Text fontSize={16} color="$gray11">Total</Text>
-                            <Text fontSize={18} fontWeight="600" color="$text">
+                        {/* Add subtotal */}
+                        <XStack justifyContent="space-between" marginBottom="$2">
+                            <Text fontSize={14} color="$gray11">Subtotal</Text>
+                            <Text fontSize={14} color="$text">
+                                ₦{parsedOrderItems.reduce((sum, item) =>
+                                    sum + (Number(item.price) * Number(item.quantity)), 0).toFixed(2)}
+                            </Text>
+                        </XStack>
+                        {/* Add delivery fee */}
+                        <XStack justifyContent="space-between" marginBottom="$2">
+                            <Text fontSize={14} color="$gray11">Delivery Fee</Text>
+                            <Text fontSize={14} color="$text">
                                 ₦{Number(deliveryFee).toFixed(2)}
+                            </Text>
+                        </XStack>
+                        {/* Total */}
+                        <View backgroundColor="$gray8" height={1} marginVertical="$3" />
+                        <XStack justifyContent="space-between">
+                            <Text fontSize={16} color="$text">Total</Text>
+                            <Text fontSize={16} fontWeight="600" color="$text">
+                                ₦{calculateTotal().toFixed(2)}
                             </Text>
                         </XStack>
                     </Card>
@@ -186,9 +201,9 @@ const Payment = () => {
                     padding="$4"
                 >
                     <YStack gap={10}>
-                        <Text fontSize={16} color="$gray11">ORD #: {orderId}</Text>
-                        <Text fontSize={14} color="$gray11">
-                            {`${deliveryType}`.toUpperCase()}
+                        <Text fontSize={16} color="$gray11">ORD #: {orderNumber} </Text>
+                        <Text fontSize={14} color="$gray11"> Order Type:
+                            {" "} {`${deliveryType}`.toUpperCase()}
                         </Text>
                     </YStack>
                 </Card>

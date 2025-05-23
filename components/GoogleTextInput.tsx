@@ -58,7 +58,6 @@ const GoogleTextInput = ({ placeholder, handlePress, onChangeText, errorMessage 
             fontSize: 14,
             color: theme.text.val,
             fontFamily: 'Poppins-Regular',
-            // borderColor: isFocused ? theme.btnPrimaryColor.val : 'transparent',
             borderWidth: 1,
             borderColor: errorMessage
               ? theme.red10.val

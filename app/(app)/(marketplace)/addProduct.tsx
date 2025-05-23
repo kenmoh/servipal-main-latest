@@ -8,7 +8,7 @@ import AppTextInput from '@/components/AppInput'
 import ImagePickerInput from '@/components/AppImagePicker'
 import { Trash, Plus } from "lucide-react-native";
 import AppColorPicker from "@/components/AppColorPicker";
-import { returnedResults } from "reanimated-color-picker";
+
 
 
 const schema = z.object({
@@ -43,12 +43,12 @@ const addMenu = () => {
         })
     
 	 const {
-    fields: colorFields,
-    append: appendColor,
-    remove: removeColor
+  fields: colorFields,
+  append: appendColor,
+  remove: removeColor
   } = useFieldArray({
-    control,
-    name: 'colors'
+  control,
+name: 'colors'
   });
     const {
         fields: imageFields,
@@ -57,7 +57,7 @@ const addMenu = () => {
     } = useFieldArray({
         control,
         name: 'image_urls'
-    });
+    })
 
     const onSubmit = (data: FormData) => {
         console.log('Form Data:', data);

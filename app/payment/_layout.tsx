@@ -12,7 +12,7 @@ const PaymentStatusLayout = () => {
             <Stack.Screen name='[orderId]' options={{
 
                 title: '',
-
+                animation: 'slide_from_bottom',
                 headerStyle: {
                     backgroundColor: theme.background.val,
 
@@ -21,7 +21,7 @@ const PaymentStatusLayout = () => {
             }} />
 
             <Stack.Screen name='payment-complete' options={{
-                presentation: 'modal',
+                animation: 'slide_from_bottom',
                 headerShown: false,
                 headerStyle: {
                     backgroundColor: theme.background.val,
