@@ -4,16 +4,20 @@ import { Input, YStack, Label, useTheme, Paragraph } from 'tamagui'
 interface InputProp extends TextInputProps {
     label?: string,
     height?: string
+    value?: string
     errorMessage?: string
     borderRadius?: number
+    onPressIn?: () => void;
 }
-const AppTextInput = ({ label, placeholder, onBlur, onChangeText, errorMessage, borderRadius = 10, height = '$5', keyboardType = 'default', editable = true, secureTextEntry = false }: InputProp) => {
+const AppTextInput = ({ label, value, onPressIn, placeholder, onBlur, onChangeText, errorMessage, borderRadius = 10, height = '$5', keyboardType = 'default', editable = true, secureTextEntry = false }: InputProp) => {
 
     return (
         <YStack marginVertical={label ? 0 : '$2'} width={'90%'} justifyContent='center' alignItems='center' alignSelf='center'>
             {label && <Label color={'$text'} fontWeight={'600'} fontFamily={'$body'} alignSelf='flex-start'>{label}</Label>}
             <Input
                 editable={editable}
+                value={value}
+                onPressIn={onPressIn}
                 height={height}
                 backgroundColor={'$cardDark'}
                 borderRadius={borderRadius}

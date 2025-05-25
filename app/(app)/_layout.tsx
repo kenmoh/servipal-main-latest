@@ -64,6 +64,9 @@ const TabBarLayout = () => {
         <Tabs
             tabBarStyle={{
                 backgroundColor: theme.background.val,
+                // alignItems:'center',
+                // justifyContent:'center'
+
 
             }}
             // labeled
@@ -112,6 +115,7 @@ const TabBarLayout = () => {
             <Tabs.Screen name='delivery' options={{
 
                 // headerShown: false,
+                title:'',
                 tabBarIcon: () => require('@/assets/images/bike.svg')
                 // tabBarIcon: ({ focused }) => (
                 //     <CustomTabBarIcon focused={focused}>
@@ -121,7 +125,7 @@ const TabBarLayout = () => {
             }} />
             <Tabs.Screen name='food' options={{
                 title: '',
-                tabBarLabel: 'Restau...',
+                // tabBarLabel: 'Restau...',
                 tabBarIcon: () => require('@/assets/images/utensils.svg')
 
                 // tabBarIcon: ({ focused }) => (
@@ -135,7 +139,7 @@ const TabBarLayout = () => {
             }} />
             <Tabs.Screen name='laundry' options={{
                 title: '',
-                tabBarLabel: 'Laundry',
+                // tabBarLabel: 'Laundry',
                 tabBarIcon: () => require('@/assets/images/washing-machine.svg')
                 // tabBarIcon: ({ focused }) => (
                 //     <CustomTabBarIcon focused={focused}>
@@ -148,7 +152,7 @@ const TabBarLayout = () => {
             }} />
             <Tabs.Screen name='(marketplace)' options={{
                 title: '',
-                tabBarLabel: 'Store',
+                // tabBarLabel: 'Store',
 
                 tabBarIcon: () => require('@/assets/images/store.svg')
                 // tabBarIcon: ({ focused }) => (
@@ -158,27 +162,26 @@ const TabBarLayout = () => {
                 //     </CustomTabBarIcon>
                 // ),
             }} />
-            <Tabs.Screen name='wallet' options={{
+          {/*  <Tabs.Screen name='wallet' options={{
                 title: '',
-                tabBarLabel: 'Wallet',
+                // tabBarLabel: 'Wallet',
                 tabBarIcon: () => require('@/assets/images/wallet.svg')
                 // tabBarIcon: ({ focused }) => (
                 //     <CustomTabBarIcon focused={focused}>
                 //         <Wallet size={TAB_BAR_ICON_SIZE} color={focused ? 'white' : theme.icon.val} />
                 //     </CustomTabBarIcon>
                 // ),
-            }} />
+            }} />*/}
             {/* <Tabs.Screen name='(profile)' options={{
                 title: '',
                 tabBarIcon: () => require('@/assets/images/user-round.svg')
                 
             }} /> */}
 
-            <Tabs.Screen name='notification' options={{
+            <Tabs.Screen name='profile' options={{
                 title: '',
-                tabBarBadge: '3',
-                tabBarLabel: 'Notifi..',
-                tabBarIcon: () => require('@/assets/images/bell.svg')
+                // tabBarLabel: 'Profile',
+                tabBarIcon: () => require('@/assets/images/user-round.svg')
 
                 // tabBarIcon: ({ focused }) => (
                 //     <CustomTabBarIcon focused={focused}>

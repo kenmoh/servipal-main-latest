@@ -2,13 +2,14 @@ import React, { ReactNode, useEffect, useState } from "react";
 import { jwtDecode } from "jwt-decode";
 import { AuthContext, useProtectedRoute } from "@/context/authContext";
 import authStorage from '@/storage/authStorage'
-import { User, UserDetails } from "@/types/user-types";
+import { User, Profile, ImageUrl } from "@/types/user-types";
 import { getCurrentUser } from "@/api/user";
 
 
 const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [user, setUser] = useState<User | null>(null);
-    const [profile, setProfile] = useState<UserDetails | null>(null)
+    const [profile, setProfile] = useState<Profile | null>(null)
+     const [images, setImages] = useState<ImageUrl | null>(null)
 
 
     const restoreToken = async () => {
@@ -27,9 +28,6 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
                 setProfile(storedProfile)
             }
 
-            // const freshProfile = await getCurrentUser()
-            // await authStorage.storeProfile(freshProfile)
-            // setProfile(freshProfile)
         } catch (error) {
             console.error('Error restoring session:', error)
         }
@@ -38,6 +36,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
     useEffect(() => {
         restoreToken()
     }, [])
+
 
     useEffect(() => {
         const loadUserData = async () => {
@@ -48,6 +47,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
         loadUserData()
     }, [])
+
 
     useEffect(() => {
         const checkAuth = async () => {
@@ -82,7 +82,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
     useProtectedRoute(user);
     return (
-        <AuthContext.Provider value={{ signOut, setUser, user, setProfile, profile }}>
+        <AuthContext.Provider value={{ signOut, setUser, user, images, setImages, setProfile, profile }}>
             {children}
         </AuthContext.Provider>
     );

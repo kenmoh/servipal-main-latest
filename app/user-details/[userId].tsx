@@ -5,7 +5,7 @@ import { router } from 'expo-router'
 import { Mail, Phone, MapPin, Bike } from 'lucide-react-native'
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window')
-const MODAL_HEIGHT = SCREEN_HEIGHT * 0.8
+const MODAL_HEIGHT = SCREEN_HEIGHT * 0.70
 
 const Modal = () => {
     const theme = useTheme()
@@ -50,22 +50,6 @@ const Modal = () => {
                         </XStack>
                     </YStack>
 
-                    {/* Stats */}
-                    <XStack justifyContent="space-between" padding={10}>
-                        <YStack alignItems="center" gap={5}>
-                            <Text color="$text" fontSize={18} fontWeight="600">24</Text>
-                            <Text color="$gray11" fontSize={14}>Orders</Text>
-                        </YStack>
-                        <YStack alignItems="center" gap={5}>
-                            <Text color="$text" fontSize={18} fontWeight="600">4.8</Text>
-                            <Text color="$gray11" fontSize={14}>Rating</Text>
-                        </YStack>
-                        <YStack alignItems="center" gap={5}>
-                            <Text color="$text" fontSize={18} fontWeight="600">12</Text>
-                            <Text color="$gray11" fontSize={14}>Reviews</Text>
-                        </YStack>
-                    </XStack>
-
                     {/* Call and Report Button */}
                     <XStack gap={5}>
                         <Button
@@ -81,7 +65,7 @@ const Modal = () => {
                             // backgroundColor="$ghost1"
                             color="white"
                             bordered
-                            borderColor={'$btnPrimaryColor'}
+                            borderColor={'$borderColor'}
 
                             size="$4"
                             width={'50%'}
@@ -116,8 +100,8 @@ const styles = StyleSheet.create({
         left: 0,
         right: 0,
         height: MODAL_HEIGHT,
-        borderTopLeftRadius: 35,
-        borderTopRightRadius: 35,
+        borderTopLeftRadius: 30,
+        borderTopRightRadius: 30,
         padding: 20,
     }
 })

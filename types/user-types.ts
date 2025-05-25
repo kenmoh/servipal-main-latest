@@ -1,3 +1,6 @@
+export const phoneRegEx =
+  /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
+
 type Role = "dispatch" | "rider" | "customer" | "vendor";
 
 type AccountStatus = "pending" | "confirmed";
@@ -62,7 +65,8 @@ export type Login = {
   password: string;
 };
 
-export interface Prfile {
+export interface Profile {
+  user_id: string;
   full_name?: string;
   phone_number: string;
   bank_name?: string;
@@ -103,7 +107,7 @@ export interface UserDetails {
   id: string;
   email: string;
   user_type: string;
-  profile: Prfile;
+  profile: Profile;
 }
 export interface CurrentUserDetails extends UserDetails {
   wallet: Wallet;
@@ -113,6 +117,7 @@ export interface User {
   account_status: AccountStatus;
   sub: string;
   user_type: Role;
+  email: string;
 }
 
 export interface RiderResponse {
@@ -126,4 +131,9 @@ export interface RiderResponse {
     pending_deliveries: number;
     completed_deliveries: number;
   };
+}
+
+export interface ImageUrl {
+  profile_image_url: string;
+  backdrop_image_url: string;
 }

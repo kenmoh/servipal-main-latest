@@ -5,13 +5,13 @@ import { Button, Text, useTheme, View, XStack, YStack, ScrollView } from 'tamagu
 import AppTextInput from '@/components/AppInput'
 import { router } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import AppSelector from '@/components/AppSelect'
-import { z } from 'zod'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { Controller, useForm } from 'react-hook-form'
+import { Formik } from 'formik'
+import * as Yup from 'yup'
+
 import AppPicker from '@/components/AppPicker'
 import { useMutation } from '@tanstack/react-query'
 import { registerApi } from '@/api/auth'
+import { phoneRegEx } from '@/types/user-types'
 
 
 const roleData = [
@@ -28,31 +28,28 @@ const role = [
 ] as const
 
 
+export const validationSchema = Yup.object().shape({
+    email: Yup.string().email().trim().required().label("Email"),
+    userType: Yup.string().required().label("userType"),
+    phoneNumber: Yup.string()
+        .required()
+        .matches(phoneRegEx, "Enter a valid phone number")
+        .max(11)
+        .min(10)
+        .label("Phone Number"),
+    password: Yup.string().required().label("Password").min(8),
+    confirmPassword: Yup.string().min(8)
+        .oneOf([Yup.ref("password"), null!], "Passwords must match")
+        .required()
+        .label("Confirm Password"),
+});
 
-const schema = z.object({
 
-    email: z.string({ message: 'Email is required.' }).email().trim(),
-    phoneNumber: z.string().min(1, { message: 'Phone number is required' }),
-    userType: z.enum(role),
-    password: z.string().min(1, { message: 'Password is required' }),
-    confirmPassword: z.string().min(1, { message: 'Confirm password is required' }),
-}).refine(data => data.password === data.confirmPassword, { message: "Password do not match.", path: ['confirmPassword'] })
 
-type FormData = z.infer<typeof schema>
 
 const SignUp = () => {
     const theme = useTheme()
-    const { control, handleSubmit, formState: { errors } } = useForm<FormData>({
-        resolver: zodResolver(schema),
-        mode: 'onBlur',
-        defaultValues: {
-            email: '',
-            phoneNumber: '',
-            userType: 'customer',
-            password: '',
-            confirmPassword: ''
-        }
-    })
+
 
     const { mutate, isPending } = useMutation({
         mutationFn: registerApi,
@@ -83,11 +80,6 @@ const SignUp = () => {
         }
     })
 
-
-    const onSubmit = (data: FormData) => {
-        mutate(data)
-
-    }
     return (
         <SafeAreaView
             style={{ flex: 1, backgroundColor: theme.background.val }}
@@ -112,100 +104,88 @@ const SignUp = () => {
                         <Text alignSelf='flex-start' fontFamily={'$heading'} fontSize={24} fontWeight={'bold'}>Let's get you started</Text>
                         <Text alignSelf='flex-start' fontFamily={'$heading'} fontSize={12} fontWeight={'400'}>Create an account</Text>
                     </YStack>
-                    <Controller
-                        name='email'
-                        control={control}
-                        render={({ field: { onChange, onBlur, value } }) => (
-                            <AppTextInput
-                                onBlur={onBlur}
-                                onChangeText={onChange}
-                                placeholder='Email'
-                                keyboardType='email-address'
-                                value={value}
-                                errorMessage={errors.email?.message}
-                                autoCapitalize='none'
-                                autoCorrect={false}
-                                autoComplete='off'
-                                editable={!isPending}
 
-                            />
+                    <Formik
+                        validationSchema={validationSchema}
+                        onSubmit={mutate}
+                        initialValues={{
+                            username: "",
+                            email: "",
+                            phoneNumber: "",
+                            userType: "",
+                            confirmPassword: "",
+                            password: "",
+                        }}
+                    >
+                        {({ handleChange, handleSubmit, values, touched, errors }) => (
+                            <>
+                                <AppTextInput
+
+                                    onChangeText={handleChange('email')}
+                                    placeholder='Email'
+                                    keyboardType='email-address'
+                                    value={values.email}
+                                    errorMessage={touched.email ? errors.email : undefined}
+                                    autoCapitalize='none'
+                                    autoCorrect={false}
+                                    autoComplete='off'
+                                    editable={!isPending}
+
+                                />
+                                <AppTextInput
+
+                                    onChangeText={handleChange('phoneNumber')}
+                                    keyboardType='phone-pad'
+                                    value={values.phoneNumber}
+                                    placeholder='Phone Number'
+                                    errorMessage={touched.phoneNumber ? errors.phoneNumber : undefined}
+                                    editable={!isPending}
+
+                                />
+                                <AppPicker items={roleData} value={values.userType} onValueChange={handleChange('userType')} />
+                                <AppTextInput
+
+                                    value={values.password}
+                                    onChangeText={handleChange('password')}
+                                    secureTextEntry
+                                    placeholder='Password'
+                                    errorMessage={touched.password ? errors.password : undefined}
+                                    editable={!isPending}
+
+                                />
+                                <AppTextInput
+
+                                    value={values.confirmPassword}
+                                    onChangeText={handleChange('confirmPassword')}
+                                    secureTextEntry
+                                    placeholder='Confirm Password'
+                                    errorMessage={touched.confirmPassword ? errors.confirmPassword : undefined}
+                                    editable={!isPending}
+
+                                />
+
+                                <Button
+                                    disabled={isPending}
+                                    backgroundColor={isPending ? '$cardDark' : '$btnPrimaryColor'}
+                                    height={'$5'}
+                                    width={'90%'}
+                                    marginTop={40}
+                                    color={'$text'}
+                                    fontWeight={'bold'}
+                                    fontSize={'$5'}
+                                    fontFamily={'$heading'}
+                                    onPress={() => handleSubmit()}
+                                >  {isPending ? <ActivityIndicator size={'large'} color={theme.text.val} /> : 'Register'}</Button>
+
+
+
+                            </>
                         )}
-                    />
-                    <Controller
-                        name='phoneNumber'
-                        control={control}
-                        render={({ field: { onChange, onBlur, value } }) => (
-                            <AppTextInput
-                                onBlur={onBlur}
-                                onChangeText={onChange}
-                                keyboardType='phone-pad'
-                                value={value}
-                                placeholder='Phone Number'
-                                errorMessage={errors.phoneNumber?.message}
-                                editable={!isPending}
 
-                            />
-                        )}
-                    />
-
-
-                    <Controller
-                        name="userType"
-                        control={control}
-                        defaultValue="customer"
-                        render={({ field: { value, onChange } }) => (
-                            <AppPicker items={roleData} value={value} onValueChange={onChange} />
-                        )}
-                    />
-
-                    <Controller
-                        name='password'
-                        control={control}
-                        render={({ field: { onChange, onBlur, value } }) => (
-                            <AppTextInput
-                                onBlur={onBlur}
-                                value={value}
-                                onChangeText={onChange}
-                                secureTextEntry
-                                placeholder='Password'
-                                errorMessage={errors.password?.message}
-                                editable={!isPending}
-
-                            />
-                        )}
-                    />
-                    <Controller
-                        name='confirmPassword'
-                        control={control}
-                        render={({ field: { onChange, onBlur, value } }) => (
-                            <AppTextInput
-                                onBlur={onBlur}
-                                value={value}
-                                onChangeText={onChange}
-                                secureTextEntry
-                                placeholder='Confirm Password'
-                                errorMessage={errors.confirmPassword?.message}
-                                editable={!isPending}
-
-                            />
-                        )}
-                    />
+                    </Formik>
 
 
 
-
-                    <Button
-                        disabled={isPending}
-                        backgroundColor={isPending ? '$cardDark' : '$btnPrimaryColor'}
-                        height={'$5'}
-                        width={'90%'}
-                        marginTop={40}
-                        color={'$text'}
-                        fontWeight={'bold'}
-                        fontSize={'$5'}
-                        fontFamily={'$heading'}
-                        onPress={handleSubmit(onSubmit)}
-                    >  {isPending ? <ActivityIndicator size={'large'} color={theme.text.val} /> : 'Register'}</Button>
 
                     <XStack alignSelf='center' marginTop={25} alignItems='center' justifyContent='center' width={'90%'} marginBottom={30} >
                         <Text color={'$text'} fontFamily={'$body'} fontSize={14} >Already have an account? </Text>

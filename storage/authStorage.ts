@@ -1,8 +1,9 @@
-import { UserDetails } from "@/types/user-types";
+import { Profile, ImageUrl } from "@/types/user-types";
 import * as SecureStore from "expo-secure-store";
 import { jwtDecode } from "jwt-decode";
 
 const profileKey = "userProfile";
+const imageKey = "imageKey";
 const key = "authToken";
 
 interface JWTPayload {
@@ -68,7 +69,7 @@ const removeToken = async () => {
   }
 };
 
-const storeProfile = async (profile: UserDetails) => {
+const storeProfile = async (profile: Profile) => {
   try {
     const profileString = JSON.stringify(profile);
     await SecureStore.setItemAsync(profileKey, profileString);
@@ -78,11 +79,11 @@ const storeProfile = async (profile: UserDetails) => {
   }
 };
 
-const getProfile = async (): Promise<UserDetails | null> => {
+const getProfile = async (): Promise<Profile | null> => {
   try {
     const profileString = await SecureStore.getItemAsync(profileKey);
     if (!profileString) return null;
-    return JSON.parse(profileString) as UserDetails;
+    return JSON.parse(profileString) as Profile;
   } catch (error) {
     console.error("Error getting user profile:", error);
     return null;
@@ -98,6 +99,36 @@ const removeProfile = async () => {
   }
 };
 
+const storeImageUrl = async (imageUrl: ImageUrl) => {
+  try {
+    const imageString = JSON.stringify(imageUrl);
+    await SecureStore.setItemAsync(imageKey, imageString);
+  } catch (error) {
+    console.error("Error storing user profile:", error);
+    throw new Error("Error storing user Image");
+  }
+};
+
+const getImageUrl = async (): Promise<ImageUrl | null> => {
+  try {
+    const imageString = await SecureStore.getItemAsync(imageKey);
+    if (!imageString) return null;
+    return JSON.parse(imageString) as ImageUrl;
+  } catch (error) {
+    console.error("Error getting user Image:", error);
+    return null;
+  }
+};
+
+const removeImage = async () => {
+  try {
+    await SecureStore.deleteItemAsync(imageKey);
+  } catch (error) {
+    console.error("Error removing user Image:", error);
+    throw new Error("Error removing user Image");
+  }
+};
+
 export default {
   getToken,
   getUser,
@@ -106,4 +137,7 @@ export default {
   getProfile,
   removeProfile,
   storeProfile,
+  getImageUrl,
+  removeImage,
+  storeImageUrl,
 };

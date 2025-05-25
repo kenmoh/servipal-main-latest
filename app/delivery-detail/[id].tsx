@@ -4,7 +4,7 @@ import {
     Dimensions,
     ScrollView,
 } from "react-native";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
     Card,
     Text,
@@ -34,6 +34,7 @@ import { Status } from "@/components/ItemCard";
 import { fetchDelivery } from "@/api/order";
 import DeliveryWrapper from "@/components/DeliveryWrapper";
 import { useAuth } from "@/context/authContext";
+import AppModal from "@/components/AppModal";
 
 const MAP_HEIGHT = Dimensions.get("window").height * 0.35;
 
@@ -41,6 +42,7 @@ const ItemDetails = () => {
     const { id } = useLocalSearchParams();
     const theme = useTheme();
     const { user } = useAuth();
+    const [modalVisible, setModalVisible] = useState(false);
 
     const { data, isLoading } = useQuery({
         queryKey: ["order", id],
@@ -56,15 +58,40 @@ const ItemDetails = () => {
     return (
         <>
             <DeliveryWrapper>
+                <AppModal visible={modalVisible} onClose={() => setModalVisible(false)}>
+                    <Text>This is the modal content!</Text>
+                    <TouchableOpacity
+                        style={{
+                            backgroundColor: theme.btnPrimaryColor.val,
+                            height: 50,
+                            width: "90%",
+                            alignSelf: "center",
+                            borderRadius: 10,
+                            justifyContent: "center",
+                            alignItems: "center",
+                        }}
+                        onPress={() => setModalVisible(false)}
+                    >
+                        <Text>Contact Rider</Text>
+                    </TouchableOpacity>
+                </AppModal>
+
+
                 {user?.sub === data?.delivery.sender_id && (
 
-                    <Button
-                        alignSelf="center"
-                        marginVertical={'$2'}
-                        variant="outlined"
-                        width={"90%"}
-                        icon={User}
-                        color={"white"}
+                    <TouchableOpacity
+                        style={{
+                            backgroundColor: theme.cardDark.val,
+                            borderColor: theme.borderColor.val,
+                            borderWidth: 1,
+                            height: 40,
+                            width: "95%",
+                            alignSelf: "center",
+                            borderRadius: 8,
+                            justifyContent: "center",
+                            alignItems: "center",
+                            marginVertical: 10,
+                        }}
                         onPress={() =>
                             router.push({
                                 pathname: "/user-details/[userId]",
@@ -72,16 +99,17 @@ const ItemDetails = () => {
                             })
                         }
                     >
-                        CONTACT RIDER
-                    </Button>
-
+                        <XStack gap={10}>
+                            <User color={"white"} size={20} />
+                            <Text>CONTACT RIDER</Text>
+                        </XStack>
+                    </TouchableOpacity>
                 )}
                 {user?.sub === data?.delivery.sender_id &&
                     data?.order.order_payment_status !== "paid" && (
-
                         <Button
                             alignSelf="center"
-                            marginVertical={'$2'}
+                            marginVertical={"$2"}
                             variant="outlined"
                             width={"90%"}
                             icon={DollarSign}
@@ -102,7 +130,6 @@ const ItemDetails = () => {
                         >
                             MAKE PAYMENT
                         </Button>
-
                     )}
 
                 <Card

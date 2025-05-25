@@ -60,7 +60,7 @@ const DeliveryLayout = () => {
             <Stack.Screen name='(topTabs)' options={{
                 title: '',
                 headerStyle: { backgroundColor: theme.background.val },
-                headerLeft: () => <HeaderLeft onPress={() => router.push({ pathname: '/(profile)' })} />,
+                // headerLeft: () => <HeaderLeft onPress={() => router.push({ pathname: '/(profile)' })} />,
                 headerRight: () => <HeaderRight onPressNotification={() => router.push({ pathname: '/(app)/delivery/notification' })} onPressSearch={() => router.push({ pathname: '/(app)/delivery/search' })} />,
                 animation: 'ios_from_left'
 

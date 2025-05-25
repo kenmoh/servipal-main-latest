@@ -69,7 +69,7 @@ const ImagePickerInput = ({
                         alignItems="center"
                         justifyContent="center"
                     >
-                        <Camera color={theme.icon.val} size={iconSize} />
+                        {/*<Camera color={theme.icon.val} size={iconSize} />*/}
                     </View>
                 )}
 

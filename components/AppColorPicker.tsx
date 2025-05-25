@@ -1,13 +1,13 @@
 // AppColorPicker.tsx
-import React, { useState } from 'react';
-import { Modal } from 'react-native';
-import { Button, View, YStack } from 'tamagui';
+import React, { useState } from "react";
+import { Modal } from "react-native";
+import { Button, View, YStack } from "tamagui";
 import ColorPicker, {
   Panel1,
   Preview,
   HueSlider,
   returnedResults,
-} from 'reanimated-color-picker';
+} from "reanimated-color-picker";
 
 interface PickerProp {
   onSelectColor: (hex: string) => void;
@@ -16,9 +16,7 @@ interface PickerProp {
 export default function AppColorPicker({ onSelectColor }: PickerProp) {
   // Local state to control modal visibility and selected color.
   const [showModal, setShowModal] = useState(false);
-  const [selectedColor, setSelectedColor] = useState<string>('#ffffff');
-
- 
+  const [selectedColor, setSelectedColor] = useState<string>("#ffffff");
 
   return (
     <>
@@ -41,8 +39,8 @@ export default function AppColorPicker({ onSelectColor }: PickerProp) {
           backgroundColor="$background"
         >
           <ColorPicker
-            style={{ width: '70%', height: 300 }}
-             initialColor={selectedColor}
+            style={{ width: "70%", height: 300 }}
+            initialColor={selectedColor}
             // value={selectedColor} Use the current selected color
             onComplete={(result: returnedResults) => {
               setSelectedColor(result.hex);
@@ -65,5 +63,5 @@ export default function AppColorPicker({ onSelectColor }: PickerProp) {
         </YStack>
       </Modal>
     </>
-  )
+  );
 }

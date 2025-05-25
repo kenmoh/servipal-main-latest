@@ -38,6 +38,10 @@ const ProfileLayout = () => {
                 title: 'Update Profile',
 
             }} />
+
+            <Stack.Screen name='wallet' options={{
+                title: 'Wallet'
+            }} />
             <Stack.Screen name='riders' options={{
                 title: 'Riders',
                 headerRight: () => (
@@ -46,7 +50,7 @@ const ProfileLayout = () => {
                         borderRadius={'$10'}
 
                         backgroundColor={'$transparentBtnPrimaryColor'}
-                        onPressIn={() => router.push({ pathname: '/(profile)/addRider' })}
+                        onPressIn={() => router.push({ pathname: '/profile/addRider' })}
                     >
                         <Text style={{ color: theme.text.val, fontFamily: 'Poppins-Medium', marginLeft: 5 }}>Add Rider</Text>
                     </Button>
