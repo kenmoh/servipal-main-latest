@@ -76,7 +76,7 @@ const ImagePickerInput = ({
 
                 {/* Error Message */}
                 {errorMessage && (
-                    <Text alignSelf='flex-start' color="$error11" marginTop="$2" style={{ fontFamily: 'Poppins-Thin', fontSize: 11 }}>
+                    <Text alignSelf='flex-start' color="$error" marginTop="$2" style={{ fontFamily: 'Poppins-Regular', fontSize: 11 }}>
                         {errorMessage}
                     </Text>
                 )}

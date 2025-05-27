@@ -2,13 +2,14 @@
 import { Button } from 'tamagui'
 import { Store } from 'lucide-react-native'
 
-const AddItemBtn = ({ onPress, label = 'Add Menu' }: { label?: string, onPress: () => void }) => {
+const AddItemBtn = ({ onPress, isDisabled = false, label = 'Add Menu' }: { label?: string, isDisabled?: boolean, onPress: () => void }) => {
 
     return (
         <Button
             pressStyle={{
                 backgroundColor: '$transparentBtnPrimaryColor'
             }}
+            disabled={isDisabled}
             onPressIn={onPress}
             marginRight={'$2.5'}
             alignSelf='flex-end'

@@ -17,7 +17,7 @@ export interface CreateItem {
   name: string;
   description: string;
   price: number;
-  item_type: ItemType;
+  itemType: ItemType;
   category_id?: string;
   images: ItemImage[];
 }

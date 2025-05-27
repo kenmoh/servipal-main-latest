@@ -21,7 +21,6 @@ import authStorage from "@/storage/authStorage";
 import { useMutation } from "@tanstack/react-query";
 import { loginApi } from "@/api/auth";
 import { ActivityIndicator } from "react-native";
-import { getCurrentUser } from "@/api/user";
 
 export const signInValidationSchema = Yup.object().shape({
   username: Yup.string().email().trim().required().label("Email"),
@@ -35,7 +34,7 @@ const SignIn = () => {
   const { mutate, isPending } = useMutation({
     mutationFn: ({ username, password }: Login) => loginApi(username, password),
     onError: (error) => {
-      
+
       Notifier.showNotification({
         title: "Error",
         description: `${error.message}`,
@@ -64,14 +63,10 @@ const SignIn = () => {
       }
 
       if (user?.account_status === "confirmed") {
-        // const profile = await getCurrentUser();
-        // console.log(profile, "=========&&&&&&&===========");
+
         try {
           await authStorage.storeToken(data?.access_token);
-          // await authStorage.storeProfile(profile);
           authContext.setUser(user);
-          // authContext.setProfile(profile);
-
           Notifier.showNotification({
             title: "Success",
             description: "Login successful",
@@ -118,7 +113,7 @@ const SignIn = () => {
               fontSize={20}
               fontWeight={"bold"}
             >
-              Welcome,
+              Welcome back,
             </Text>
             <Text
               alignSelf="flex-start"

@@ -25,14 +25,7 @@ const AppModal = ({ visible, onClose, children }: AppModalProps) => {
                     <Text>ken</Text>
                     <TouchableWithoutFeedback>
                         <View style={[styles.modalContent, { backgroundColor: theme.background.val }]}>
-                            <TouchableWithoutFeedback style={{
 
-                                position: 'absolute',
-                                top: 20,
-                                right: 30
-                            }}>
-                                <X color={theme.icon.val} />
-                            </TouchableWithoutFeedback>
                             {children}
                         </View>
                     </TouchableWithoutFeedback>

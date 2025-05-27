@@ -134,6 +134,6 @@ export interface RiderResponse {
 }
 
 export interface ImageUrl {
-  profile_image_url: string;
-  backdrop_image_url: string;
+  profile_image_url?: string;
+  backdrop_image_url?: string;
 }

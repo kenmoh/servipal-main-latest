@@ -13,7 +13,7 @@ const StoreCard = ({ item }: { item: CompanyProfile }) => {
         <TouchableOpacity
             activeOpacity={0.8}
             onPress={() => router.push({
-                pathname: '/(app)/food/[storeId]',
+                pathname: '/store-detail/[storeId]',
                 params: {
                     storeId: item?.id,
                     companyName: item?.company_name,

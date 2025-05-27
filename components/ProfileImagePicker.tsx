@@ -10,7 +10,7 @@ interface CustomImagePickerProps {
   width?: number;
   height?: number;
   borderRadius?: number;
-  disabled?: boolean;
+  isBackdropImage?: boolean;
 }
 
 const ProfileImagePicker = ({
@@ -19,7 +19,7 @@ const ProfileImagePicker = ({
   initialImage = null,
   width = 100,
   height = 100,
-  disabled = false,
+  isBackdropImage = false,
 }: CustomImagePickerProps) => {
   const [selectedImage, setSelectedImage] = useState<string | null>(initialImage);
   const theme = useTheme();
@@ -80,7 +80,7 @@ const ProfileImagePicker = ({
           justifyContent="center"
           alignItems="center"
         >
-          <Camera size={width * 0.3} color={theme.color?.val} />
+          <Camera size={isBackdropImage ? width * 0.1 : 0.3} color={theme.color?.val} />
         </View>
       )}
     </TouchableOpacity>

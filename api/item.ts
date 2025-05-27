@@ -101,13 +101,20 @@ export const createItem = async (
   data.append("name", itemData.name);
   data.append("price", itemData.price.toString());
   data.append("description", itemData.description);
-  data.append("item_type", itemData.item_type);
-  if (itemData.category_id !== undefined) {
+  data.append("item_type", itemData.itemType);
+  if (itemData.category_id) {
     data.append("category_id", itemData.category_id);
   }
+
   // Handle multiple images
-  if (itemData.images && itemData.images.length > 0) {
-    itemData.images.forEach((image, index) => {
+  const imagesArray = Array.isArray(itemData.images)
+    ? itemData.images
+    : itemData.images
+    ? [itemData.images]
+    : [];
+
+  if (imagesArray.length > 0) {
+    imagesArray.forEach((image, index) => {
       data.append("images", {
         uri: image.url,
         type: "image/jpeg",
@@ -115,6 +122,7 @@ export const createItem = async (
       } as any);
     });
   }
+
   try {
     const response: ApiResponse<ItemResponse | ErrorResponse> =
       await apiClient.post("/items", data, {
@@ -130,6 +138,7 @@ export const createItem = async (
           : "Error creating item. Please try again later.";
       throw new Error(errorMessage);
     }
+    console.log(response.status, response.problem, response.originalError);
     return response.data;
   } catch (error) {
     if (error instanceof Error) {
@@ -148,14 +157,13 @@ export const updateItem = async (
   data.append("name", itemData.name);
   data.append("price", itemData.price.toString());
   data.append("description", itemData.description);
-  data.append("item_type", itemData.item_type);
+  data.append("item_type", itemData.itemType);
   if (itemData.category_id !== undefined) {
     data.append("category_id", itemData.category_id);
   }
   // Handle multiple images
   if (itemData.images && itemData.images.length > 0) {
     itemData.images.forEach((image, index) => {
-      // If using React Native, you can append the image as follows:
       data.append("images", {
         uri: image.url,
         type: "image/jpeg",

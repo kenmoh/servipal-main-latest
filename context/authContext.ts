@@ -8,18 +8,20 @@ type AuthContextType = {
   signOut: () => void;
   setUser: (user: User | null) => void;
   setProfile: (profile: Profile | null) => void;
+  setImages: (images: ImageUrl | null) => void;
   user?: User | null;
   profile: Profile | null;
-  images: ImageUrl | null
+  images: ImageUrl | null;
 };
 
 export const AuthContext = createContext<AuthContextType>({
   signOut: () => null,
   setUser: () => {},
   setProfile: () => {},
+  setImages: () => {},
   user: null,
   profile: null,
-  images: null
+  images: null,
 });
 
 // This hook is used to access the user info.
@@ -55,7 +57,9 @@ export function useProtectedRoute(user: {} | null) {
       !inAuthGroup
     ) {
       // Redirect to the sign-in screen.
-      router.replace({ pathname: "/sign-in" });
+      isFirstLaunch
+        ? router.replace({ pathname: "/sign-up" })
+        : router.replace({ pathname: "/sign-in" });
     } else if (user && inAuthGroup) {
       // Redirect away from the sign-in screen.
       router.replace({ pathname: "/(app)/delivery/(topTabs)" });

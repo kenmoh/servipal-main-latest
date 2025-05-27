@@ -14,13 +14,12 @@ export interface ImageData {
   name: string;
 }
 
-interface ImageUpload {
+export interface ImageUpload {
   profile_image_url?: ImageData | null;
   backdrop_image_url?: ImageData | null;
 }
 
-
-const BASE_URL = "/users"; // Replace with your actual base URL
+const BASE_URL = "/users";
 
 // Get current logged in user
 export const getCurrentUser = async (userId: string): Promise<Profile> => {
@@ -31,7 +30,7 @@ export const getCurrentUser = async (userId: string): Promise<Profile> => {
         headers: {
           "Content-Type": "application/json",
         },
-      },
+      }
     );
 
     if (!response.ok || !response.data || "detail" in response.data) {
@@ -107,7 +106,7 @@ export const fetchRestaurants = async (): Promise<CompanyProfile[]> => {
 
 // Update current user
 export const updateCurrentVendorUser = async (
-  userData: UserProfileUpdate,
+  userData: UserProfileUpdate
 ): Promise<Profile> => {
   const data = {
     phone_number: userData.phoneNumber,
@@ -127,7 +126,7 @@ export const updateCurrentVendorUser = async (
         headers: {
           "Content-Type": "application/json",
         },
-      },
+      }
     );
 
     if (!response.ok || !response.data || "detail" in response.data) {
@@ -146,24 +145,23 @@ export const updateCurrentVendorUser = async (
   }
 };
 
-
 // upload profile
 export const uploadProfileImage = async (
   imageData: ImageUpload
 ): Promise<ImageUpload> => {
   const formData = new FormData();
-  
+
   // Only append images that exist
   if (imageData.profile_image_url) {
-    formData.append('profile_image_url', {
+    formData.append("profile_image_url", {
       uri: imageData.profile_image_url.uri,
       type: imageData.profile_image_url.type,
       name: imageData.profile_image_url.name,
     } as any);
   }
-  
+
   if (imageData.backdrop_image_url) {
-    formData.append('backdrop_image_url', {
+    formData.append("backdrop_image_url", {
       uri: imageData.backdrop_image_url.uri,
       type: imageData.backdrop_image_url.type,
       name: imageData.backdrop_image_url.name,
@@ -171,16 +169,13 @@ export const uploadProfileImage = async (
   }
 
   try {
-    const response: ApiResponse<ImageUpload | ErrorResponse> = await apiClient.put(
-      `${BASE_URL}/upload-image`,
-      formData,
-      {
+    const response: ApiResponse<ImageUpload | ErrorResponse> =
+      await apiClient.put(`${BASE_URL}/upload-image`, formData, {
         headers: {
-          "Content-Type": 'multipart/form-data',
+          "Content-Type": "multipart/form-data",
         },
-      },
-    );
-    
+      });
+
     if (!response.ok || !response.data || "detail" in response.data) {
       const errorMessage =
         response.data && "detail" in response.data
@@ -188,13 +183,93 @@ export const uploadProfileImage = async (
           : "Error uploading images.";
       throw new Error(errorMessage);
     }
-    
+
     return response.data;
   } catch (error) {
-    console.error('Upload error:', error);
+    console.error("Upload error:", error);
     if (error instanceof Error) {
       throw new Error(error.message);
     }
     throw new Error("An unexpected error occurred");
   }
 };
+
+// upload profile
+// export const uploadProfileImage = async (
+//   imageData: ImageUpload
+// ): Promise<ImageUpload> => {
+//   const formData = new FormData();
+
+//   if (imageData.profile_image_url) {
+//     formData.append("profile_image_url", {
+//       uri: imageData.profile_image_url.uri,
+//       type: imageData.profile_image_url.type,
+//       name: imageData.profile_image_url.name,
+//     } as any);
+//   }
+
+//   try {
+//     const response: ApiResponse<ImageUpload | ErrorResponse> =
+//       await apiClient.put(`${BASE_URL}/upload-image`, formData, {
+//         headers: {
+//           "Content-Type": "multipart/form-data",
+//         },
+//       });
+
+//     if (!response.ok || !response.data || "detail" in response.data) {
+//       const errorMessage =
+//         response.data && "detail" in response.data
+//           ? response.data.detail
+//           : "Error uploading images.";
+//       throw new Error(errorMessage);
+//     }
+
+//     return response.data;
+//   } catch (error) {
+//     console.error("Upload error:", error);
+//     if (error instanceof Error) {
+//       throw new Error(error.message);
+//     }
+//     throw new Error("An unexpected error occurred");
+//   }
+// };
+
+// // upload backdrop
+// export const uploadBackdropImage = async (
+//   imageData: ImageUpload
+// ): Promise<ImageUpload> => {
+//   const formData = new FormData();
+
+//   if (imageData.backdrop_image_url) {
+//     formData.append("backdrop_image_url", {
+//       uri: imageData.backdrop_image_url.uri,
+//       type: imageData.backdrop_image_url.type,
+//       name: imageData.backdrop_image_url.name,
+//     } as any);
+//   }
+
+//   try {
+//     const response: ApiResponse<ImageUpload | ErrorResponse> =
+//       await apiClient.put(`${BASE_URL}/upload-image`, formData, {
+//         headers: {
+//           "Content-Type": "multipart/form-data",
+//         },
+//       });
+
+//     if (!response.ok || !response.data || "detail" in response.data) {
+//       const errorMessage =
+//         response.data && "detail" in response.data
+//           ? response.data.detail
+//           : "Error uploading images.";
+//       throw new Error(errorMessage);
+//     }
+
+//     return response.data;
+//   } catch (error) {
+//     console.error("Upload error:", error);
+//     if (error instanceof Error) {
+//       throw new Error(error.message);
+//     }
+//     throw new Error("An unexpected error occurred");
+//   }
+// };

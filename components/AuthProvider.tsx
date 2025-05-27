@@ -9,7 +9,7 @@ import { getCurrentUser } from "@/api/user";
 const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [user, setUser] = useState<User | null>(null);
     const [profile, setProfile] = useState<Profile | null>(null)
-     const [images, setImages] = useState<ImageUrl | null>(null)
+    const [images, setImages] = useState<ImageUrl | null>(null)
 
 
     const restoreToken = async () => {
@@ -37,6 +37,13 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
         restoreToken()
     }, [])
 
+    useEffect(() => {
+        const loadImages = async () => {
+            const storedImages = await authStorage.getImageUrl();
+            if (storedImages) setImages(storedImages);
+        };
+        loadImages();
+    }, []);
 
     useEffect(() => {
         const loadUserData = async () => {

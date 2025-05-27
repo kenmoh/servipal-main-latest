@@ -7,7 +7,7 @@ import { View } from 'tamagui';
 
 
 type ItemProp = {
-    id: number;
+    id: number | string;
     name: string;
 };
 
@@ -43,7 +43,7 @@ const AppPicker = ({ label, items, value, onValueChange }: PickerProps) => {
 
                     {
                         items.map(item => (
-                            <Picker.Item color={theme.text.val} style={{ backgroundColor: theme.cardDark.val }} label={item.name} value={item.name} key={item.id} />
+                            <Picker.Item color={theme.text.val} style={{ backgroundColor: theme.cardDark.val }} label={item.name} value={item.id} key={item.id} />
                         ))
                     }
 

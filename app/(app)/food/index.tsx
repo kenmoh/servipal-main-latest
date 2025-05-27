@@ -29,6 +29,8 @@ const Page = () => {
         queryFn: fetchRestaurants
     })
 
+    console.log(data)
+
     if (isPending) {
         return <LoadingIndicator />
     }
