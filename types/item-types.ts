@@ -1,16 +1,19 @@
 type ItemType = "food" | "package" | "product" | "laundry";
 
-export interface ItemImage {
-  id: string;
-  item_id: string;
-  url: string;
-}
+
 
 export interface Review {
   item_id: string;
   rating: number;
   comment: string;
   created_at: string;
+}
+
+
+export interface ItemImage {
+  id: string;
+  item_id: string;
+  url: string;
 }
 
 export interface CreateItem {
@@ -32,4 +35,16 @@ export interface CreateCategory {
 }
 export interface CategoryResponse extends CreateCategory {
   id: string;
+}
+
+
+export interface MenuItem {
+  description: string;
+  id: string;
+  images: ItemImage[];
+  item_type: string;
+  name: string;
+  price: string;
+  reviews: Review[];
+  user_id: string;
 }

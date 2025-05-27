@@ -1,4 +1,4 @@
-import { Dimensions, StyleSheet } from "react-native";
+import { Dimensions, StyleSheet, Image, FlatList } from "react-native";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -10,7 +10,6 @@ import { router, useLocalSearchParams } from "expo-router";
 import {
 
   Heading,
-  Image,
   Paragraph,
 
   Text,
@@ -26,6 +25,9 @@ import FoodCard from "@/components/FoodCard";
 import AddItemBtn from "@/components/AddItemBtn";
 import { useAuth } from "@/context/authContext";
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { fetchVendorItems } from "@/api/item";
+import { MenuItem } from "@/types/item-types";
 
 const groups = [
   { id: 1, name: "Starters" },
@@ -43,6 +45,9 @@ const CATEGORY_HEIGHT = 55;
 const StoreDetails = () => {
   const theme = useTheme();
   const { user, images } = useAuth();
+  const { backDrop, storeId } = useLocalSearchParams()
+
+
   const scrollY = useSharedValue(0);
   const [showStickyCategory, setShowStickyCategory] = useState(false);
   const {
@@ -54,11 +59,15 @@ const StoreDetails = () => {
     reviews,
   } = useLocalSearchParams();
 
-  // const scrollHandler = useAnimatedScrollHandler({
-  //   onScroll: (event) => {
-  //     scrollY.value = event.contentOffset.y;
-  //   },
-  // });
+  const { data } = useQuery({
+    queryKey: ['storeItems', storeId],
+    queryFn: ({ queryKey }) => {
+      const [, storeId] = queryKey;
+      return fetchVendorItems(storeId as string);
+    }
+  })
+
+  console.log(data)
 
   const scrollHandler = useAnimatedScrollHandler({
     onScroll: (event) => {
@@ -168,21 +177,25 @@ const StoreDetails = () => {
         >
           <View gap={10}>
             <Image
-              src={images?.backdrop_image_url || require("@/assets/images/Burge.jpg")}
+              source={{ uri: backDrop || require("@/assets/images/Burge.jpg") }}
               height={IMAGET_HEIGHT}
-              objectFit="cover"
+              style={{
+                objectFit: 'cover',
+              }}
             />
 
             <View>
               <Image
-                src={images?.profile_image_url || require("@/assets/images/Pizza.jpeg")}
+                source={{ uri: backDrop || require("@/assets/images/Pizza.jpeg") }}
                 height={65}
                 width={65}
                 borderRadius={10}
-                objectFit="cover"
-                position="absolute"
-                top={-35}
-                left={20}
+                style={{
+                  objectFit: 'cover',
+                  position: 'absolute',
+                  top: -35,
+                  left: 20
+                }}
               />
             </View>
 
@@ -241,8 +254,9 @@ const StoreDetails = () => {
                   </Paragraph>
                 </XStack>
               </YStack>
+
               <AddItemBtn
-                isDisabled={user?.user_type !== "vendor"}
+                isDisabled={user?.user_type !== "vendor" && user?.sub !== data[0].user_id}
                 onPress={() => router.push({ pathname: "/store-detail/addMenu" })}
               />
             </XStack>
@@ -266,14 +280,22 @@ const StoreDetails = () => {
           <Category categories={groups} />
         </Animated.View>
 
-        <YStack>
-          <FoodCard />
-          <FoodCard />
-          <FoodCard />
-          <FoodCard />
-          <FoodCard />
-          <FoodCard />
-          <FoodCard />
+        <YStack flex={1}>
+             <FlatList
+        data={data}
+        keyExtractor={(item)=>item?.id}
+        renderItem={({item}: {item: MenuItem})=>  <FoodCard item={item}/>}
+        // refreshing={isFetching}
+        // onRefresh={handleRefresh}
+        scrollEnabled={false} 
+        removeClippedSubviews={true}
+        maxToRenderPerBatch={10}
+        updateCellsBatchingPeriod={50}
+        initialNumToRender={10}
+        windowSize={10}
+      />
+         
+
         </YStack>
       </Animated.ScrollView>
     </View>

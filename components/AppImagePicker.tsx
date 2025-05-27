@@ -1,6 +1,6 @@
 import React from 'react';
-import { StyleSheet, TouchableOpacity, ViewStyle } from 'react-native';
-import { Button, Image, View, Text, useTheme } from 'tamagui';
+import { TouchableOpacity } from 'react-native';
+import { Image, View, Text, useTheme } from 'tamagui';
 import * as ImagePicker from 'expo-image-picker';
 import { Camera } from 'lucide-react-native';
 import { ImageType } from '@/types/order-types';
@@ -47,7 +47,7 @@ const ImagePickerInput = ({
     return (
         <TouchableOpacity onPress={pickImage}>
 
-            <View width={'95%'} borderColor={'$gray1'} padding="$3" alignSelf='center' alignItems="center">
+            <View width={'95%'} borderColor={'$red'} padding="$3" alignSelf='center' alignItems="center">
                 {/* Preview Image or Placeholder */}
                 {value ? (
                     <Image
@@ -69,7 +69,7 @@ const ImagePickerInput = ({
                         alignItems="center"
                         justifyContent="center"
                     >
-                        {/*<Camera color={theme.icon.val} size={iconSize} />*/}
+                        <Camera color={theme.icon.val} size={iconSize} />
                     </View>
                 )}
 

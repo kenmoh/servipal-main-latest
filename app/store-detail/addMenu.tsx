@@ -17,19 +17,23 @@ import LoadingIndicator from "@/components/LoadingIndicator";
 
 const itemTypeEnum = z.enum(["food", "package", "product", "laundry"]);
 
+const itemTypeOptions = [
+    { id: "food", name: "Food" },
+    { id: "package", name: "Package" },
+    { id: "laundry", name: "Laundry" },
+    { id: "product", name: "Product" }
+];
+
 const schema = z.object({
     name: z.string().min(1, "Name is a required field"),
     price: z.number().int().gt(0, "Price MUST be greater than 0").lte(999999),
     description: z.string().min(1, "Ingredients is a required field"),
-    category: z.string({ message: "Category is a required field" }),
+    category_id: z.string({ message: "Category is a required field" }),
     itemType: itemTypeEnum,
     side: z.string().optional(),
-    images: z
-        .any()
-        .nullable()
-        .refine((val) => val != null, {
-            message: "Image is required",
-        }),
+    images: z.array(z.any()).nonempty({
+        message: "Image is required"
+    }),
 });
 
 const categorySchema = z.object({
@@ -60,7 +64,7 @@ const addMenu = () => {
             description: "",
             price: 0,
             images: [],
-            category: "",
+            category_id: "",
             side: "",
             itemType: "food",
         },
@@ -211,12 +215,24 @@ const addMenu = () => {
                     />
                     <Controller
                         control={control}
-                        name="category"
+                        name="category_id"
                         render={({ field: { onChange, value } }) => (
                             <AppPicker
                                 items={categories ?? []}
                                 onValueChange={onChange}
                                 value={value}
+                            />
+                        )}
+                    />
+                    <Controller
+                        control={control}
+                        name="itemType"
+                        render={({ field: { onChange, value } }) => (
+                            <AppPicker
+                                items={itemTypeOptions}
+                                onValueChange={onChange}
+                                value={value}
+                                placeholder="Select Item Type"
                             />
                         )}
                     />
@@ -239,8 +255,8 @@ const addMenu = () => {
                         name="images"
                         render={({ field: { onChange, value } }) => (
                             <ImagePickerInput
-                                value={value}
-                                onChange={onChange}
+                                value={value && value.length > 0 ? value[0] : null}
+                                onChange={(image) => onChange(image ? [image] : [])}
                                 errorMessage={errors.images?.message?.toString()}
                             />
                         )}

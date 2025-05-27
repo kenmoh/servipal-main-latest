@@ -9,7 +9,6 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Controller, useForm, useWatch } from 'react-hook-form'
 import AppTextInput from '@/components/AppInput'
 import ImagePickerInput from '@/components/AppImagePicker'
-import GoogleTextInput from "@/components/GoogleTextInput";
 import { useLocationStore } from '@/store/locationStore'
 import { Feather, MaterialCommunityIcons, AntDesign } from '@expo/vector-icons'
 import { Clock, Dot } from 'lucide-react-native'

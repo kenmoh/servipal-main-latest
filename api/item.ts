@@ -84,6 +84,8 @@ export const fetchVendorItems = async (
           : "Error fetching vendour items.";
       throw new Error(errorMessage);
     }
+
+    console.log(response.data, response.status, response.problem);
     return response.data;
   } catch (error) {
     if (error instanceof Error) {
@@ -98,6 +100,7 @@ export const createItem = async (
   itemData: CreateItem
 ): Promise<ItemResponse> => {
   const data = new FormData();
+
   data.append("name", itemData.name);
   data.append("price", itemData.price.toString());
   data.append("description", itemData.description);
@@ -106,22 +109,23 @@ export const createItem = async (
     data.append("category_id", itemData.category_id);
   }
 
-  // Handle multiple images
-  const imagesArray = Array.isArray(itemData.images)
-    ? itemData.images
-    : itemData.images
-    ? [itemData.images]
-    : [];
 
+
+  // Handle images - the images array contains file path strings
+  const imagesArray = Array.isArray(itemData.images) ? itemData.images : [];
+  
   if (imagesArray.length > 0) {
-    imagesArray.forEach((image, index) => {
-      data.append("images", {
-        uri: image.url,
+    imagesArray.forEach((imagePath, index) => {
+      const imageData = {
+        uri: imagePath, 
         type: "image/jpeg",
         name: `image_${index}.jpg`,
-      } as any);
+      };
+      data.append("images", imageData as any);
     });
   }
+
+
 
   try {
     const response: ApiResponse<ItemResponse | ErrorResponse> =
@@ -138,7 +142,7 @@ export const createItem = async (
           : "Error creating item. Please try again later.";
       throw new Error(errorMessage);
     }
-    console.log(response.status, response.problem, response.originalError);
+
     return response.data;
   } catch (error) {
     if (error instanceof Error) {

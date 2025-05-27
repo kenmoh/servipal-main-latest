@@ -15,10 +15,11 @@ type PickerProps = {
     label?: string;
     items: ItemProp[];
     value: string;
+    placeholder?: string;
     onValueChange: (val: string) => void;
 
 };
-const AppPicker = ({ label, items, value, onValueChange }: PickerProps) => {
+const AppPicker = ({ label, items, value, placeholder, onValueChange }: PickerProps) => {
 
     const theme = useTheme()
     return (
@@ -36,6 +37,7 @@ const AppPicker = ({ label, items, value, onValueChange }: PickerProps) => {
 
                     }}
                     mode='dropdown'
+                    placeholder={placeholder}
                     selectedValue={value}
                     onValueChange={(itemValue) =>
                         onValueChange(itemValue)
