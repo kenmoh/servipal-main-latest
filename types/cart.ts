@@ -49,3 +49,41 @@ export interface DeliveryInfo {
   destination_coords: [number | null, number | null];
   additional_info: string;
 }
+
+
+
+// types/cart.ts
+
+export type OrderItem = {
+  vendor_id: string;
+  item_id: string;
+  quantity: number;
+  price: number;
+};
+
+export type CartDeliveryInfo = {
+  pickup_coordinates: number[];
+  dropoff_coordinates: number[];
+  distance: number;
+  require_delivery: "pickup" | "delivery";
+  duration: string;
+  origin: string;
+  destination: string;
+  additional_info?: string;
+};
+
+export type CartState = {
+  order_items: OrderItem[];
+  delivery_info: CartDeliveryInfo;
+  totalCost: number;
+
+  addItem: (item: Omit<OrderItem, "quantity"> & { price: number }) => void;
+  removeItem: (item_id: string, vendor_id: string) => void;
+  updateQuantity: (item_id: string, vendor_id: string, quantity: number) => void;
+  clearCart: () => void;
+  setDeliveryInfo: (info: Partial<CartDeliveryInfo>) => void;
+  getPayload: () => {
+    order_items: Omit<OrderItem, "price">[];
+    totalCost: number;
+  } & CartDeliveryInfo;
+};

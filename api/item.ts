@@ -6,6 +6,7 @@ import {
   CreateCategory,
   CreateItem,
   ItemResponse,
+  MenuItem,
 } from "@/types/item-types";
 
 // Fetch categories
@@ -68,9 +69,9 @@ export const createCategory = async (
 // Fetch Vendor Items
 export const fetchVendorItems = async (
   Vendor_id: string
-): Promise<ItemResponse[]> => {
+): Promise<MenuItem[]> => {
   try {
-    const response: ApiResponse<ItemResponse[] | ErrorResponse> =
+    const response: ApiResponse<MenuItem[] | ErrorResponse> =
       await apiClient.get(`/items/${Vendor_id}`, {
         headers: {
           "Content-Type": "application/json",
@@ -109,24 +110,19 @@ export const createItem = async (
     data.append("category_id", itemData.category_id);
   }
 
-
-
-  // Handle images - the images array contains file path strings
+  // Handle images
   const imagesArray = Array.isArray(itemData.images) ? itemData.images : [];
-  
+
   if (imagesArray.length > 0) {
     imagesArray.forEach((imagePath, index) => {
       const imageData = {
-        uri: imagePath, 
+        uri: imagePath,
         type: "image/jpeg",
         name: `image_${index}.jpg`,
       };
       data.append("images", imageData as any);
     });
   }
-
-
-
   try {
     const response: ApiResponse<ItemResponse | ErrorResponse> =
       await apiClient.post("/items", data, {
@@ -142,7 +138,7 @@ export const createItem = async (
           : "Error creating item. Please try again later.";
       throw new Error(errorMessage);
     }
-
+    console.log(response.status, response.problem, response.originalError);
     return response.data;
   } catch (error) {
     if (error instanceof Error) {

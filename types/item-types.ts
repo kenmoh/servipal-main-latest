@@ -1,14 +1,11 @@
 type ItemType = "food" | "package" | "product" | "laundry";
 
-
-
 export interface Review {
   item_id: string;
   rating: number;
   comment: string;
   created_at: string;
 }
-
 
 export interface ItemImage {
   id: string;
@@ -37,14 +34,13 @@ export interface CategoryResponse extends CreateCategory {
   id: string;
 }
 
-
 export interface MenuItem {
-  description: string;
   id: string;
-  images: ItemImage[];
-  item_type: string;
-  name: string;
-  price: string;
-  reviews: Review[];
   user_id: string;
+  name: string;
+  item_type: string;
+  price: string;
+  description: string;
+  images: ItemImage[];
+  reviews: Review[];
 }

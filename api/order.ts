@@ -307,59 +307,28 @@ export const createReview = async (
 
 /*
 
-
+POST -> /{vendor_id}
 {
-  "delivery": {
-    "id": "5626efcf-60c8-4fec-b2f6-76d53477ef52",
-    "delivery_type": "package",
-    "delivery_status": "pending",
-    "sender_id": "b7142dd0-4570-4a5b-9831-1f3df6e43388",
-    "vendor_id": "b7142dd0-4570-4a5b-9831-1f3df6e43388",
-    "dispatch_id": null,
-    "rider_id": null,
-    "distance": "30",
-    "duration": "12",
-    "pickup_coordinates": [
-      5.66,
-      8.99
-    ],
-    "dropoff_coordinates": [
-      3,
-      5.9
-    ],
-    "delivery_fee": "7500.00",
-    "amount_due_dispatch": "6375.0000",
-    "created_at": "2025-05-17T19:01:15.717270"
-  },
-  "order": {
-    "id": "6551c4f2-5a38-4fb2-be86-9fa85e14807d",
-    "user_id": "b7142dd0-4570-4a5b-9831-1f3df6e43388",
-    "vendor_id": "b7142dd0-4570-4a5b-9831-1f3df6e43388",
-    "order_type": "package",
-    "total_price": "7500.00",
-    "order_payment_status": "pending",
-    "order_status": "pending",
-    "amount_due_vendor": "0",
-    "payment_link": "https://checkout-v2.dev-flutterwave.com/v3/hosted/pay/1167543ab6cc19b0d5b4",
-    "order_items": [
-      {
-        "id": "7ffacb1c-a21c-4844-a388-3cab04c9d9c8",
-        "user_id": "b7142dd0-4570-4a5b-9831-1f3df6e43388",
-        "name": "string",
-        "price": "0",
-        "images": [
-          {
-            "id": "a4dd7e4c-04d8-47d9-baaf-282ae6982211",
-            "item_id": "7ffacb1c-a21c-4844-a388-3cab04c9d9c8",
-            "url": "https://mohdelivery.s3.amazonaws.com/6d313d98dfddca7efd8ff52e3dhand.jpg"
-          }
-        ],
-        "description": "string",
-        "quantity": 1
-      }
-    ]
-  }
+
+  "order_items": [
+    {
+      "vendor_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "item_id": "string",
+      "quantity": 0
+    }
+  ],
+  "pickup_coordinates": [
+    0
+  ],
+  "dropoff_coordinates": [
+    0
+  ],
+  "distance": 0,
+  "require_delivery": "pickup",
+  "duration": "string",
+  "origin": "string",
+  "destination": "string",
+  "additional_info"?: "string"
 }
-Response headers
 
 */

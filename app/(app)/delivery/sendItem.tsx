@@ -7,9 +7,7 @@ import { useRouter } from 'expo-router'
 const SendItem = () => {
   const {
     origin,
-    originCoords,
     destination,
-    destinationCoords,
     setOrigin,
     setDestination
   } = useLocationStore()

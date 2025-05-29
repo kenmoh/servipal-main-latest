@@ -8,10 +8,8 @@ import Animated, {
 } from "react-native-reanimated";
 import { router, useLocalSearchParams } from "expo-router";
 import {
-
   Heading,
   Paragraph,
-
   Text,
   useTheme,
   View,
@@ -23,11 +21,14 @@ import HDivider from "@/components/HDivider";
 import Category from "@/components/Category";
 import FoodCard from "@/components/FoodCard";
 import AddItemBtn from "@/components/AddItemBtn";
+import CartInfoBtn from "@/components/CartInfoBtn";
+
 import { useAuth } from "@/context/authContext";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchVendorItems } from "@/api/item";
 import { MenuItem } from "@/types/item-types";
+import { useCartStore } from "@/store/cartStore";
 
 const groups = [
   { id: 1, name: "Starters" },
@@ -44,13 +45,10 @@ const CATEGORY_HEIGHT = 55;
 
 const StoreDetails = () => {
   const theme = useTheme();
-  const { user, images } = useAuth();
-  const { backDrop, storeId } = useLocalSearchParams()
-
-
-  const scrollY = useSharedValue(0);
-  const [showStickyCategory, setShowStickyCategory] = useState(false);
+  const { user } = useAuth();
   const {
+    backDrop,
+    storeId,
     companyName,
     openingHour,
     closingHour,
@@ -59,35 +57,46 @@ const StoreDetails = () => {
     reviews,
   } = useLocalSearchParams();
 
-  const { data } = useQuery({
-    queryKey: ['storeItems', storeId],
-    queryFn: ({ queryKey }) => {
-      const [, storeId] = queryKey;
-      return fetchVendorItems(storeId as string);
-    }
-  })
+  const scrollY = useSharedValue(0);
+  const [showStickyCategory, setShowStickyCategory] = useState(false);
+  const { cart, addItem } = useCartStore();
 
-  console.log(data)
+  const { data } = useQuery({
+    queryKey: ["storeItems", storeId],
+    queryFn: () => fetchVendorItems(storeId as string),
+  });
+
+  // Calculate total  cost
+  const totalCost = data?.reduce((acc, item) => {
+    const cartItem = cart.order_items.find((ci) => ci.item_id === item.id);
+    return acc + (cartItem ? Number(item.price) * cartItem.quantity : 0);
+  }, 0);
+  // Handle adding item to cart
+  const handleAddToCart = (item: MenuItem) => {
+    console.log(item)
+    addItem(storeId as string, item.id, 1);
+  };
 
   const scrollHandler = useAnimatedScrollHandler({
     onScroll: (event) => {
       scrollY.value = event.contentOffset.y;
-      runOnJS(setShowStickyCategory)(event.contentOffset.y > TOP_SECTION_HEIGHT);
+      runOnJS(setShowStickyCategory)(
+        event.contentOffset.y > TOP_SECTION_HEIGHT
+      );
     },
   });
-
 
   const categoryStyle = useAnimatedStyle(() => {
     const translateY = interpolate(
       scrollY.value,
       [0, IMAGET_HEIGHT],
       [0, -IMAGET_HEIGHT],
-      "clamp",
+      "clamp"
     );
     return {
       transform: [{ translateY }],
       position: scrollY.value > TOP_SECTION_HEIGHT ? "absolute" : "relative",
-      top: scrollY.value > TOP_SECTION_HEIGHT ? HEADER_HEIGHT + 10 : undefined, // 10px below header
+      top: scrollY.value > TOP_SECTION_HEIGHT ? HEADER_HEIGHT + 10 : undefined,
       zIndex: scrollY.value > TOP_SECTION_HEIGHT ? 1 : 0,
       width: "100%",
     };
@@ -98,21 +107,19 @@ const StoreDetails = () => {
       scrollY.value,
       [0, TOP_SECTION_HEIGHT],
       [0, 1],
-      "clamp",
+      "clamp"
     );
     const translateY = interpolate(
       scrollY.value,
       [0, TOP_SECTION_HEIGHT],
       [-HEADER_HEIGHT, 0],
-      "clamp",
+      "clamp"
     );
     return {
       opacity,
       transform: [{ translateY }],
     };
   });
-
-
 
   return (
     <View flex={1} backgroundColor={"$background"}>
@@ -172,7 +179,6 @@ const StoreDetails = () => {
               height: TOP_SECTION_HEIGHT,
               backgroundColor: theme.cardBackground.val,
             },
-
           ]}
         >
           <View gap={10}>
@@ -180,21 +186,23 @@ const StoreDetails = () => {
               source={{ uri: backDrop || require("@/assets/images/Burge.jpg") }}
               height={IMAGET_HEIGHT}
               style={{
-                objectFit: 'cover',
+                objectFit: "cover",
               }}
             />
 
             <View>
               <Image
-                source={{ uri: backDrop || require("@/assets/images/Pizza.jpeg") }}
+                source={{
+                  uri: backDrop || require("@/assets/images/Pizza.jpeg"),
+                }}
                 height={65}
                 width={65}
                 borderRadius={10}
                 style={{
-                  objectFit: 'cover',
-                  position: 'absolute',
+                  objectFit: "cover",
+                  position: "absolute",
                   top: -35,
-                  left: 20
+                  left: 20,
                 }}
               />
             </View>
@@ -256,8 +264,12 @@ const StoreDetails = () => {
               </YStack>
 
               <AddItemBtn
-                isDisabled={user?.user_type !== "vendor" && user?.sub !== data[0].user_id}
-                onPress={() => router.push({ pathname: "/store-detail/addMenu" })}
+                isDisabled={
+                  user?.user_type !== "vendor" && user?.sub !== data[0]?.user_id
+                }
+                onPress={() =>
+                  router.push({ pathname: "/store-detail/addMenu" })
+                }
               />
             </XStack>
             <HDivider />
@@ -272,7 +284,7 @@ const StoreDetails = () => {
               alignItems: "center",
               justifyContent: "center",
               height: CATEGORY_HEIGHT,
-              marginTop: 10
+              marginTop: 10,
             },
             categoryStyle,
           ]}
@@ -281,23 +293,29 @@ const StoreDetails = () => {
         </Animated.View>
 
         <YStack flex={1}>
-             <FlatList
-        data={data}
-        keyExtractor={(item)=>item?.id}
-        renderItem={({item}: {item: MenuItem})=>  <FoodCard item={item}/>}
-        // refreshing={isFetching}
-        // onRefresh={handleRefresh}
-        scrollEnabled={false} 
-        removeClippedSubviews={true}
-        maxToRenderPerBatch={10}
-        updateCellsBatchingPeriod={50}
-        initialNumToRender={10}
-        windowSize={10}
-      />
-         
-
+          <FlatList
+            data={data ?? []}
+            keyExtractor={(item) => item?.id}
+            renderItem={({ item }: { item: MenuItem }) => (
+              <FoodCard item={item} onPress={() => handleAddToCart(item)} />
+            )}
+            scrollEnabled={false}
+            removeClippedSubviews={true}
+            maxToRenderPerBatch={10}
+            updateCellsBatchingPeriod={50}
+            initialNumToRender={10}
+            windowSize={10}
+          // refreshing={isFetching}
+          // onRefresh={handleRefresh}
+          />
         </YStack>
       </Animated.ScrollView>
+      <CartInfoBtn
+        label="View Cart"
+        totalCost={totalCost?.toString()!}
+        totalItem={cart.order_items.length}
+        onPress={() => router.push({ pathname: "/cart" })}
+      />
     </View>
   );
 };
@@ -317,4 +335,3 @@ const styles = StyleSheet.create({
     elevation: 1000,
   },
 });
-
