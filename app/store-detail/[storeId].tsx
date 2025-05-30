@@ -74,7 +74,7 @@ const StoreDetails = () => {
   // Handle adding item to cart
   const handleAddToCart = (item: MenuItem) => {
     console.log(item)
-    addItem(storeId as string, item.id, 1);
+    addItem(storeId as string, item.id, 1, { name: item.name, price: Number(item.price), image: item.images[0]?.url || '' });
   };
 
   const scrollHandler = useAnimatedScrollHandler({
@@ -265,7 +265,7 @@ const StoreDetails = () => {
 
               <AddItemBtn
                 isDisabled={
-                  user?.user_type !== "vendor" && user?.sub !== data[0]?.user_id
+                  user?.user_type !== "vendor" && (data && user?.sub !== data[0]?.user_id)
                 }
                 onPress={() =>
                   router.push({ pathname: "/store-detail/addMenu" })
@@ -291,6 +291,11 @@ const StoreDetails = () => {
         >
           <Category categories={groups} />
         </Animated.View>
+
+
+        {/* RENDER SECTION */}
+
+
 
         <YStack flex={1}>
           <FlatList

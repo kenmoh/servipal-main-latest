@@ -8,7 +8,7 @@ const FoodCard = ({ item, onPress }: { item: MenuItem, onPress: (id: string) => 
 
     const theme = useTheme()
     return (
-        <Pressable style={({ pressed }) => [{ opacity: pressed ? 0.8 : 0 }]} onPress={() => onPress(item.id)}>
+        <Pressable style={({ pressed }) => [{ opacity: pressed ? 0.5 : 1 }]} onPressIn={() => onPress(item.id)}>
             <Card
                 bordered
                 padded

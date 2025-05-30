@@ -85,141 +85,154 @@ const Cart = () => {
 
 
     return (
-        <ScrollView style={{ flex: 1, backgroundColor: theme.cardDark.val }}>
-            <Text>Cart</Text>
 
-            {
-                cart.order_items.map(item => <Item item={item} />)
-            }
+        <View flex={1} backgroundColor={theme.background.val}>
+            <ScrollView
 
-            <AppModal visible={modalVisible} onClose={() => setModalVisible(false)}>
-                <ScrollView style={{ width: "100%", flex: 1 }}>
-                    <GoogleTextInput
-                        placeholder="Pickup Location"
-                        errorMessage={error.origin}
-                        value={origin}
-                        onChangeText={() => { }}
-                        handlePress={(lat, lng, address) => {
-                            setOrigin(address, [lat, lng]);
-                            setError((prev) => ({ ...prev, origin: "" }));
-                        }}
-                    />
-
-                    <GoogleTextInput
-                        placeholder="Destination"
-                        value={destination}
-                        errorMessage={error.destination}
-                        onChangeText={() => { }}
-                        handlePress={(lat, lng, address) => {
-                            setDestination(address, [lat, lng]);
-                            setError((prev) => ({ ...prev, destination: "" }));
-                        }}
-                    />
-
-                    <AppTextInput
-                        placeholder="Additional Information"
-                        value={infoText}
-                        onChangeText={(e) => setInfoText(e)}
-                    />
-
-                    <Button
-                        width={"90%"}
-                        marginVertical={"$5"}
-                        backgroundColor={"$btnPrimaryColor"}
-                        alignSelf="center"
-                        onPress={handleNext}
-                    >
-                        Ok
-                    </Button>
-                </ScrollView>
-            </AppModal>
-            <XStack
-                gap={"$3"}
-                alignSelf={"flex-end"}
-                backgroundColor="$borderColor"
-                alignItems="center"
-                justifyContent="center"
-                paddingHorizontal={"$5"}
-                borderRadius={"$10"}
+                contentContainerStyle={{
+                    flexGrow: 1,
+                    paddingBottom: 20,
+                }}
             >
-                <Label>PICKUP</Label>
-                <Switch
-                    checked={require_delivery === "delivery"}
-                    onCheckedChange={handleSwitchToggle}
-                >
-                    <Switch.Thumb
-                        backgroundColor={
-                            require_delivery === "delivery"
-                                ? "$btnPrimaryColor"
-                                : "$cardLight"
-                        }
-                    />
-                </Switch>
-                <Label>DELIVERY</Label>
-            </XStack>
-            <Card padded width={'95%'} alignSelf="center" bordered>
-                {/* DELIVERY INFO */}
-                <Paragraph
-                    style={{
-                        fontFamily: "Poppins-Regular",
-                        fontSize: 11,
-                        color: theme.text.val,
-                    }}
-                >
-                    Origin:{" "} {origin}
-                </Paragraph>
-                <Paragraph
-                    style={{
-                        fontFamily: "Poppins-Regular",
-                        fontSize: 11,
-                        color: theme.text.val,
-                    }}
-                >
-                    Destination:{" "} {destination}
-                </Paragraph>
-                <Paragraph
-                    style={{
-                        fontFamily: "Poppins-Regular",
-                        fontSize: 11,
-                        color: theme.text.val,
-                    }}
-                >
-                    Duration:{" "} {duration}
-                </Paragraph>
-                <Paragraph
-                    style={{
-                        fontFamily: "Poppins-Regular",
-                        fontSize: 11,
-                        color: theme.text.val,
-                    }}
-                >
-                    Distance:{" "} {distance}
-                </Paragraph>
-                <XStack>
-                    <Text
-                        style={{
-                            fontFamily: "Poppins-Regular",
-                            fontSize: 11,
-                            color: theme.text.val,
-                        }}
-                    >
-                        Additional Info:{" "}
-                    </Text>
-                    <Paragraph
-                        flex={1}
-                        flexWrap="wrap"
-                        style={{
-                            fontFamily: "Poppins-Regular",
-                            fontSize: 11,
-                            color: theme.text.val,
-                        }}
-                    >
-                        {cart}
-                    </Paragraph>
 
+                {
+                    cart.order_items.map(item => <Item key={item?.item_id} item={item} />)
+                }
+
+
+                <XStack
+                    gap={"$3"}
+                    alignSelf={"center"}
+                    backgroundColor="$borderColor"
+                    alignItems="center"
+                    justifyContent="center"
+                    paddingHorizontal={"$5"}
+                    borderRadius={"$10"}
+                    marginVertical={"$5"}
+
+                >
+                    <Label>PICKUP</Label>
+                    <Switch
+                        checked={require_delivery === "delivery"}
+                        onCheckedChange={handleSwitchToggle}
+                    >
+                        <Switch.Thumb
+                            backgroundColor={
+                                require_delivery === "delivery"
+                                    ? "$btnPrimaryColor"
+                                    : "$cardLight"
+                            }
+                        />
+                    </Switch>
+                    <Label>DELIVERY</Label>
                 </XStack>
-            </Card>
-        </ScrollView>
+                <Card padded width={'95%'} alignSelf="center" bordered marginBottom='$5'>
+                    {/* DELIVERY INFO */}
+                    <Paragraph
+                        style={{
+                            fontFamily: "Poppins-Regular",
+                            fontSize: 11,
+                            color: theme.text.val,
+                        }}
+                    >
+                        Origin:{" "} {origin}
+                    </Paragraph>
+                    <Paragraph
+                        style={{
+                            fontFamily: "Poppins-Regular",
+                            fontSize: 11,
+                            color: theme.text.val,
+                        }}
+                    >
+                        Destination:{" "} {destination}
+                    </Paragraph>
+                    <Paragraph
+                        style={{
+                            fontFamily: "Poppins-Regular",
+                            fontSize: 11,
+                            color: theme.text.val,
+                        }}
+                    >
+                        Duration:{" "} {duration}
+                    </Paragraph>
+                    <Paragraph
+                        style={{
+                            fontFamily: "Poppins-Regular",
+                            fontSize: 11,
+                            color: theme.text.val,
+                        }}
+                    >
+                        Distance:{" "} {distance}
+                    </Paragraph>
+                    <XStack>
+                        <Text
+                            style={{
+                                fontFamily: "Poppins-Regular",
+                                fontSize: 11,
+                                color: theme.text.val,
+                            }}
+                        >
+                            Additional Info:{" "}
+                        </Text>
+                        <Paragraph
+                            flex={1}
+                            flexWrap="wrap"
+                            style={{
+                                fontFamily: "Poppins-Regular",
+                                fontSize: 11,
+                                color: theme.text.val,
+                            }}
+                        >
+                            {cart.additional_info}
+                        </Paragraph>
+
+                    </XStack>
+                </Card>
+            </ScrollView>
+            <AppModal visible={modalVisible} onClose={() => setModalVisible(false)}>
+
+                <GoogleTextInput
+                    placeholder="Pickup Location"
+                    errorMessage={error.origin}
+                    disableScroll={true}
+                    value={origin}
+                    onChangeText={() => { }}
+                    handlePress={(lat, lng, address) => {
+                        setOrigin(address, [lat, lng]);
+                        setError((prev) => ({ ...prev, origin: "" }));
+                    }}
+                />
+
+                <GoogleTextInput
+                    placeholder="Destination"
+                    disableScroll={true}
+                    value={destination}
+                    errorMessage={error.destination}
+                    onChangeText={() => { }}
+                    handlePress={(lat, lng, address) => {
+                        setDestination(address, [lat, lng]);
+                        setError((prev) => ({ ...prev, destination: "" }));
+                    }}
+                />
+
+                <AppTextInput
+                    placeholder="Additional Information"
+                    value={infoText}
+                    onChangeText={(e) => setInfoText(e)}
+                />
+
+                <Button
+                    width={"90%"}
+                    marginVertical={"$5"}
+                    backgroundColor={"$btnPrimaryColor"}
+                    alignSelf="center"
+                    onPress={handleNext}
+                >
+                    Ok
+                </Button>
+
+            </AppModal>
+        </View>
     );
 };
 

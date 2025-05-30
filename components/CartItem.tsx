@@ -1,7 +1,7 @@
-import { View, Text, Image, XStack, useTheme } from "tamagui";
+import { View, Text, Image, XStack, useTheme, Card, YStack } from "tamagui";
 import { CartItem, useCartStore } from "@/store/cartStore";
 import { TouchableOpacity } from "react-native";
-import { Minus, Plus, Trash2Icon } from "lucide-react-native";
+import { Minus, Plus, Trash } from "lucide-react-native";
 
 type CartItemProps = {
     item: CartItem;
@@ -12,65 +12,81 @@ const Item = ({ item }: CartItemProps) => {
     const theme = useTheme()
 
     return (
-        <>
-            <View
-                flexDirection="row"
-                padding="$2"
-                backgroundColor="$cardBackground"
-                borderRadius="$2"
-                marginVertical="$1"
-            >
+        <Card
+            padding="$3"
+            backgroundColor="$cardDark"
+            borderRadius="$2"
+            marginVertical="$1"
+            width={'95%'}
+            alignSelf="center"
+            flexDirection="row"
+            justifyContent="space-between"
+        >
+            <XStack flex={1}>
+                {/* Left side: Image */}
                 <Image
                     source={{ uri: item.image }}
                     width={60}
                     height={60}
                     borderRadius="$1"
                 />
-                <View flex={1} marginLeft="$2">
-                    <Text fontFamily="$body">{item.name}</Text>
-                    <Text fontFamily="$body" color="$gray11">
+
+                {/* Middle: Name and Price */}
+                <View marginLeft="$2" flex={1}>
+                    <Text fontFamily="$body" numberOfLines={2}>
+                        {item.name}
+                    </Text>
+                    <Text fontFamily="$body" color="$gray11" marginTop="$1">
                         ₦{item.price?.toLocaleString()}
                     </Text>
-                    <Text fontFamily="$body">Qty: {item.quantity}</Text>
                 </View>
-            </View>
+            </XStack>
 
-            <XStack alignSelf="flex-end">
-                <XStack alignItems="center" justifyContent="center" gap={"$2"} width={'$15'}>
+            {/* Right: Quantity Controls */}
+
+            <YStack>
+                <XStack gap={"$2"} >
                     <TouchableOpacity
                         onPress={() => updateItemQuantity(item.item_id, item.quantity - 1)}
                         style={{
-                            backgroundColor: theme.transparentBtnPrimaryColor.val,
+
                             borderTopLeftRadius: 10,
                             borderBottomLeftRadius: 10,
-                            padding: 5
+                            padding: 3
                         }}>
                         <Minus size={20} color={theme.icon.val} />
                     </TouchableOpacity>
-                    <Text color={'$icon'} fontSize={'$6'}>0</Text>
+                    <View padding={3}>
+                        <Text color={'$icon'} fontSize={'$3'}>{item.quantity}</Text>
+                    </View>
                     <TouchableOpacity
                         onPress={() => updateItemQuantity(item.item_id, item.quantity + 1)}
                         style={{
-                            backgroundColor: theme.transparentBtnPrimaryColor.val,
+
                             borderTopRightRadius: 10,
                             borderBottomRightRadius: 10,
-                            padding: 5
+                            padding: 3
                         }}>
                         <Plus size={20} color={theme.icon.val} />
                     </TouchableOpacity>
                 </XStack>
+
+                {/* Delete button */}
                 <TouchableOpacity
                     onPress={() => removeItem(item.item_id)}
                     style={{
-                        backgroundColor: theme.error.val,
-                        borderRadius: 10,
-                        padding: 5
+                        borderRadius: 20,
+                        padding: 5,
+                        alignSelf: 'flex-end',
+                        marginTop: 10
 
                     }}>
-                    <Trash2Icon size={20} color={theme.icon.val} />
+                    <Trash size={20} color={theme.icon.val} />
                 </TouchableOpacity>
-            </XStack>
-        </>
+
+            </YStack>
+
+        </Card>
     );
 };
 

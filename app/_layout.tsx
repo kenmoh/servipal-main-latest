@@ -14,19 +14,24 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler'
 
 import tamaguiConfig from '@/tamagui.config';
 import AuthProvider from "@/components/AuthProvider";
+import AddItemBtn from '@/components/AddItemBtn';
+import { useCartStore } from '@/store/cartStore';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
-// SplashScreen.setOptions({
-//   duration: 500,
-//   fade: true
-// })
+SplashScreen.setOptions({
+  duration: 500,
+  fade: true
+})
 
 const queryClient = new QueryClient();
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
+  const { clearCart } = useCartStore()
+
+
 
   const [loaded] = useFonts({
     "Poppins-Bold": require("../assets/fonts/Poppins-Bold.ttf"),
@@ -68,10 +73,10 @@ export default function RootLayout() {
                   <Stack.Screen name="(app)" options={{ headerShown: false }} />
                   <Stack.Screen name="index" options={{ headerShown: false }} />
                   <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-                  <Stack.Screen name='(profile)' options={{
+                  {/* <Stack.Screen name='(profile)' options={{
                     headerShown: false
 
-                  }} />
+                  }} /> */}
                   <Stack.Screen name='delivery-detail' options={{
                     headerShown: false
 
@@ -84,8 +89,9 @@ export default function RootLayout() {
                     headerShown: false
 
                   }} />
-                  <Stack.Screen name='cart' options={{
-                    headerShown: false
+                  <Stack.Screen name='cart/index' options={{
+                    title: 'Cart',
+                    headerRight: () => <AddItemBtn label='Clear Cart' onPress={clearCart} />
 
                   }} />
 

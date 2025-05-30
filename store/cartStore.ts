@@ -17,20 +17,25 @@ type CartType = {
   // dropoff_coordinates: [number | null, number | null];
   distance: number;
   require_delivery: "pickup" | "delivery";
-  duration: number;
+  duration: string;
   additional_info: string;
 };
 
 type CartState = {
   cart: CartType;
-  addItem: (vendor_id: string, item_id: string, quantity: number) => void;
+  addItem: (
+    vendor_id: string,
+    item_id: string,
+    quantity: number,
+    itemDetails: { name: string; price: number; image: string }
+  ) => void;
   removeItem: (item_id: string) => void;
   updateItemQuantity: (item_id: string, quantity: number) => void;
   // setPickupCoordinates: (lat: number | null, lng: number | null) => void;
   // setDropOffCoordinates: (lat: number | null, lng: number | null) => void;
   setDeliveryOption: (option: "pickup" | "delivery") => void;
   updateDistance: (distance: number) => void;
-  updateDuration: (duration: number) => void;
+  updateDuration: (duration: string) => void;
   setAdditionalInfo: (info: string) => void;
   clearCart: () => void;
 };
@@ -42,7 +47,7 @@ export const useCartStore = create<CartState>((set) => ({
     // dropoff_coordinates: [null, null],
     distance: 0,
     require_delivery: "pickup",
-    duration: 0,
+    duration: "",
     additional_info: "",
   },
 
@@ -81,8 +86,8 @@ export const useCartStore = create<CartState>((set) => ({
               vendor_id: vendorId,
               item_id: itemId,
               quantity,
-              name: itemDetails.name,
               price: itemDetails.price,
+              name: itemDetails.name,
               image: itemDetails.image,
             },
           ],
@@ -98,15 +103,40 @@ export const useCartStore = create<CartState>((set) => ({
         ),
       },
     })),
+
   updateItemQuantity: (item_id, quantity) =>
-    set((state) => ({
-      cart: {
-        ...state.cart,
-        order_items: state.cart.order_items.map((item) =>
-          item.item_id === item_id ? { ...item, quantity } : item
-        ),
-      },
-    })),
+    set((state) => {
+      // If quantity is 0 or less, remove the item
+      if (quantity <= 0) {
+        return {
+          cart: {
+            ...state.cart,
+            order_items: state.cart.order_items.filter(
+              (item) => item.item_id !== item_id
+            ),
+          },
+        };
+      }
+
+      // Otherwise update the quantity
+      return {
+        cart: {
+          ...state.cart,
+          order_items: state.cart.order_items.map((item) =>
+            item.item_id === item_id ? { ...item, quantity } : item
+          ),
+        },
+      };
+    }),
+  // updateItemQuantity: (item_id, quantity) =>
+  //   set((state) => ({
+  //     cart: {
+  //       ...state.cart,
+  //       order_items: state.cart.order_items.map((item) =>
+  //         item.item_id === item_id ? { ...item, quantity } : item
+  //       ),
+  //     },
+  //   })),
   // setPickupCoordinates: (lat, lng) =>
   //   set((state) => ({
   //     cart: {
@@ -157,7 +187,7 @@ export const useCartStore = create<CartState>((set) => ({
         // dropoff_coordinates: [null, null],
         distance: 0,
         require_delivery: "pickup",
-        duration: 0,
+        duration: "",
         additional_info: "",
       },
     })),

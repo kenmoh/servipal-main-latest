@@ -10,9 +10,10 @@ interface GoogleTextInputProps {
   value: ControllerRenderProps<any, any>['value'];
   onChangeText: ControllerRenderProps<any, any>['onChange'];
   errorMessage?: string;
+  disableScroll?: boolean;
 }
 
-const GoogleTextInput = ({ placeholder, handlePress, onChangeText, errorMessage }: GoogleTextInputProps) => {
+const GoogleTextInput = ({ placeholder, handlePress, onChangeText, errorMessage, disableScroll = false }: GoogleTextInputProps) => {
   const theme = useTheme();
   const [isFocused, setIsFocused] = useState(false);
   const ref = useRef<any>(null);
@@ -22,6 +23,7 @@ const GoogleTextInput = ({ placeholder, handlePress, onChangeText, errorMessage 
       <GooglePlacesAutocomplete
         ref={ref}
         placeholder={placeholder}
+        disableScroll={disableScroll}
         fetchDetails={true}
         debounce={300}
         enablePoweredByContainer={false}
