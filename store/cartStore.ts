@@ -23,6 +23,7 @@ type CartType = {
 
 type CartState = {
   cart: CartType;
+  totalCost: number;
   addItem: (
     vendor_id: string,
     item_id: string,
@@ -50,6 +51,15 @@ export const useCartStore = create<CartState>((set) => ({
     duration: "",
     additional_info: "",
   },
+  totalCost: 0,
+
+  calculateTotal: () =>
+    set((state) => ({
+      totalCost: state.cart.order_items.reduce(
+        (acc, item) => acc + item.price * item.quantity,
+        0
+      ),
+    })),
 
   addItem: (
     vendorId: string,
