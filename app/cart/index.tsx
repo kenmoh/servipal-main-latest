@@ -1,11 +1,19 @@
+import { createOrder } from "@/api/order";
 import AppTextInput from "@/components/AppInput";
 import AppModal from "@/components/AppModal";
 import Item from "@/components/CartItem";
 import GoogleTextInput from "@/components/GoogleTextInput";
+import LoadingIndicator from "@/components/LoadingIndicator";
+import { useAuth } from "@/context/authContext";
 import { useCartStore } from "@/store/cartStore";
 import { useLocationStore } from "@/store/locationStore";
+import { OrderFoodOLaundry } from "@/types/order-types";
+import { useMutation } from "@tanstack/react-query";
+import { router } from "expo-router";
+import { ListOrderedIcon, ShoppingCart, X } from "lucide-react-native";
 import React, { useEffect, useState } from "react";
 import { ScrollView, StyleSheet } from "react-native";
+import { Notifier, NotifierComponents } from "react-native-notifier";
 import {
     Text,
     useTheme,
@@ -25,16 +33,34 @@ const Cart = () => {
     const [error, setError] = useState({ origin: "", destination: "" });
     const [infoText, setInfoText] = useState("");
     const theme = useTheme();
-    const { setDeliveryOption, cart, setAdditionalInfo } = useCartStore();
-    const { require_delivery } = useCartStore((state) => state.cart);
-    const { setOrigin, setDestination, origin, destination } = useLocationStore();
-
-    console.log(cart, cart.additional_info);
+    const { user } = useAuth();
+    const {
+        setDeliveryOption,
+        cart,
+        updateDuration,
+        updateDistance,
+        setAdditionalInfo,
+        // prepareOrderForServer,
+        totalCost,
+    } = useCartStore();
+    const {
+        require_delivery,
+        duration: storeDelivery,
+        distance: storeDistance,
+    } = useCartStore((state) => state.cart);
+    const {
+        setOrigin,
+        setDestination,
+        origin,
+        destination,
+        originCoords,
+        destinationCoords,
+    } = useLocationStore();
 
     const handleNext = () => {
-        setAdditionalInfo(infoText)
-        setModalVisible(false)
-    }
+        setAdditionalInfo(infoText);
+        setModalVisible(false);
+    };
 
     const handleSwitchToggle = (isChecked: boolean) => {
         // Set delivery option in store
@@ -45,11 +71,60 @@ const Cart = () => {
         }
     };
 
+    const prepareOrderForServer = (): OrderFoodOLaundry => {
+        return {
+            order_items: cart.order_items.map((item) => ({
+                vendor_id: item.vendor_id,
+                item_id: item.item_id,
+                quantity: item.quantity,
+            })),
+            pickup_coordinates: originCoords || [0, 0],
+            dropoff_coordinates: destinationCoords || [0, 0],
+            distance: cart.distance,
+            require_delivery: cart.require_delivery,
+            duration: cart.duration,
+            origin: origin,
+            destination: destination,
+            ...(cart.additional_info && { additional_info: cart.additional_info }),
+        };
+    };
+
+    const orderData = prepareOrderForServer();
+
+    const { mutate, data, isPending } = useMutation({
+        mutationKey: ["createOrder", user?.sub],
+        mutationFn: () => createOrder(cart.order_items[0].vendor_id, orderData),
+        onSuccess: (data) => {
+            router.push({
+                pathname: "/payment/[orderId]",
+                params: {
+                    orderNumber: data?.order?.order_number,
+                    deliveryType: data?.delivery?.delivery_type,
+                    paymentLink: data?.order?.payment_link,
+                    orderId: data?.order?.id,
+                    deliveryFee: data?.delivery?.delivery_fee,
+                    orderItems: JSON.stringify(data?.order?.order_items),
+                },
+            });
+        },
+        onError: (error) => {
+            Notifier.showNotification({
+                title: "Error",
+                description: `${error.message}`,
+                Component: NotifierComponents.Alert,
+                componentProps: {
+                    alertType: "error",
+                },
+            });
+        },
+    });
+
+    console.log(data);
     // Fetch distance and duration when origin or destination changes
     useEffect(() => {
         const fetchAndUseTravelInfo = async () => {
             // Only proceed if we have both origin and destination
-            if (origin || destination) {
+            if (!origin || !destination) {
                 return;
             }
 
@@ -72,8 +147,8 @@ const Cart = () => {
 
                     setDistance(distanceValue);
                     setDuration(durationText);
-
-
+                    updateDistance(distanceValue);
+                    updateDuration(durationText);
                 }
             } catch (error) {
                 console.error("Failed to fetch distance matrix:", error);
@@ -83,156 +158,257 @@ const Cart = () => {
         fetchAndUseTravelInfo();
     }, [origin, destination]);
 
-
     return (
-
-        <View flex={1} backgroundColor={theme.background.val}>
-            <ScrollView
-
-                contentContainerStyle={{
-                    flexGrow: 1,
-                    paddingBottom: 20,
-                }}
-            >
-
-                {
-                    cart.order_items.map(item => <Item key={item?.item_id} item={item} />)
-                }
-
-
-                <XStack
-                    gap={"$3"}
-                    alignSelf={"center"}
-                    backgroundColor="$borderColor"
-                    alignItems="center"
+        <>
+            {cart?.order_items.length === 0 ? (
+                <View
+                    flex={1}
+                    backgroundColor={"$background"}
                     justifyContent="center"
-                    paddingHorizontal={"$5"}
-                    borderRadius={"$10"}
-                    marginVertical={"$5"}
-
+                    alignItems="center"
                 >
-                    <Label>PICKUP</Label>
-                    <Switch
-                        checked={require_delivery === "delivery"}
-                        onCheckedChange={handleSwitchToggle}
+                    <ShoppingCart color={theme.icon.val} size={100} />
+                    <Text fontSize={12} color={'$icon'} textAlign="center">Your cart is empty!</Text>
+                </View>
+            ) : (
+                <View flex={1} backgroundColor={theme.background.val}>
+                    <ScrollView
+                        contentContainerStyle={{
+                            flexGrow: 1,
+                            paddingBottom: 20,
+                        }}
                     >
-                        <Switch.Thumb
-                            backgroundColor={
-                                require_delivery === "delivery"
-                                    ? "$btnPrimaryColor"
-                                    : "$cardLight"
-                            }
+                        {cart.order_items.map((item) => (
+                            <Item key={item?.item_id} item={item} />
+                        ))}
+
+                        <Card
+                            padded
+                            width={"90%"}
+                            flexDirection="row"
+                            justifyContent="space-between"
+                            alignSelf="center"
+                            bordered
+                            marginTop="$5"
+                        >
+                            <Text color={"$icon"}>Total</Text>
+                            <Text fontWeight={"bold"}>₦ {totalCost}</Text>
+                        </Card>
+
+                        <Button
+                            disabled={isPending}
+                            width={"90%"}
+                            marginVertical={"$5"}
+                            alignSelf="center"
+                            backgroundColor={isPending ? '$borderColor' : "$btnPrimaryColor"}
+                            onPress={() => mutate()}
+                        >
+                            {isPending ? <LoadingIndicator /> : 'PROCEED TO PAYMENT'}
+                        </Button>
+                        <XStack
+                            gap={"$3"}
+                            alignSelf={"center"}
+                            backgroundColor="$borderColor"
+                            alignItems="center"
+                            justifyContent="center"
+                            paddingHorizontal={"$5"}
+                            borderRadius={"$10"}
+                            marginVertical={"$5"}
+                        >
+                            <Label>PICKUP</Label>
+                            <Switch
+                                checked={require_delivery === "delivery"}
+                                onCheckedChange={handleSwitchToggle}
+                            >
+                                <Switch.Thumb
+                                    backgroundColor={
+                                        require_delivery === "delivery"
+                                            ? "$btnPrimaryColor"
+                                            : "$cardLight"
+                                    }
+                                />
+                            </Switch>
+                            <Label>DELIVERY</Label>
+                        </XStack>
+                        {require_delivery === "delivery" && (
+                            <Card
+                                padded
+                                width={"95%"}
+                                alignSelf="center"
+                                bordered
+                                marginBottom="$5"
+                            >
+                                {/* DELIVERY INFO */}
+                                <XStack>
+                                    <Text
+                                        style={{
+                                            fontFamily: "Poppins-Regular",
+                                            fontSize: 11,
+                                            color: theme.text.val,
+                                            fontWeight: "bold",
+                                        }}
+                                    >
+                                        Origin:{" "}
+                                    </Text>
+                                    <Paragraph
+                                        style={{
+                                            fontFamily: "Poppins-Regular",
+                                            fontSize: 11,
+                                            color: theme.text.val,
+                                        }}
+                                    >
+                                        {origin}
+                                    </Paragraph>
+                                </XStack>
+
+                                <XStack>
+                                    <Text
+                                        style={{
+                                            fontFamily: "Poppins-Regular",
+                                            fontSize: 11,
+                                            color: theme.text.val,
+                                            fontWeight: "bold",
+                                        }}
+                                    >
+                                        Destination:{" "}
+                                    </Text>
+                                    <Paragraph
+                                        style={{
+                                            fontFamily: "Poppins-Regular",
+                                            fontSize: 11,
+                                            color: theme.text.val,
+                                        }}
+                                    >
+                                        {destination}
+                                    </Paragraph>
+                                </XStack>
+
+                                <XStack justifyContent="space-between" alignItems="center">
+                                    <XStack>
+                                        <Text
+                                            style={{
+                                                fontFamily: "Poppins-Regular",
+                                                fontSize: 11,
+                                                color: theme.text.val,
+                                                fontWeight: "bold",
+                                            }}
+                                        >
+                                            Duration:{" "}
+                                        </Text>
+                                        <Paragraph
+                                            style={{
+                                                fontFamily: "Poppins-Regular",
+                                                fontSize: 11,
+                                                color: theme.text.val,
+                                            }}
+                                        >
+                                            {storeDelivery}
+                                        </Paragraph>
+                                    </XStack>
+                                    <XStack>
+                                        <Text
+                                            style={{
+                                                fontFamily: "Poppins-Regular",
+                                                fontSize: 11,
+                                                color: theme.text.val,
+                                                fontWeight: "bold",
+                                            }}
+                                        >
+                                            Distance:{" "}
+                                        </Text>
+                                        <Paragraph
+                                            style={{
+                                                fontFamily: "Poppins-Regular",
+                                                fontSize: 11,
+                                                color: theme.text.val,
+                                            }}
+                                        >
+                                            {storeDistance} Km
+                                        </Paragraph>
+                                    </XStack>
+                                </XStack>
+                                <XStack>
+                                    <Text
+                                        style={{
+                                            fontFamily: "Poppins-Regular",
+                                            fontSize: 11,
+                                            color: theme.text.val,
+                                            fontWeight: "bold",
+                                        }}
+                                    >
+                                        Additional Info:{" "}
+                                    </Text>
+                                    <Paragraph
+                                        flex={1}
+                                        flexWrap="wrap"
+                                        style={{
+                                            fontFamily: "Poppins-Regular",
+                                            fontSize: 11,
+                                            color: theme.text.val,
+                                        }}
+                                    >
+                                        {cart.additional_info}
+                                    </Paragraph>
+                                </XStack>
+                                <Text
+                                    style={{
+                                        fontFamily: "Poppins-Regular",
+                                        fontSize: 11,
+                                        color: theme.text.val,
+                                    }}
+                                >
+                                    Delivery Option: {require_delivery.toUpperCase()}
+                                </Text>
+                            </Card>
+                        )}
+                    </ScrollView>
+                    <AppModal
+                        visible={modalVisible}
+                        onClose={() => setModalVisible(false)}
+                    >
+                        <GoogleTextInput
+                            placeholder="Pickup Location"
+                            errorMessage={error.origin}
+                            disableScroll={true}
+                            value={origin}
+                            onChangeText={() => { }}
+                            handlePress={(lat, lng, address) => {
+                                setOrigin(address, [lat, lng]);
+                                setError((prev) => ({ ...prev, origin: "" }));
+                            }}
                         />
-                    </Switch>
-                    <Label>DELIVERY</Label>
-                </XStack>
-                <Card padded width={'95%'} alignSelf="center" bordered marginBottom='$5'>
-                    {/* DELIVERY INFO */}
-                    <Paragraph
-                        style={{
-                            fontFamily: "Poppins-Regular",
-                            fontSize: 11,
-                            color: theme.text.val,
-                        }}
-                    >
-                        Origin:{" "} {origin}
-                    </Paragraph>
-                    <Paragraph
-                        style={{
-                            fontFamily: "Poppins-Regular",
-                            fontSize: 11,
-                            color: theme.text.val,
-                        }}
-                    >
-                        Destination:{" "} {destination}
-                    </Paragraph>
-                    <Paragraph
-                        style={{
-                            fontFamily: "Poppins-Regular",
-                            fontSize: 11,
-                            color: theme.text.val,
-                        }}
-                    >
-                        Duration:{" "} {duration}
-                    </Paragraph>
-                    <Paragraph
-                        style={{
-                            fontFamily: "Poppins-Regular",
-                            fontSize: 11,
-                            color: theme.text.val,
-                        }}
-                    >
-                        Distance:{" "} {distance}
-                    </Paragraph>
-                    <XStack>
-                        <Text
-                            style={{
-                                fontFamily: "Poppins-Regular",
-                                fontSize: 11,
-                                color: theme.text.val,
+
+                        <GoogleTextInput
+                            placeholder="Destination"
+                            disableScroll={true}
+                            value={destination}
+                            errorMessage={error.destination}
+                            onChangeText={() => { }}
+                            handlePress={(lat, lng, address) => {
+                                setDestination(address, [lat, lng]);
+                                setError((prev) => ({ ...prev, destination: "" }));
                             }}
+                        />
+
+                        <AppTextInput
+                            placeholder="Additional Information"
+                            value={infoText}
+                            onChangeText={(e) => setInfoText(e)}
+                        />
+
+                        <Button
+                            width={"90%"}
+                            marginVertical={"$5"}
+                            backgroundColor={"$btnPrimaryColor"}
+                            alignSelf="center"
+                            onPress={handleNext}
                         >
-                            Additional Info:{" "}
-                        </Text>
-                        <Paragraph
-                            flex={1}
-                            flexWrap="wrap"
-                            style={{
-                                fontFamily: "Poppins-Regular",
-                                fontSize: 11,
-                                color: theme.text.val,
-                            }}
-                        >
-                            {cart.additional_info}
-                        </Paragraph>
-
-                    </XStack>
-                </Card>
-            </ScrollView>
-            <AppModal visible={modalVisible} onClose={() => setModalVisible(false)}>
-
-                <GoogleTextInput
-                    placeholder="Pickup Location"
-                    errorMessage={error.origin}
-                    disableScroll={true}
-                    value={origin}
-                    onChangeText={() => { }}
-                    handlePress={(lat, lng, address) => {
-                        setOrigin(address, [lat, lng]);
-                        setError((prev) => ({ ...prev, origin: "" }));
-                    }}
-                />
-
-                <GoogleTextInput
-                    placeholder="Destination"
-                    disableScroll={true}
-                    value={destination}
-                    errorMessage={error.destination}
-                    onChangeText={() => { }}
-                    handlePress={(lat, lng, address) => {
-                        setDestination(address, [lat, lng]);
-                        setError((prev) => ({ ...prev, destination: "" }));
-                    }}
-                />
-
-                <AppTextInput
-                    placeholder="Additional Information"
-                    value={infoText}
-                    onChangeText={(e) => setInfoText(e)}
-                />
-
-                <Button
-                    width={"90%"}
-                    marginVertical={"$5"}
-                    backgroundColor={"$btnPrimaryColor"}
-                    alignSelf="center"
-                    onPress={handleNext}
-                >
-                    Ok
-                </Button>
-
-            </AppModal>
-        </View>
+                            Ok
+                        </Button>
+                    </AppModal>
+                </View>
+            )}
+        </>
     );
 };
 

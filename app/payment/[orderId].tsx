@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import { Dimensions, ScrollView, StyleSheet } from 'react-native'
 import { WebView } from "react-native-webview";
-import { Notifier, NotifierComponents } from 'react-native-notifier';
 import { YStack, XStack, Text, Card, Button, View, useTheme } from 'tamagui'
 import { router, useLocalSearchParams } from 'expo-router'
 import { Package, Shirt, CreditCard, Utensils } from 'lucide-react-native'
 import { OrderItemResponse } from '@/types/order-types';
-import LoadingIndicator from '@/components/LoadingIndicator';
+
 
 const Payment = () => {
     const { orderNumber, deliveryType, paymentLink, deliveryFee, orderItems
@@ -16,6 +15,7 @@ const Payment = () => {
     const [redirectedUrl, setRedirectedUrl] = useState<{ url?: string } | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const status = redirectedUrl?.url ? redirectedUrl?.url?.split("?")[1]?.split("&") : null;
+
     // Parse the stringified orderItems back to an array
     const parsedOrderItems: OrderItemResponse[] = orderItems ? JSON.parse(orderItems as string) : []
 

@@ -17,7 +17,7 @@ const Item = ({ item }: CartItemProps) => {
             backgroundColor="$cardDark"
             borderRadius="$2"
             marginVertical="$1"
-            width={'95%'}
+            width={'90%'}
             alignSelf="center"
             flexDirection="row"
             justifyContent="space-between"

@@ -1,37 +1,47 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
-import 'react-native-get-random-values';
-import { useColorScheme } from 'react-native';
-import { Stack } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
+import {
+  DarkTheme,
+  DefaultTheme,
+  ThemeProvider,
+} from "@react-navigation/native";
+import { useFonts } from "expo-font";
+import "react-native-get-random-values";
+import { useColorScheme } from "react-native";
+import { Stack } from "expo-router";
+import * as SplashScreen from "expo-splash-screen";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
-import { StatusBar } from 'expo-status-bar';
-import { useEffect } from 'react';
-import 'react-native-reanimated';
-import { TamaguiProvider } from 'tamagui'
-import { NotifierWrapper } from 'react-native-notifier'
-import { GestureHandlerRootView } from 'react-native-gesture-handler'
+import { StatusBar } from "expo-status-bar";
+import { useEffect } from "react";
+import "react-native-reanimated";
+import { TamaguiProvider } from "tamagui";
+import { NotifierWrapper } from "react-native-notifier";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
-import tamaguiConfig from '@/tamagui.config';
+import tamaguiConfig from "@/tamagui.config";
 import AuthProvider from "@/components/AuthProvider";
-import AddItemBtn from '@/components/AddItemBtn';
-import { useCartStore } from '@/store/cartStore';
+import AddItemBtn from "@/components/AddItemBtn";
+import { useCartStore } from "@/store/cartStore";
+import { useLocationStore } from "@/store/locationStore";
+import { Trash } from "lucide-react-native";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 SplashScreen.setOptions({
   duration: 500,
-  fade: true
-})
+  fade: true,
+});
 
 const queryClient = new QueryClient();
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
-  const { clearCart } = useCartStore()
+  const { clearCart } = useCartStore();
+  const { reset } = useLocationStore();
 
-
+  const handleClearCart = () => {
+    clearCart();
+    reset();
+  };
 
   const [loaded] = useFonts({
     "Poppins-Bold": require("../assets/fonts/Poppins-Bold.ttf"),
@@ -56,63 +66,77 @@ export default function RootLayout() {
     <QueryClientProvider client={queryClient}>
       <GestureHandlerRootView style={{ flex: 1 }}>
         <TamaguiProvider config={tamaguiConfig} defaultTheme={colorScheme!}>
-          <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+          <ThemeProvider
+            value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+          >
             {/* <ToastProvider native={false}> */}
 
             <NotifierWrapper>
               <AuthProvider>
-                <Stack screenOptions={{
-                  navigationBarColor: '#18191c',
-                  contentStyle: {
-                    backgroundColor: '#18191c'
-                  }
-
-                }}>
-
-
+                <Stack
+                  screenOptions={{
+                    navigationBarColor: "#18191c",
+                    contentStyle: {
+                      backgroundColor: "#18191c",
+                    },
+                  }}
+                >
                   <Stack.Screen name="(app)" options={{ headerShown: false }} />
                   <Stack.Screen name="index" options={{ headerShown: false }} />
-                  <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+                  <Stack.Screen
+                    name="(auth)"
+                    options={{ headerShown: false }}
+                  />
                   {/* <Stack.Screen name='(profile)' options={{
                     headerShown: false
 
                   }} /> */}
-                  <Stack.Screen name='delivery-detail' options={{
-                    headerShown: false
+                  <Stack.Screen
+                    name="delivery-detail"
+                    options={{
+                      headerShown: false,
+                    }}
+                  />
+                  <Stack.Screen
+                    name="store-detail"
+                    options={{
+                      headerShown: false,
+                    }}
+                  />
+                  <Stack.Screen
+                    name="payment"
+                    options={{
+                      headerShown: false,
+                    }}
+                  />
+                  <Stack.Screen
+                    name="cart/index"
+                    options={{
+                      title: "Cart",
+                      headerRight: () => (
+                        <AddItemBtn
+                          icon={<Trash size={18} color={"white"} />}
+                          label="Clear Cart"
+                          onPress={handleClearCart}
+                        />
+                      ),
+                    }}
+                  />
 
-                  }} />
-                  <Stack.Screen name='store-detail' options={{
-                    headerShown: false
-
-                  }} />
-                  <Stack.Screen name='payment' options={{
-                    headerShown: false
-
-                  }} />
-                  <Stack.Screen name='cart/index' options={{
-                    title: 'Cart',
-                    headerRight: () => <AddItemBtn label='Clear Cart' onPress={clearCart} />
-
-                  }} />
-
-                  <Stack.Screen name="user-details" options={{
-                    presentation: 'transparentModal',
-                    animation: 'slide_from_bottom',
-                    headerShown: false,
-                    contentStyle: {
-                      backgroundColor: 'rgba(0,0,0,0.7)',
-                    }
-
-
-                  }} />
-
-
-
+                  <Stack.Screen
+                    name="user-details"
+                    options={{
+                      presentation: "transparentModal",
+                      animation: "slide_from_bottom",
+                      headerShown: false,
+                      contentStyle: {
+                        backgroundColor: "rgba(0,0,0,0.7)",
+                      },
+                    }}
+                  />
                 </Stack>
                 <StatusBar style="auto" />
-
               </AuthProvider>
-
             </NotifierWrapper>
           </ThemeProvider>
         </TamaguiProvider>

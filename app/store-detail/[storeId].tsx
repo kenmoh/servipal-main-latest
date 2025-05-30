@@ -59,21 +59,16 @@ const StoreDetails = () => {
 
   const scrollY = useSharedValue(0);
   const [showStickyCategory, setShowStickyCategory] = useState(false);
-  const { cart, addItem } = useCartStore();
+  const { cart, addItem, totalCost } = useCartStore();
 
   const { data } = useQuery({
     queryKey: ["storeItems", storeId],
     queryFn: () => fetchVendorItems(storeId as string),
   });
 
-  // Calculate total  cost
-  const totalCost = data?.reduce((acc, item) => {
-    const cartItem = cart.order_items.find((ci) => ci.item_id === item.id);
-    return acc + (cartItem ? Number(item.price) * cartItem.quantity : 0);
-  }, 0);
+
   // Handle adding item to cart
   const handleAddToCart = (item: MenuItem) => {
-    console.log(item)
     addItem(storeId as string, item.id, 1, { name: item.name, price: Number(item.price), image: item.images[0]?.url || '' });
   };
 

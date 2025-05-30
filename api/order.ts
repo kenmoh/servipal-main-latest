@@ -151,10 +151,10 @@ export const sendItem = async (itemData: SendItem): Promise<DeliveryDetail> => {
 };
 
 // Order Food/Laundry
-export const createCategory = async (
+export const createOrder = async (
   vendorId: string,
   orderData: OrderFoodOLaundry
-): Promise<OrderResponse> => {
+): Promise<DeliveryDetail> => {
   const data = {
     order_items: orderData.order_items,
     pickup_coordinates: orderData.pickup_coordinates,
@@ -162,10 +162,12 @@ export const createCategory = async (
     distance: orderData.distance,
     require_delivery: orderData.require_delivery,
     duration: orderData.duration,
+    origin: orderData.origin,
+    destination: orderData.destination,
     additional_info: orderData.additional_info,
   };
   try {
-    const response: ApiResponse<OrderResponse | ErrorResponse> =
+    const response: ApiResponse<DeliveryDetail | ErrorResponse> =
       await apiClient.post(`${BASE_URL}/${vendorId}`, data, {
         headers: {
           "Content-Type": "application/json",
@@ -308,6 +310,16 @@ export const createReview = async (
 /*
 
 POST -> /{vendor_id}
+
+export interface OrderFoodOLaundry {
+  order_items: OrderItem[];
+  pickup_coordinates: [null, null];
+  dropoff_coordinates: [null, null];
+  distance: 0;
+  require_delivery: RequireDelivery;
+  duration: string;
+  additional_info: string;
+}
 {
 
   "order_items": [

@@ -63,24 +63,26 @@ export interface OrderResponse {
 }
 
 export interface DeliveryDetail {
-  delivery: Delivery;
+  delivery?: Delivery;
   order: OrderResponse;
 }
 
 interface OrderItem {
   vendor_id: string;
   item_id: string;
-  quantity: 0;
+  quantity: number;
 }
 
 export interface OrderFoodOLaundry {
   order_items: OrderItem[];
-  pickup_coordinates: [null, null];
-  dropoff_coordinates: [null, null];
-  distance: 0;
+  pickup_coordinates?: [number, number] | [null, null];
+  dropoff_coordinates?: [number, number] | [null, null];
+  distance?: number;
   require_delivery: RequireDelivery;
-  duration: string;
-  additional_info: string;
+  duration?: string;
+  origin?: string;
+  destination?: string;
+  additional_info?: string;
 }
 
 export interface CreateReview {
