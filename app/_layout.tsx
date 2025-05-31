@@ -31,7 +31,16 @@ SplashScreen.setOptions({
   fade: true,
 });
 
-const queryClient = new QueryClient();
+export const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 5,
+      gcTime: 1000 * 60 * 30,
+      retry: 2,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -113,6 +122,9 @@ export default function RootLayout() {
                     name="cart/index"
                     options={{
                       title: "Cart",
+                      headerStyle: {
+                        backgroundColor: "#18191c",
+                      },
                       headerRight: () => (
                         <AddItemBtn
                           icon={<Trash size={18} color={"white"} />}

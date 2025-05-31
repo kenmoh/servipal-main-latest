@@ -14,6 +14,7 @@ import { Notifier, NotifierComponents } from "react-native-notifier";
 import { router } from "expo-router";
 import { Plug, Plus } from "lucide-react-native";
 import LoadingIndicator from "@/components/LoadingIndicator";
+import { queryClient } from "../_layout";
 
 const itemTypeEnum = z.enum(["food", "package", "product", "laundry"]);
 
@@ -49,8 +50,6 @@ type FormData = z.infer<typeof schema>;
 const addMenu = () => {
     const [visble, setVisble] = useState(false);
 
-    const queryClient = useQueryClient();
-
     const {
         control,
         handleSubmit,
@@ -83,7 +82,7 @@ const addMenu = () => {
     const { data: categories } = useQuery({
         queryKey: ["categories"],
         queryFn: fetchCategories,
-        staleTime: 1000 * 60 * 10
+        // staleTime: 1000 * 60 * 10
 
     });
 

@@ -24,7 +24,7 @@ import AddItemBtn from "@/components/AddItemBtn";
 import CartInfoBtn from "@/components/CartInfoBtn";
 
 import { useAuth } from "@/context/authContext";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchVendorItems } from "@/api/item";
 import { MenuItem } from "@/types/item-types";
@@ -59,7 +59,8 @@ const StoreDetails = () => {
 
   const scrollY = useSharedValue(0);
   const [showStickyCategory, setShowStickyCategory] = useState(false);
-  const { cart, addItem, totalCost } = useCartStore();
+  const { cart, addItem, totalCost, removeItem } = useCartStore();
+  const [checkedItems, setCheckedItems] = useState<Set<string>>(new Set());
 
   const { data } = useQuery({
     queryKey: ["storeItems", storeId],
@@ -68,9 +69,34 @@ const StoreDetails = () => {
 
 
   // Handle adding item to cart
-  const handleAddToCart = (item: MenuItem) => {
-    addItem(storeId as string, item.id, 1, { name: item.name, price: Number(item.price), image: item.images[0]?.url || '' });
-  };
+  // const handleAddToCart = (item: MenuItem) => {
+  //   addItem(storeId as string, item.id, 1, { name: item.name, price: Number(item.price), image: item.images[0]?.url || '' });
+  // };
+
+
+
+  const handleAddToCart = useCallback((item: MenuItem) => {
+    setCheckedItems(prev => {
+      const newChecked = new Set(prev);
+      if (newChecked.has(item.id)) {
+        newChecked.delete(item.id);
+        removeItem(item.id);
+      } else {
+        newChecked.add(item.id);
+        addItem(
+          storeId as string,
+          item.id,
+          1,
+          {
+            name: item.name,
+            price: Number(item.price),
+            image: item.images[0]?.url || ''
+          }
+        );
+      }
+      return newChecked;
+    });
+  }, [addItem, removeItem]);
 
   const scrollHandler = useAnimatedScrollHandler({
     onScroll: (event) => {
@@ -297,7 +323,7 @@ const StoreDetails = () => {
             data={data ?? []}
             keyExtractor={(item) => item?.id}
             renderItem={({ item }: { item: MenuItem }) => (
-              <FoodCard item={item} onPress={() => handleAddToCart(item)} />
+              <FoodCard isChecked={checkedItems.has(item.id)} item={item} onPress={() => handleAddToCart(item)} />
             )}
             scrollEnabled={false}
             removeClippedSubviews={true}

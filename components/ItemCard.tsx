@@ -1,171 +1,3 @@
-// import { StyleSheet, TouchableOpacity } from 'react-native'
-// import React from 'react'
-// import { Card, View, XStack, YStack, Image, useTheme, Text, Square } from 'tamagui'
-// import { Feather, MaterialCommunityIcons, AntDesign } from '@expo/vector-icons'
-// import { router } from 'expo-router'
-// import { DeliveryDetail, OrderStatus } from '@/types/order-types'
-// import { Package, Shirt, Utensils, UtensilsCrossed } from 'lucide-react-native'
-
-// type CardProp = {
-//     data: DeliveryDetail
-//     isHomeScreen?: boolean
-// }
-
-// type DeliveryIconProps = {
-//     type: string;
-//     size?: number;
-//     theme: any;
-// }
-
-// const DeliveryTypeIcon = ({ type, size = 12, theme }: DeliveryIconProps) => {
-//     switch (type) {
-//         case 'food':
-//             return <Utensils size={size} color={theme.orange10.val} />;
-//         case 'laundry':
-//             return <Shirt size={size} color={theme.blue10.val} />;
-//         case 'package':
-//         default:
-//             return <Package size={size} color={theme.green10.val} />;
-//     }
-// };
-
-// const ItemCard = ({ data, isHomeScreen = false }: CardProp) => {
-
-//     const theme = useTheme()
-//     return (
-//         <TouchableOpacity activeOpacity={0.6} onPress={() => router.push({
-//             pathname: '/delivery-detail/[id]',
-//             params: {
-//                 id: data?.delivery.id,
-//                 orderNumber: data?.order.id
-
-//             }
-//         })}>
-
-//             <Card padding={10}>
-//                 <XStack flex={1}>
-//                     {/* Left side container */}
-//                     <XStack flex={1} gap={10}>
-//                         {/* Image container with fixed dimensions */}
-//                         <Square
-//                             height={70}
-//                             width={70}
-//                             borderRadius={10}
-//                             flexShrink={0}  // Prevent shrinking
-//                             overflow="hidden"
-//                         >
-//                             <Image
-//                                 src={data?.order.order_items[0].images[0].url}
-//                                 height="100%"
-//                                 width="100%"
-//                                 alt={data?.order.order_items[0].name || 'Order item'}
-//                                 resizeMode="cover"  // Maintain aspect ratio
-//                             />
-//                         </Square>
-
-//                         {/* Content container */}
-//                         <YStack flex={1} gap={5}>
-//                             <XStack gap={5} alignItems="center">
-//                                 <DeliveryTypeIcon
-//                                     type={data?.delivery.delivery_type}
-//                                     theme={theme}
-//                                 />
-//                                 <Text
-//                                     color="$text"
-//                                     fontFamily="$body"
-//                                     fontSize={11}
-//                                     numberOfLines={1}
-//                                     flex={1}
-//                                 >
-//                                     {data?.order.order_items[0].name}
-//                                 </Text>
-//                             </XStack>
-
-//                             <XStack gap={5} alignItems="flex-start">
-//                                 <MaterialCommunityIcons
-//                                     name="circle"
-//                                     color={theme.icon.val}
-//                                     size={10}
-//                                     style={{ marginTop: 4 }}  // Align with first line
-//                                 />
-//                                 <Text
-//                                     flex={1}
-//                                     color="$text"
-//                                     fontFamily="$body"
-//                                     fontSize={11}
-//                                     numberOfLines={2}
-//                                 >
-//                                     {data?.delivery.origin}
-//                                 </Text>
-//                             </XStack>
-
-//                             <XStack gap={5} alignItems="flex-start">
-//                                 <Feather
-//                                     name="map-pin"
-//                                     color={theme.icon.val}
-//                                     size={10}
-//                                     style={{ marginTop: 4 }}
-//                                 />
-//                                 <Text
-//                                     flex={1}
-//                                     color="$text"
-//                                     fontFamily="$body"
-//                                     fontSize={11}
-//                                     numberOfLines={2}
-//                                 >
-//                                     {data?.delivery.destination}
-//                                 </Text>
-//                             </XStack>
-
-//                             <XStack gap={5} alignItems="center" flexWrap="wrap">
-//                                 <XStack gap={5} alignItems="center" flexShrink={0}>
-//                                     <Feather name="clock" color={theme.icon.val} size={10} />
-//                                     <Text color="$text" fontFamily="$body" fontSize={11}>
-//                                         {data?.delivery.duration} mins
-//                                     </Text>
-//                                 </XStack>
-//                                 <XStack gap={2} alignItems="center" flexShrink={0}>
-//                                     <MaterialCommunityIcons name="road-variant" color={theme.icon.val} size={11} />
-//                                     <Text color="$text" fontFamily="$body" fontSize={11}>
-//                                         {data?.delivery.distance} km
-//                                     </Text>
-//                                 </XStack>
-//                             </XStack>
-//                         </YStack>
-//                     </XStack>
-
-//                     {/* Right chevron */}
-//                     <XStack width={20} justifyContent="center" flexShrink={0}>
-//                         <Feather name="chevron-right" size={20} color={theme.icon.val} />
-//                     </XStack>
-//                 </XStack>
-
-//                 {/* Bottom info */}
-//                 <XStack
-//                     justifyContent="space-between"
-//                     marginTop={10}
-//                     paddingLeft={80}  // Align with content
-//                     paddingRight={10}
-//                 >
-//                     <XStack gap={5} alignItems="center">
-//                         <AntDesign name="wallet" color={theme.icon.val} size={10} />
-//                         <Text color="$text" fontFamily="$heading" fontSize={12} fontWeight="700">
-//                             ₦ {data?.delivery.delivery_fee}
-//                         </Text>
-//                     </XStack>
-
-//                     {!isHomeScreen && <Status status={data?.order.order_status} />}
-//                 </XStack>
-//             </Card>
-//         </TouchableOpacity>
-//     )
-// }
-
-// export default ItemCard
-
-
-
-
 import { StyleSheet, TouchableOpacity } from 'react-native'
 import React from 'react'
 import { Card, View, XStack, YStack, Image, useTheme, Text, Square } from 'tamagui'
@@ -222,9 +54,9 @@ export const Status = React.memo(({ status }: { status?: OrderStatus }) => {
             paddingHorizontal={10}
             borderRadius={20}
         >
-            <Text 
+            <Text
                 color={colors.color}
-                fontFamily={'$heading'} 
+                fontFamily={'$heading'}
                 fontWeight={'800'}
                 fontSize={11}
                 textTransform='capitalize'
@@ -245,11 +77,11 @@ const ItemCard = React.memo(({ data, isHomeScreen = false }: CardProp) => {
         router.push({
             pathname: '/delivery-detail/[id]',
             params: {
-                id: data?.delivery.id,
+                id: data?.delivery?.id!,
                 orderNumber: data?.order.id
             }
         });
-    }, [data?.delivery.id, data?.order.id]);
+    }, [data?.delivery?.id, data?.order.id]);
 
     // Memoize computed values
     const firstOrderItem = React.useMemo(() => data?.order.order_items[0], [data?.order.order_items]);
@@ -283,7 +115,7 @@ const ItemCard = React.memo(({ data, isHomeScreen = false }: CardProp) => {
                         <YStack flex={1} gap={5}>
                             <XStack gap={5} alignItems="center">
                                 <DeliveryTypeIcon
-                                    type={data?.delivery.delivery_type}
+                                    type={data?.delivery?.delivery_type!}
                                     theme={theme}
                                 />
                                 <Text
@@ -311,7 +143,7 @@ const ItemCard = React.memo(({ data, isHomeScreen = false }: CardProp) => {
                                     fontSize={11}
                                     numberOfLines={2}
                                 >
-                                    {data?.delivery.origin}
+                                    {data?.delivery?.origin}
                                 </Text>
                             </XStack>
 
@@ -329,7 +161,7 @@ const ItemCard = React.memo(({ data, isHomeScreen = false }: CardProp) => {
                                     fontSize={11}
                                     numberOfLines={2}
                                 >
-                                    {data?.delivery.destination}
+                                    {data?.delivery?.destination}
                                 </Text>
                             </XStack>
 
@@ -337,13 +169,13 @@ const ItemCard = React.memo(({ data, isHomeScreen = false }: CardProp) => {
                                 <XStack gap={5} alignItems="center" flexShrink={0}>
                                     <Feather name="clock" color={theme.icon.val} size={10} />
                                     <Text color="$text" fontFamily="$body" fontSize={11}>
-                                        {data?.delivery.duration} mins
+                                        {data?.delivery?.duration} mins
                                     </Text>
                                 </XStack>
                                 <XStack gap={2} alignItems="center" flexShrink={0}>
                                     <MaterialCommunityIcons name="road-variant" color={theme.icon.val} size={11} />
                                     <Text color="$text" fontFamily="$body" fontSize={11}>
-                                        {data?.delivery.distance} km
+                                        {data?.delivery?.distance} km
                                     </Text>
                                 </XStack>
                             </XStack>
@@ -366,11 +198,11 @@ const ItemCard = React.memo(({ data, isHomeScreen = false }: CardProp) => {
                     <XStack gap={5} alignItems="center">
                         <AntDesign name="wallet" color={theme.icon.val} size={10} />
                         <Text color="$text" fontFamily="$heading" fontSize={12} fontWeight="700">
-                            ₦ {data?.delivery.delivery_fee}
+                            ₦ {Number(data?.delivery?.delivery_fee).toFixed(2)}
                         </Text>
                     </XStack>
 
-                    {!isHomeScreen && <Status status={data?.order.order_status} />}
+                    {!isHomeScreen && <Status status={data?.order?.order_status} />}
                 </XStack>
             </Card>
         </TouchableOpacity>

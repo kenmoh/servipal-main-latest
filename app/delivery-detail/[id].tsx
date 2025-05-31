@@ -77,7 +77,9 @@ const ItemDetails = () => {
                 </AppModal>
 
 
-                {user?.sub === data?.delivery.sender_id && (
+
+
+                {user?.sub === data?.delivery?.sender_id && (
 
                     <TouchableOpacity
                         style={{
@@ -105,7 +107,7 @@ const ItemDetails = () => {
                         </XStack>
                     </TouchableOpacity>
                 )}
-                {user?.sub === data?.delivery.sender_id &&
+                {user?.sub === data?.delivery?.sender_id &&
                     data?.order.order_payment_status !== "paid" && (
                         <Button
                             alignSelf="center"
@@ -119,9 +121,9 @@ const ItemDetails = () => {
                                     pathname: "/payment/[orderId]",
                                     params: {
                                         orderId: data?.order.id ?? "",
-                                        deliveryFee: data?.delivery.delivery_fee,
-                                        orderNumber: data?.order.order_number,
-                                        deliveryType: data?.delivery.delivery_type,
+                                        deliveryFee: data?.delivery?.delivery_fee,
+                                        orderNumber: data?.order?.order_number,
+                                        deliveryType: data?.delivery?.delivery_type,
                                         orderItems: JSON.stringify(data?.order.order_items ?? []),
                                         paymentLink: data?.order.payment_link,
                                     },
@@ -150,7 +152,7 @@ const ItemDetails = () => {
                             <Text color={"$text"} fontSize={12} marginBottom={5}>
                                 ORDER DETAILS
                             </Text>
-                            <Status status={data?.delivery.delivery_status} />
+                            <Status status={data?.delivery?.delivery_status} />
                         </XStack>
                         <XStack gap={5}>
                             <Info color={theme.icon.val} size={15} />
@@ -191,7 +193,7 @@ const ItemDetails = () => {
                                     fontWeight={"500"}
                                     fontSize={12}
                                 >
-                                    ₦ {Number(data?.delivery.amount_due_dispatch).toFixed(2)}
+                                    ₦ {Number(data?.delivery?.amount_due_dispatch).toFixed(2)}
                                 </Paragraph>
                             </XStack>
                         </XStack>
@@ -234,7 +236,7 @@ const ItemDetails = () => {
                                     fontWeight={"500"}
                                     fontSize={11}
                                 >
-                                    {data?.delivery.destination}
+                                    {data?.delivery?.destination}
                                 </Paragraph>
                             </YStack>
                         </XStack>

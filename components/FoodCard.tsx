@@ -1,10 +1,11 @@
-import { StyleSheet, TouchableOpacity, Image, Pressable } from 'react-native'
+import { StyleSheet, Image, Pressable } from 'react-native'
 
 import { MenuItem } from "@/types/item-types";
 import React from 'react'
-import { Card, Heading, Paragraph, Text, Square, useTheme, XStack, YStack } from 'tamagui'
+import { Card, Heading, Paragraph, Checkbox, Square, useTheme, XStack, YStack } from 'tamagui'
+import { Check } from 'lucide-react-native';
 
-const FoodCard = ({ item, onPress }: { item: MenuItem, onPress: (id: string) => void }) => {
+const FoodCard = ({ item, onPress, isChecked }: { item: MenuItem, isChecked: boolean; onPress: (id: string) => void }) => {
 
     const theme = useTheme()
     return (
@@ -33,9 +34,23 @@ const FoodCard = ({ item, onPress }: { item: MenuItem, onPress: (id: string) => 
                     <YStack width={'70%'}>
                         <Heading fontSize={14} fontWeight={'bold'}>{item.name}</Heading>
                         <Paragraph textWrap='wrap' marginTop='1' color={'$icon'} fontSize={12} flexWrap='wrap'>{item.description}</Paragraph>
-                        <Heading marginTop={'$2'} fontSize={14} fontWeight={'bold'}>₦{item.price}</Heading>
+                        <Heading marginTop={'$2'} fontSize={14} fontWeight={'bold'}>₦{Number(item.price).toFixed(2)}</Heading>
                     </YStack>
                 </XStack>
+                <Checkbox
+                    checked={isChecked}
+                    onCheckedChange={() => onPress(item.id)}
+                    position="absolute"
+                    right={10}
+                    top={10}
+
+
+                >
+
+                    <Checkbox.Indicator>
+                        <Check color={theme.btnPrimaryColor.val} />
+                    </Checkbox.Indicator>
+                </Checkbox>
             </Card>
         </Pressable>
     )

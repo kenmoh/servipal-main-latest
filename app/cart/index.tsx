@@ -9,7 +9,7 @@ import { useCartStore } from "@/store/cartStore";
 import { useLocationStore } from "@/store/locationStore";
 import { OrderFoodOLaundry } from "@/types/order-types";
 import { useMutation } from "@tanstack/react-query";
-import { router } from "expo-router";
+import { router, Stack } from "expo-router";
 import { ListOrderedIcon, ShoppingCart, X } from "lucide-react-native";
 import React, { useEffect, useState } from "react";
 import { ScrollView, StyleSheet } from "react-native";
@@ -100,6 +100,7 @@ const Cart = () => {
                 params: {
                     orderNumber: data?.order?.order_number,
                     deliveryType: data?.delivery?.delivery_type,
+                    orderType: data?.order?.order_type,
                     paymentLink: data?.order?.payment_link,
                     orderId: data?.order?.id,
                     deliveryFee: data?.delivery?.delivery_fee,
@@ -160,6 +161,7 @@ const Cart = () => {
 
     return (
         <>
+       
             {cart?.order_items.length === 0 ? (
                 <View
                     flex={1}
@@ -172,6 +174,7 @@ const Cart = () => {
                 </View>
             ) : (
                 <View flex={1} backgroundColor={theme.background.val}>
+                    <View marginVertical={'$2.5'}/>
                     <ScrollView
                         contentContainerStyle={{
                             flexGrow: 1,
@@ -200,7 +203,7 @@ const Cart = () => {
                             width={"90%"}
                             marginVertical={"$5"}
                             alignSelf="center"
-                            backgroundColor={isPending ? '$borderColor' : "$btnPrimaryColor"}
+                            backgroundColor={isPending ? '$cardDark' : "$btnPrimaryColor"}
                             onPress={() => mutate()}
                         >
                             {isPending ? <LoadingIndicator /> : 'PROCEED TO PAYMENT'}
@@ -233,14 +236,14 @@ const Cart = () => {
                         {require_delivery === "delivery" && (
                             <Card
                                 padded
-                                width={"95%"}
+                                width={"90%"}
                                 alignSelf="center"
                                 bordered
                                 marginBottom="$5"
                             >
                                 {/* DELIVERY INFO */}
                                 <XStack>
-                                    <Text
+                                    <Text width={'25%'}
                                         style={{
                                             fontFamily: "Poppins-Regular",
                                             fontSize: 11,
@@ -251,6 +254,7 @@ const Cart = () => {
                                         Origin:{" "}
                                     </Text>
                                     <Paragraph
+                                        width={'75%'}
                                         style={{
                                             fontFamily: "Poppins-Regular",
                                             fontSize: 11,
@@ -263,6 +267,7 @@ const Cart = () => {
 
                                 <XStack>
                                     <Text
+                                        width={'25%'}
                                         style={{
                                             fontFamily: "Poppins-Regular",
                                             fontSize: 11,
@@ -273,6 +278,7 @@ const Cart = () => {
                                         Destination:{" "}
                                     </Text>
                                     <Paragraph
+                                        width={'75%'}
                                         style={{
                                             fontFamily: "Poppins-Regular",
                                             fontSize: 11,
@@ -283,52 +289,11 @@ const Cart = () => {
                                     </Paragraph>
                                 </XStack>
 
-                                <XStack justifyContent="space-between" alignItems="center">
-                                    <XStack>
-                                        <Text
-                                            style={{
-                                                fontFamily: "Poppins-Regular",
-                                                fontSize: 11,
-                                                color: theme.text.val,
-                                                fontWeight: "bold",
-                                            }}
-                                        >
-                                            Duration:{" "}
-                                        </Text>
-                                        <Paragraph
-                                            style={{
-                                                fontFamily: "Poppins-Regular",
-                                                fontSize: 11,
-                                                color: theme.text.val,
-                                            }}
-                                        >
-                                            {storeDelivery}
-                                        </Paragraph>
-                                    </XStack>
-                                    <XStack>
-                                        <Text
-                                            style={{
-                                                fontFamily: "Poppins-Regular",
-                                                fontSize: 11,
-                                                color: theme.text.val,
-                                                fontWeight: "bold",
-                                            }}
-                                        >
-                                            Distance:{" "}
-                                        </Text>
-                                        <Paragraph
-                                            style={{
-                                                fontFamily: "Poppins-Regular",
-                                                fontSize: 11,
-                                                color: theme.text.val,
-                                            }}
-                                        >
-                                            {storeDistance} Km
-                                        </Paragraph>
-                                    </XStack>
-                                </XStack>
+
                                 <XStack>
                                     <Text
+                                        width={'25%'}
+
                                         style={{
                                             fontFamily: "Poppins-Regular",
                                             fontSize: 11,
@@ -336,9 +301,57 @@ const Cart = () => {
                                             fontWeight: "bold",
                                         }}
                                     >
-                                        Additional Info:{" "}
+                                        Duration:   {" "}
                                     </Text>
                                     <Paragraph
+                                        width={'75%'}
+                                        style={{
+                                            fontFamily: "Poppins-Regular",
+                                            fontSize: 11,
+                                            color: theme.text.val,
+                                        }}
+                                    >
+                                        {storeDelivery}
+                                    </Paragraph>
+                                </XStack>
+                                <XStack>
+                                    <Text
+                                        width={'25%'}
+                                        style={{
+                                            fontFamily: "Poppins-Regular",
+                                            fontSize: 11,
+                                            color: theme.text.val,
+                                            fontWeight: "bold",
+                                        }}
+                                    >
+                                        Distance:{" "}
+                                    </Text>
+                                    <Paragraph
+                                        width={'75%'}
+                                        style={{
+                                            fontFamily: "Poppins-Regular",
+                                            fontSize: 11,
+                                            color: theme.text.val,
+                                        }}
+                                    >
+                                        {storeDistance} Km
+                                    </Paragraph>
+                                </XStack>
+
+                                <XStack>
+                                    <Text
+                                        width={'25%'}
+                                        style={{
+                                            fontFamily: "Poppins-Regular",
+                                            fontSize: 11,
+                                            color: theme.text.val,
+                                            fontWeight: "bold",
+                                        }}
+                                    >
+                                        Additional Info:
+                                    </Text>
+                                    <Paragraph
+                                        width={'75%'}
                                         flex={1}
                                         flexWrap="wrap"
                                         style={{

@@ -57,7 +57,7 @@ const PaymentComplete = () => {
             <Stack.Screen
                 options={{
                     headerShown: true,
-                    title: `${paymentStatus ? "Payment Successful" : "Payment Failed"}`,
+                    title: `${paymentStatus === 'success' ? "Payment Successful" : "Payment Failed"}`,
                     headerTintColor:
                         paymentStatus === "success" ? theme.green10.val : theme.red10.val,
                 }}
@@ -87,7 +87,7 @@ const PaymentComplete = () => {
                 {/* Status text */}
                 <YStack gap={6} alignItems="center" marginTop="$10">
                     <Text color="$text" fontSize={24} fontWeight="600">
-                        {paymentStatus ? "Payment Successful!" : "Payment Failed"}
+                        {paymentStatus === 'success' ? "Payment Successful!" : "Payment Failed"}
                     </Text>
                     <Text
                         color="$gray11"
@@ -95,7 +95,7 @@ const PaymentComplete = () => {
                         textAlign="center"
                         paddingHorizontal="$4"
                     >
-                        {paymentStatus
+                        {paymentStatus === 'success'
                             ? "Your payment has been processed successfully."
                             : "There was an error processing your payment. Please try again."}
                     </Text>
@@ -122,7 +122,7 @@ const PaymentComplete = () => {
                     )}
 
                     <TouchableOpacity
-                        onPress={() => router.push({ pathname: "/delivery" })}
+                        onPress={() => router.replace({ pathname: "/delivery" })}
                     >
                         <Card
                             bordered

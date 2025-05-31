@@ -5,10 +5,11 @@ import { YStack, XStack, Text, Card, Button, View, useTheme } from 'tamagui'
 import { router, useLocalSearchParams } from 'expo-router'
 import { Package, Shirt, CreditCard, Utensils } from 'lucide-react-native'
 import { OrderItemResponse } from '@/types/order-types';
+import { queryClient } from '../_layout';
 
 
 const Payment = () => {
-    const { orderNumber, deliveryType, paymentLink, deliveryFee, orderItems
+    const { orderNumber, deliveryType, paymentLink, deliveryFee, orderType, orderItems
     } = useLocalSearchParams()
     const theme = useTheme()
     const [showWebView, setShowWebView] = useState(false);
@@ -35,7 +36,7 @@ const Payment = () => {
             return sum + (Number(item.price) * Number(item.quantity))
         }, 0);
 
-        return Number(deliveryFee) + itemsTotal;
+        return deliveryFee ? Number(deliveryFee) + itemsTotal : itemsTotal;
     };
 
 
@@ -48,6 +49,9 @@ const Payment = () => {
                 pathname: "/payment/payment-complete",
                 params: { paymentStatus: 'success' }
             });
+
+            queryClient.invalidateQueries({ queryKey: ["deliveryies", 'all', 'food', 'laundry', 'package'] });
+
         }
         if (status[0] === "status=failed" || status[0] === "status=cancelled") {
             router.replace({
@@ -162,12 +166,12 @@ const Payment = () => {
                             </Text>
                         </XStack>
                         {/* Add delivery fee */}
-                        <XStack justifyContent="space-between" marginBottom="$2">
+                        {deliveryFee && <XStack justifyContent="space-between" marginBottom="$2">
                             <Text fontSize={14} color="$gray11">Delivery Fee</Text>
                             <Text fontSize={14} color="$text">
                                 ₦{Number(deliveryFee).toFixed(2)}
                             </Text>
-                        </XStack>
+                        </XStack>}
                         {/* Total */}
                         <View backgroundColor="$gray8" height={1} marginVertical="$3" />
                         <XStack justifyContent="space-between">
@@ -203,7 +207,7 @@ const Payment = () => {
                     <YStack gap={10}>
                         <Text fontSize={16} color="$gray11">ORD #: {orderNumber} </Text>
                         <Text fontSize={14} color="$gray11"> Order Type:
-                            {" "} {`${deliveryType}`.toUpperCase()}
+                            {" "} {`${deliveryType}`.toUpperCase() || `${orderType}`.toUpperCase()}
                         </Text>
                     </YStack>
                 </Card>
