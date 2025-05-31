@@ -21,7 +21,7 @@ const DeliveryLayout = () => {
                         textTransform: 'capitalize',
                         fontFamily: 'Poppins-Bold',
                     },
-
+                    swipeEnabled: false,
                     tabBarActiveTintColor: theme.text.val,
                     tabBarInactiveTintColor: theme.borderColor.val,
                     tabBarAndroidRipple: { borderless: false },

@@ -43,6 +43,7 @@ const FoodCard = ({ item, onPress, isChecked }: { item: MenuItem, isChecked: boo
                     position="absolute"
                     right={10}
                     top={10}
+                    hitSlop={35}
 
 
                 >
