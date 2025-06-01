@@ -1,22 +1,33 @@
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, ActivityIndicator, Keyboard } from 'react-native';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import { Text, useTheme } from 'tamagui';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ControllerRenderProps } from 'react-hook-form';
 
 interface GoogleTextInputProps {
   placeholder: string;
   handlePress: (lat: number, lng: number, address: string) => void;
-  value: ControllerRenderProps<any, any>['value'];
+  value: string | null;
+  isLoading?: boolean;
+  // value: ControllerRenderProps<any, any>['value'];
+
   onChangeText: ControllerRenderProps<any, any>['onChange'];
   errorMessage?: string;
   disableScroll?: boolean;
+
 }
 
-const GoogleTextInput = ({ placeholder, handlePress, onChangeText, errorMessage, disableScroll = false }: GoogleTextInputProps) => {
+const GoogleTextInput = ({ placeholder, handlePress, onChangeText, value, errorMessage, disableScroll = false, isLoading = false }: GoogleTextInputProps) => {
   const theme = useTheme();
   const [isFocused, setIsFocused] = useState(false);
   const ref = useRef<any>(null);
+
+  useEffect(() => {
+    if (value && ref.current) {
+      ref.current.setAddressText(value);
+    }
+  }, [value]);
+
 
   return (
     <View style={styles.container}>
@@ -32,6 +43,15 @@ const GoogleTextInput = ({ placeholder, handlePress, onChangeText, errorMessage,
           language: 'en',
           components: 'country:ng',
         }}
+        // onPress={(data, details = null) => {
+        //   const address = data.description;
+        //   if (details?.geometry?.location) {
+        //     const { lat, lng } = details.geometry.location;
+        //     onChangeText(address);
+        //     ref.current?.setAddressText(address);
+        //     handlePress(lat, lng, address);
+        //   }
+        // }}
         onPress={(data, details = null) => {
           const address = data.description;
           if (details?.geometry?.location) {
@@ -39,10 +59,19 @@ const GoogleTextInput = ({ placeholder, handlePress, onChangeText, errorMessage,
             onChangeText(address);
             ref.current?.setAddressText(address);
             handlePress(lat, lng, address);
+            Keyboard.dismiss();
           }
         }}
+        keyboardShouldPersistTaps="handled"
         textInputProps={{
+
           placeholderTextColor: theme.gray11.val,
+          // value: value || '',
+          // onChangeText: (text) => {
+          //   onChangeText(text);
+          //   ref.current?.setAddressText(text);
+          // },
+          onChangeText: onChangeText,
           onFocus: () => setIsFocused(true),
           onBlur: () => setIsFocused(false),
         }}
@@ -60,6 +89,7 @@ const GoogleTextInput = ({ placeholder, handlePress, onChangeText, errorMessage,
             fontSize: 14,
             color: theme.text.val,
             fontFamily: 'Poppins-Regular',
+            opacity: isLoading ? 0.5 : 1,
             borderWidth: 1,
             borderColor: errorMessage
               ? theme.red10.val
@@ -91,11 +121,24 @@ const GoogleTextInput = ({ placeholder, handlePress, onChangeText, errorMessage,
           },
         }}
       />
+
+      {isLoading && (
+        <ActivityIndicator
+          size="small"
+          color={theme.btnPrimaryColor.val}
+          style={styles.loader}
+        />
+      )}
       {errorMessage && (
-        <Text color={'$red10'}>
+        <Text color={'$red10'} fontSize={12} marginTop="$1">
           {errorMessage}
         </Text>
       )}
+      {/* {errorMessage && (
+        <Text color={'$red10'}>
+          {errorMessage}
+        </Text>
+      )} */}
     </View>
   );
 };
@@ -107,6 +150,12 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     zIndex: 1,
   },
+
+  loader: {
+    position: 'absolute',
+    right: 15,
+    top: 15,
+  }
 });
 
 export default GoogleTextInput;

@@ -1,11 +1,90 @@
+// import { CompanyProfile } from '@/types/user-types'
+// import { AntDesign } from '@expo/vector-icons'
+// import { router } from 'expo-router'
+// import { StyleSheet, Image, Dimensions, TouchableOpacity } from 'react-native'
+// import { Card, Paragraph, YStack, XStack, useTheme, View } from 'tamagui'
+
+// const IMAGET_HEIGHT = Dimensions.get('window').height * 0.22
+
+
+// const StoreCard = ({ item }: { item: CompanyProfile }) => {
+//     const theme = useTheme()
+//     return (
+//         <TouchableOpacity
+//             activeOpacity={0.8}
+//             onPress={() => router.push({
+//                 pathname: '/store-detail/[storeId]',
+//                 params: {
+//                     storeId: item?.id,
+//                     companyName: item?.company_name,
+//                     backDrop: item?.backdrop_image_url,
+//                     profileImage: item?.backdrop_image_url,
+//                     openingHour: item?.opening_hour,
+//                     closingHour: item?.closing_hour,
+//                     address: item?.location,
+//                     rating: item?.rating?.average_rating,
+//                     reviews: item?.rating.number_of_ratings
+//                 }
+//             })}
+//         >
+//             <Card unstyled width={'90%'} alignSelf='center'
+//                 bordered
+//                 borderWidth={StyleSheet.hairlineWidth}
+//                 overflow='hidden'
+//                 marginVertical={5}
+//             >
+//                 <Image source={{ uri: item?.backdrop_image_url }} height={IMAGET_HEIGHT} style={{ objectFit: 'cover' }} />
+//                 <Card.Footer padded backgroundColor={'$background'}>
+//                     <YStack>
+//                         <XStack alignItems='center' >
+//                             <Paragraph
+//                                 fontSize={14}
+//                                 color={'$text'}
+//                                 style={{
+//                                     fontFamily: 'Poppins-Bold'
+//                                 }}
+//                             >{item?.company_name}</Paragraph>
+//                         </XStack>
+//                         <Paragraph color={'$icon'} fontSize={11}>{item?.location}</Paragraph>
+//                     </YStack>
+//                     {
+//                         parseInt(item?.rating.average_rating) > 0 && (
+//                             <View flexDirection='row'
+//                                 backgroundColor={'$transparentBtnPrimaryColor'}
+//                                 alignItems='center'
+//                                 gap={5}
+//                                 borderRadius='$2'
+//                                 height={25}
+//                                 width={50}
+//                                 justifyContent='center'
+//                                 position='absolute'
+//                                 right={10}
+//                                 top={20}
+
+//                             >
+//                                 <Paragraph color={'$icon'}>{item?.rating?.average_rating}</Paragraph>
+//                                 <AntDesign name='staro' color={theme.transparentBtnPrimaryColor.val} />
+//                             </View>
+//                         )
+//                     }
+//                 </Card.Footer>
+//             </Card>
+//         </TouchableOpacity>
+//     )
+// }
+
+// export default StoreCard
+
+// const styles = StyleSheet.create({})
+
 import { CompanyProfile } from '@/types/user-types'
 import { AntDesign } from '@expo/vector-icons'
 import { router } from 'expo-router'
 import { StyleSheet, Image, Dimensions, TouchableOpacity } from 'react-native'
 import { Card, Paragraph, YStack, XStack, useTheme, View } from 'tamagui'
+import { LinearGradient } from 'expo-linear-gradient'
 
 const IMAGET_HEIGHT = Dimensions.get('window').height * 0.22
-
 
 const StoreCard = ({ item }: { item: CompanyProfile }) => {
     const theme = useTheme()
@@ -27,52 +106,95 @@ const StoreCard = ({ item }: { item: CompanyProfile }) => {
                 }
             })}
         >
-            <Card unstyled width={'95%'} alignSelf='center'
-                bordered
+            <Card
+                width={'90%'}
+                alignSelf='center'
                 borderWidth={StyleSheet.hairlineWidth}
+                borderColor="$cardBorder"
                 overflow='hidden'
                 marginVertical={5}
+                height={IMAGET_HEIGHT}
+                elevation={2}
             >
-                <Image source={{ uri: item?.backdrop_image_url }} height={IMAGET_HEIGHT} style={{ objectFit: 'cover' }} />
-                <Card.Footer padded backgroundColor={'$background'}>
-                    <YStack>
-                        <XStack alignItems='center' >
-                            <Paragraph
-                                fontSize={14}
-                                color={'$text'}
-                                style={{
-                                    fontFamily: 'Poppins-Bold'
-                                }}
-                            >{item?.company_name}</Paragraph>
-                        </XStack>
-                        <Paragraph color={'$icon'} fontSize={11}>{item?.location}</Paragraph>
-                    </YStack>
-                    {
-                        parseInt(item?.rating.average_rating) > 0 && (
-                            <View flexDirection='row'
-                                backgroundColor={'$transparentBtnPrimaryColor'}
-                                alignItems='center'
-                                gap={5}
-                                borderRadius='$2'
-                                height={25}
-                                width={50}
-                                justifyContent='center'
-                                position='absolute'
-                                right={10}
-                                top={20}
+                {/* Background Image */}
+                <Image
+                    source={{ uri: item?.backdrop_image_url }}
+                    style={styles.image}
+                />
 
-                            >
-                                <Paragraph color={'$icon'}>{item?.rating?.average_rating}</Paragraph>
-                                <AntDesign name='staro' color={theme.transparentBtnPrimaryColor.val} />
-                            </View>
-                        )
-                    }
-                </Card.Footer>
+                {/* Gradient Overlay */}
+                <LinearGradient
+                    colors={['transparent', 'rgba(0,0,0,0.7)']}
+                    style={styles.gradient}
+                />
+
+                {/* Rating Badge */}
+                {parseInt(item?.rating.average_rating) > 0 && (
+                    <View style={styles.ratingBadge}>
+                        <Paragraph color="white" fontWeight="bold">
+                            {item?.rating?.average_rating}
+                        </Paragraph>
+                        <AntDesign name="star" size={14} color={theme.btnPrimaryColor.val} />
+                    </View>
+                )}
+
+                {/* Content */}
+                <YStack
+                    position="absolute"
+                    bottom={0}
+                    padding="$3"
+                    width="100%"
+                    gap="$1"
+                >
+                    <Paragraph
+                        fontSize={16}
+                        color="white"
+                        numberOfLines={1}
+                        style={{
+                            fontFamily: 'Poppins-Bold'
+                        }}
+                    >
+                        {item?.company_name}
+                    </Paragraph>
+                    <Paragraph
+                        fontSize={12}
+                        color="white"
+                        opacity={0.9}
+                        numberOfLines={1}
+                    >
+                        {item?.location}
+                    </Paragraph>
+                </YStack>
             </Card>
         </TouchableOpacity>
     )
 }
 
-export default StoreCard
+const styles = StyleSheet.create({
+    image: {
+        width: '100%',
+        height: '100%',
+        resizeMode: 'cover'
+    },
+    gradient: {
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        height: 100,
+    },
+    ratingBadge: {
+        position: 'absolute',
+        top: 12,
+        right: 12,
+        flexDirection: 'row',
+        backgroundColor: 'rgba(0,0,0,0.6)',
+        paddingHorizontal: 8,
+        paddingVertical: 4,
+        borderRadius: 4,
+        alignItems: 'center',
+        gap: 4
+    }
+})
 
-const styles = StyleSheet.create({})
+export default StoreCard

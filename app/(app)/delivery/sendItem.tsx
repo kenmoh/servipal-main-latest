@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react'
 import GoogleTextInput from "@/components/GoogleTextInput"
 import { useLocationStore } from '@/store/locationStore'
 import { useRouter } from 'expo-router'
+import CurrentLocationButton from '@/components/CurrentLocationButton'
 
 const SendItem = () => {
   const {
@@ -50,6 +51,13 @@ const SendItem = () => {
   return (
     <View backgroundColor={'$background'} flex={1}>
       <YStack marginTop={'$5'} gap={25}>
+        <CurrentLocationButton
+          onLocationSet={(address, coords) => {
+            setOrigin(address, coords)
+            setErrors(prev => ({ ...prev, origin: '' }))
+            setIsDisabled(false)
+          }}
+        />
         <GoogleTextInput
           placeholder="Pickup Location"
           errorMessage={errors.origin}

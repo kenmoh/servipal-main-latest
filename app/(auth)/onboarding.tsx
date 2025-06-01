@@ -110,7 +110,7 @@ const Onboarding = () => {
                     <View key={slide.id} style={styles.container}>
                         <Animated.View style={[styles.imageContainer, getImageAnimatedStyle(index)]}>
                             <Image
-                                source={slide.image}
+                                src={slide.image}
                                 style={styles.image}
                                 objectFit="contain"
                             />
