@@ -36,6 +36,7 @@ interface Delivery {
   delivery_fee: string;
   amount_due_dispatch: string;
   created_at: string;
+  pickup_coordinates?: Coordinates;
 }
 
 export interface OrderItemResponse {

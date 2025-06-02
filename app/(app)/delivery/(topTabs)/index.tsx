@@ -1,6 +1,5 @@
 import React from "react";
-import { debounce } from 'lodash';
-import { DeliveryType, fetchDeliveries } from "@/api/order";
+import { DeliveryType, fetchDeliveries, getTravelDistance } from "@/api/order";
 import HDivider from "@/components/HDivider";
 import ItemCard from "@/components/ItemCard";
 import LoadingIndicator from "@/components/LoadingIndicator";
@@ -9,23 +8,30 @@ import { useQuery } from "@tanstack/react-query";
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { FlatList, TouchableOpacity, ListRenderItem } from "react-native";
 import { YStack, Text, useTheme, Button, Separator } from "tamagui";
+import * as Location from "expo-location";
 import { RefreshCcw, Send } from "lucide-react-native";
 import { router } from "expo-router";
 import { useAuth } from "@/context/authContext";
 import { getCurrentUser } from "@/api/user";
 import authStorage from "@/storage/authStorage";
 import AppTextInput from "@/components/AppInput";
+import LocationPermission from "@/components/Locationpermission";
+
 
 const DeliveryScreen = () => {
   const theme = useTheme();
   const { user, setProfile } = useAuth();
   const [selectedType, setSelectedType] = useState<DeliveryType | "all">("all");
   const [searchQuery, setSearchQuery] = useState("");
+  const [locationPermission, setLocationPermission] = useState<boolean | null>(null)
+  const [userLocation, setUserLocation] = useState<{ latitude: number; longitude: number } | null>(null);
+
+
 
   const getUserProfile = useCallback(async () => {
     if (!user?.sub) return;
     try {
-      const profile = await getCurrentUser(user.sub);
+      const profile = await getCurrentUser(user?.sub);
       if (profile) {
         authStorage.storeProfile(profile);
         setProfile(profile);
@@ -34,6 +40,35 @@ const DeliveryScreen = () => {
       console.error('Failed to get user profile:', error);
     }
   }, [user?.sub, setProfile]);
+
+  const checkLocationPermission = useCallback(async () => {
+    const { status } = await Location.getForegroundPermissionsAsync()
+    const isLocationEnabled = await Location.hasServicesEnabledAsync()
+
+    setLocationPermission(status === 'granted' && isLocationEnabled)
+  }, [])
+
+  useEffect(() => {
+    const getUserLocation = async () => {
+      if (!locationPermission) return;
+
+      try {
+        const location = await Location.getCurrentPositionAsync({});
+        setUserLocation({
+          latitude: location.coords.latitude,
+          longitude: location.coords.longitude
+        });
+      } catch (error) {
+        console.error('Error getting user location:', error);
+      }
+    };
+
+    getUserLocation();
+  }, [locationPermission]);
+
+  useEffect(() => {
+    checkLocationPermission()
+  }, [checkLocationPermission])
 
   useEffect(() => {
     getUserProfile();
@@ -86,21 +121,104 @@ const DeliveryScreen = () => {
   }), [theme.btnPrimaryColor?.val]);
 
   // Filter function
-  const filteredData = useMemo(() => {
-    if (!searchQuery.trim() || !data) return data;
+  // const filteredData = useMemo(() => {
+  //   if (!searchQuery.trim() || !data) return data;
 
-    const searchTerm = searchQuery.toLowerCase().trim();
-    return data.filter(item => {
-      const origin = item.delivery?.origin?.toLowerCase() || '';
-      const destination = item.delivery?.destination?.toLowerCase() || '';
+  //   const searchTerm = searchQuery.toLowerCase().trim();
+  //   return data.filter(item => {
+  //     const origin = item.delivery?.origin?.toLowerCase() || '';
+  //     const destination = item.delivery?.destination?.toLowerCase() || '';
 
-      return origin.includes(searchTerm) || destination.includes(searchTerm);
-    });
-  }, [data, searchQuery]);
+  //     return origin.includes(searchTerm) || destination.includes(searchTerm);
+  //   });
+  // }, [data, searchQuery]);
 
   const handleSearch = useCallback((text: string) => {
     setSearchQuery(text);
   }, []);
+
+
+  // Filter deliveries within 30km
+  // const filteredData = useMemo(() => {
+  //   if (!data || !locationPermission) return []
+
+  //   let filtered = data.filter(item => {
+  //     const distance = parseFloat(item?.delivery?.distance!)
+  //     return distance <= 30
+  //   })
+
+  //   if (searchQuery.trim()) {
+  //     const searchTerm = searchQuery.toLowerCase().trim()
+  //     filtered = filtered.filter(item => {
+  //       const origin = item.delivery?.origin?.toLowerCase() || ''
+  //       const destination = item.delivery?.destination?.toLowerCase() || ''
+  //       return origin.includes(searchTerm) || destination.includes(searchTerm)
+  //     })
+  //   }
+
+  //   return filtered
+  // }, [data, searchQuery, locationPermission])
+
+
+  // Filter deliveries within 30km
+  const [filteredData, setFilteredData] = useState<DeliveryDetail[]>([]);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const filterDeliveries = async () => {
+      if (!data || !locationPermission || !userLocation) {
+        if (isMounted) setFilteredData([]);
+        return;
+      }
+
+      const itemsWithinRange = await Promise.all(
+        data.map(async (item) => {
+          const pickupCoords = item.delivery?.pickup_coordinates;
+
+          if (!pickupCoords || !pickupCoords[0] || !pickupCoords[1]) return null;
+
+          const distance = await getTravelDistance(
+            userLocation.latitude,
+            userLocation.longitude,
+            pickupCoords[0],
+            pickupCoords[1]
+          );
+
+          // Now distance is in kilometers (numeric value)
+          if (distance === null || distance > 30) return null;
+
+          return {
+            ...item,
+            distance
+          };
+        })
+      );
+
+      let filtered = itemsWithinRange.filter(Boolean) as (DeliveryDetail & { distance: number })[];
+
+      // Sort by distance (closest first)
+      filtered.sort((a, b) => a.distance - b.distance);
+
+      if (searchQuery.trim()) {
+        const searchTerm = searchQuery.toLowerCase().trim();
+        filtered = filtered.filter(item => {
+          const origin = item?.delivery?.origin?.toLowerCase() || '';
+          const destination = item?.delivery?.destination?.toLowerCase() || '';
+          return origin.includes(searchTerm) || destination.includes(searchTerm);
+        });
+      }
+
+      if (isMounted) setFilteredData(filtered);
+    };
+    filterDeliveries();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [data, searchQuery, locationPermission, userLocation]);
+
+
 
   // const handleSearch = useMemo(
   //   () => debounce((text: string) => {
@@ -114,6 +232,10 @@ const DeliveryScreen = () => {
   //     handleSearch.cancel();
   //   };
   // }, [handleSearch]);
+
+  if (!locationPermission) {
+    return <LocationPermission onRetry={checkLocationPermission} />
+  }
 
   if (isLoading) return <LoadingIndicator />;
 
@@ -155,7 +277,7 @@ const DeliveryScreen = () => {
       />
       <Separator />
       <FlatList
-        data={filteredData}
+        data={filteredData || []}
         keyExtractor={keyExtractor}
         renderItem={renderItem}
         ItemSeparatorComponent={renderSeparator}

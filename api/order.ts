@@ -306,41 +306,38 @@ export const createReview = async (
     throw new Error("An unexpected error occurred");
   }
 };
-
-/*
-
-POST -> /{vendor_id}
-
-export interface OrderFoodOLaundry {
-  order_items: OrderItem[];
-  pickup_coordinates: [null, null];
-  dropoff_coordinates: [null, null];
-  distance: 0;
-  require_delivery: RequireDelivery;
+interface DistanceResponse {
+  distance: number;
   duration: string;
-  additional_info: string;
 }
-{
 
-  "order_items": [
-    {
-      "vendor_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-      "item_id": "string",
-      "quantity": 0
+export const getTravelDistance = async (
+  userLat: number,
+  userLng: number,
+  destinationLat: number,
+  destinationLng: number
+): Promise<number | null> => {
+  try {
+    const origin = `${userLat},${userLng}`;
+    const destination = `${destinationLat},${destinationLng}`;
+
+    const url = `https://maps.googleapis.com/maps/api/distancematrix/json?destinations=${destination}&origins=${origin}&units=metric&key=${process.env.EXPO_PUBLIC_GOOGLE_MAP_API_KEY}`;
+
+    const response = await fetch(url);
+    const data = await response.json();
+
+    const distanceInMeters = data?.rows?.[0]?.elements?.[0]?.distance?.value;
+
+    if (distanceInMeters) {
+      // Convert meters to kilometers
+      return distanceInMeters / 1000;
     }
-  ],
-  "pickup_coordinates": [
-    0
-  ],
-  "dropoff_coordinates": [
-    0
-  ],
-  "distance": 0,
-  "require_delivery": "pickup",
-  "duration": "string",
-  "origin": "string",
-  "destination": "string",
-  "additional_info"?: "string"
-}
 
-*/
+    console.log(distanceInMeters, "================");
+
+    return null;
+  } catch (error) {
+    console.error("Error calculating travel distance:", error);
+    return null;
+  }
+};
