@@ -430,7 +430,6 @@ export const useCartStore = create<CartState>((set, get) => ({
 
 */
 
-
 import { create } from "zustand";
 
 export type CartItem = {
@@ -473,7 +472,12 @@ type CartState = {
   setAdditionalInfo: (info: string) => void;
   clearCart: (resetLocationCallback?: () => void) => void;
   calculateTotal: () => void;
-  prepareOrderForServer: (locationData: { origin: string; destination: string; originCoords: [number, number] | null; destinationCoords: [number, number] | null }) => any;
+  prepareOrderForServer: (locationData: {
+    origin: string;
+    destination: string;
+    originCoords: [number, number] | null;
+    destinationCoords: [number, number] | null;
+  }) => any;
 };
 
 export const useCartStore = create<CartState>((set, get) => ({
@@ -642,7 +646,7 @@ export const useCartStore = create<CartState>((set, get) => ({
     if (resetLocationCallback) {
       resetLocationCallback();
     }
-    
+
     // Reset cart store
     set(() => ({
       cart: {
@@ -660,12 +664,12 @@ export const useCartStore = create<CartState>((set, get) => ({
 
   prepareOrderForServer: (locationData) => {
     const state = get();
-    
+
     return {
-      order_items: state.cart.order_items.map(item => ({
+      order_items: state.cart.order_items.map((item) => ({
         vendor_id: item.vendor_id,
         item_id: item.item_id,
-        quantity: item.quantity
+        quantity: item.quantity,
       })),
       pickup_coordinates: locationData.originCoords || [0, 0],
       dropoff_coordinates: locationData.destinationCoords || [0, 0],
@@ -674,7 +678,9 @@ export const useCartStore = create<CartState>((set, get) => ({
       duration: state.cart.duration,
       origin: locationData.origin,
       destination: locationData.destination,
-      ...(state.cart.additional_info && { additional_info: state.cart.additional_info })
+      ...(state.cart.additional_info && {
+        additional_info: state.cart.additional_info,
+      }),
     };
   },
 }));

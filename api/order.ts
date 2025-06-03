@@ -5,7 +5,6 @@ import {
   CreateReview,
   DeliveryDetail,
   OrderFoodOLaundry,
-  OrderResponse,
   SendItem,
 } from "@/types/order-types";
 
@@ -332,8 +331,6 @@ export const getTravelDistance = async (
       // Convert meters to kilometers
       return distanceInMeters / 1000;
     }
-
-    console.log(distanceInMeters, "================");
 
     return null;
   } catch (error) {

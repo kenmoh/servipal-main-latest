@@ -56,7 +56,7 @@ export function useProtectedRoute(user: {} | null) {
       !user &&
       !inAuthGroup
     ) {
-      // Redirect to the sign-in screen.
+      // Redirect to the sign-in or sign-up screen.
       isFirstLaunch
         ? router.replace({ pathname: "/sign-up" })
         : router.replace({ pathname: "/sign-in" });

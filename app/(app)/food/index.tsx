@@ -1,7 +1,8 @@
+import React, { useEffect, useState } from 'react'
 import { StyleSheet, FlatList, ScrollView, Image } from 'react-native'
 import { Card, Heading, Paragraph, XStack, YStack, Text, Separator } from 'tamagui'
-import React from 'react'
 import StoreCard from '@/components/StoreCard'
+import * as Location from 'expo-location'
 import { Button, useTheme, View } from 'tamagui'
 import { useQuery } from '@tanstack/react-query'
 import { fetchRestaurants } from '@/api/user'
@@ -13,8 +14,12 @@ import AppHeader from '@/components/AppHeader'
 import { CompanyProfile } from '@/types/user-types'
 import Swiper from 'react-native-swiper'
 import { LinearGradient } from 'expo-linear-gradient'
+import { getCoordinatesFromAddress } from '@/utils/geocoding'
+import { getTravelDistance } from '@/api/order'
 
-
+export interface RestaurantWithDistance extends CompanyProfile {
+    distance: number;
+}
 export const featuredRestaurants = [
     {
         id: 'f1',
@@ -99,13 +104,75 @@ const categories = [
 ];
 const Page = () => {
     const theme = useTheme()
-
+    const [userLocation, setUserLocation] = useState<{ latitude: number; longitude: number } | null>(null);
+    const [filteredRestaurants, setFilteredRestaurants] = useState<(CompanyProfile & { distance: number })[]>([]);
+    const [filteredFeatured, setFilteredFeatured] = useState<RestaurantWithDistance[]>([]);
     const { data, isPending } = useQuery({
         queryKey: ['restaurants'],
         queryFn: fetchRestaurants
     })
 
-    console.log(data)
+
+    // Get user's location
+    useEffect(() => {
+        const getUserLocation = async () => {
+            const { status } = await Location.requestForegroundPermissionsAsync();
+            if (status !== 'granted') return;
+
+            const location = await Location.getCurrentPositionAsync({});
+            setUserLocation({
+                latitude: location.coords.latitude,
+                longitude: location.coords.longitude
+            });
+        };
+
+        getUserLocation();
+    }, []);
+
+
+
+
+    useEffect(() => {
+        const filterRestaurants = async () => {
+            if (!data || !userLocation) return;
+
+            const restaurantsWithDistance = await Promise.all(
+                data.map(async (restaurant) => {
+                    const coordinates = await getCoordinatesFromAddress(restaurant.location);
+                    if (!coordinates) return null;
+
+                    const distance = await getTravelDistance(
+                        userLocation.latitude,
+                        userLocation.longitude,
+                        coordinates.lat,
+                        coordinates.lng
+                    );
+
+                    console.log('DISTANCE', distance)
+                    console.log('DISTANCE')
+
+                    if (!distance || distance > 6000) return null;
+
+                    return {
+                        ...restaurant,
+                        distance
+                    } as RestaurantWithDistance;
+                })
+            );
+
+            const filtered = restaurantsWithDistance
+                // .filter(Boolean)
+                .filter((item): item is RestaurantWithDistance => item !== null)
+                .sort((a, b) => a!.distance - b!.distance);
+
+            setFilteredRestaurants(filtered as (CompanyProfile & { distance: number })[]);
+        };
+
+        filterRestaurants();
+    }, [data, userLocation]);
+
+
+
 
     if (isPending) {
         return <LoadingIndicator />
@@ -120,7 +187,8 @@ const Page = () => {
             {/* <Category categories={categories} /> */}
 
             <FlatList
-                data={data}
+                // data={data}
+                data={filteredRestaurants}
                 ListHeaderComponent={() => (
                     <>
                         <Category categories={categories} />
@@ -131,7 +199,10 @@ const Page = () => {
                 stickyHeaderIndices={[1]}
                 showsVerticalScrollIndicator={false}
                 keyExtractor={item => item.id}
-                renderItem={({ item }: { item: CompanyProfile }) => <StoreCard item={item} />}
+                renderItem={({ item }: { item: CompanyProfile & { distance: number } }) => (
+                    <StoreCard item={item} distance={item.distance} screenType='RESTAURANT' />
+                )}
+                // renderItem={({ item }: { item: CompanyProfile }) => <StoreCard item={item}  />}
                 contentContainerStyle={{
                     paddingBottom: 10
                 }}

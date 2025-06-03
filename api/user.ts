@@ -1,6 +1,7 @@
 import {
   CompanyProfile,
   Profile,
+  Wallet,
   RiderResponse,
   UserProfileUpdate,
 } from "@/types/user-types";
@@ -49,6 +50,34 @@ export const getCurrentUser = async (userId: string): Promise<Profile> => {
     throw new Error("An unexpected error occurred");
   }
 };
+// Get current logged in user
+export const getCurrentUserWallet = async (): Promise<Wallet> => {
+  try {
+    const response: ApiResponse<Wallet | ErrorResponse> = await apiClient.get(
+      `${BASE_URL}/user-wallet`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (!response.ok || !response.data || "detail" in response.data) {
+      const errorMessage =
+        response.data && "detail" in response.data
+          ? response.data.detail
+          : "Error loading user wallet.";
+      throw new Error(errorMessage);
+    }
+
+    return response.data;
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    }
+    throw new Error("An unexpected error occurred");
+  }
+};
 
 // Get current logged in user riders
 export const getCurrentDispatchRiders = async (): Promise<RiderResponse[]> => {
@@ -82,6 +111,32 @@ export const fetchRestaurants = async (): Promise<CompanyProfile[]> => {
   try {
     const response: ApiResponse<CompanyProfile[] | ErrorResponse> =
       await apiClient.get(`${BASE_URL}/restaurants`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+    if (!response.ok || !response.data || "detail" in response.data) {
+      const errorMessage =
+        response.data && "detail" in response.data
+          ? response.data.detail
+          : "Error loading user profile.";
+      throw new Error(errorMessage);
+    }
+
+    return response.data;
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    }
+    throw new Error("An unexpected error occurred");
+  }
+};
+// Fetch laundry users
+export const fetchLaundryVendors = async (): Promise<CompanyProfile[]> => {
+  try {
+    const response: ApiResponse<CompanyProfile[] | ErrorResponse> =
+      await apiClient.get(`${BASE_URL}/laundry-vendors`, {
         headers: {
           "Content-Type": "application/json",
         },

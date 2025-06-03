@@ -29,6 +29,7 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchVendorItems } from "@/api/item";
 import { MenuItem } from "@/types/item-types";
 import { useCartStore } from "@/store/cartStore";
+import { Plus } from "lucide-react-native";
 
 const groups = [
   { id: 1, name: "Starters" },
@@ -55,6 +56,7 @@ const StoreDetails = () => {
     address,
     rating,
     reviews,
+    screenType
   } = useLocalSearchParams();
 
   const scrollY = useSharedValue(0);
@@ -66,13 +68,6 @@ const StoreDetails = () => {
     queryKey: ["storeItems", storeId],
     queryFn: () => fetchVendorItems(storeId as string),
   });
-
-
-  // Handle adding item to cart
-  // const handleAddToCart = (item: MenuItem) => {
-  //   addItem(storeId as string, item.id, 1, { name: item.name, price: Number(item.price), image: item.images[0]?.url || '' });
-  // };
-
 
 
   const handleAddToCart = useCallback((item: MenuItem) => {
@@ -167,7 +162,7 @@ const StoreDetails = () => {
           {companyName}
         </Heading>
       </Animated.View>
-      {showStickyCategory && (
+      {screenType === 'RESTAURANT' && showStickyCategory && (
         <View
           style={{
             position: "absolute",
@@ -285,6 +280,8 @@ const StoreDetails = () => {
               </YStack>
 
               <AddItemBtn
+                label="Add Item"
+                icon={<Plus color={theme.btnPrimaryColor.val} size={20} />}
                 isDisabled={
                   user?.user_type !== "vendor" && (data && user?.sub !== data[0]?.user_id)
                 }
@@ -298,21 +295,22 @@ const StoreDetails = () => {
         </Animated.View>
 
         {/* CATEGORY */}
-        <Animated.View
-          style={[
-            {
-              backgroundColor: theme.cardBackground.val,
-              alignItems: "center",
-              justifyContent: "center",
-              height: CATEGORY_HEIGHT,
-              marginTop: 10,
-            },
-            categoryStyle,
-          ]}
-        >
-          <Category categories={groups} />
-        </Animated.View>
-
+        {screenType === 'RESTAURANT' &&
+          <Animated.View
+            style={[
+              {
+                backgroundColor: theme.cardBackground.val,
+                alignItems: "center",
+                justifyContent: "center",
+                height: CATEGORY_HEIGHT,
+                marginTop: 10,
+              },
+              categoryStyle,
+            ]}
+          >
+            <Category categories={groups} />
+          </Animated.View>
+        }
 
         {/* RENDER SECTION */}
 
@@ -323,7 +321,7 @@ const StoreDetails = () => {
             data={data ?? []}
             keyExtractor={(item) => item?.id}
             renderItem={({ item }: { item: MenuItem }) => (
-              <FoodCard isChecked={checkedItems.has(item.id)} item={item} onPress={() => handleAddToCart(item)} />
+              <FoodCard item={item} screenType={screenType as "RESTAURANT" | "LAUNDRY"} onPress={() => handleAddToCart(item)} />
             )}
             scrollEnabled={false}
             removeClippedSubviews={true}

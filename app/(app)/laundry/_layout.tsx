@@ -14,7 +14,7 @@ const LaundryLayout = () => {
         }}>
             <Stack.Screen name='index' options={{
 
-
+                headerShown: false
             }} />
         </Stack>
     )

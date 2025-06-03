@@ -73,10 +73,10 @@ export interface Profile {
   bank_account_number?: string;
   bike_number?: string;
   business_name?: string;
-  business_redistration_number?: string;
+  business_registration_number?: string;
   business_address?: string;
   closing_hours?: string;
-  openning_hours?: string;
+  opening_hours?: string;
 }
 
 export interface UserProfileUpdate {
@@ -93,10 +93,13 @@ export interface UserProfileUpdate {
 type TransactionType = "credit" | "debit";
 
 interface Transaction {
+  id: string;
+  wallet_id: string;
+  created_at: string;
   amount: number;
   transaction_type: TransactionType;
 }
-interface Wallet {
+export interface Wallet {
   id: string;
   balance: number;
   escrow_balance: number;

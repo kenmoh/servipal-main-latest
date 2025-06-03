@@ -16,6 +16,8 @@ import { getCurrentUser } from "@/api/user";
 import authStorage from "@/storage/authStorage";
 import AppTextInput from "@/components/AppInput";
 import LocationPermission from "@/components/Locationpermission";
+import { distanceCache } from "@/utils/distance-cache";
+import { useLocationTracking } from "@/hooks/useLocationTracking";
 
 
 const DeliveryScreen = () => {
@@ -85,6 +87,51 @@ const DeliveryScreen = () => {
     },
 
   });
+
+  // Handle location change and Memoize user location change
+  const handleLocationChange = useCallback((newLocation: { latitude: number; longitude: number }) => {
+    setUserLocation(newLocation);
+    distanceCache.clear(); // Clear cache when location changes significantly
+  }, []);
+
+  useLocationTracking(handleLocationChange);
+
+  const getItemDistance = async (pickupCoords: [number, number]) => {
+    if (!userLocation) return null;
+
+    // Check cache first
+    const cachedDistance = distanceCache.get(
+      userLocation.latitude,
+      userLocation.longitude,
+      pickupCoords[0],
+      pickupCoords[1]
+    );
+
+    if (cachedDistance !== null) {
+      return cachedDistance;
+    }
+
+    // Calculate new distance
+    const distance = await getTravelDistance(
+      userLocation.latitude,
+      userLocation.longitude,
+      pickupCoords[0],
+      pickupCoords[1]
+    );
+
+    // Cache the result
+    if (distance !== null) {
+      distanceCache.set(
+        userLocation.latitude,
+        userLocation.longitude,
+        pickupCoords[0],
+        pickupCoords[1],
+        distance
+      );
+    }
+
+    return distance;
+  };
 
   // Memoize render functions
   const renderItem: ListRenderItem<DeliveryDetail> = useCallback(
@@ -175,17 +222,15 @@ const DeliveryScreen = () => {
       const itemsWithinRange = await Promise.all(
         data.map(async (item) => {
           const pickupCoords = item.delivery?.pickup_coordinates;
+          if (
+            !pickupCoords ||
+            pickupCoords[0] === null ||
+            pickupCoords[1] === null ||
+            typeof pickupCoords[0] !== "number" ||
+            typeof pickupCoords[1] !== "number"
+          ) return null;
 
-          if (!pickupCoords || !pickupCoords[0] || !pickupCoords[1]) return null;
-
-          const distance = await getTravelDistance(
-            userLocation.latitude,
-            userLocation.longitude,
-            pickupCoords[0],
-            pickupCoords[1]
-          );
-
-          // Now distance is in kilometers (numeric value)
+          const distance = await getItemDistance([pickupCoords[0], pickupCoords[1]]);
           if (distance === null || distance > 30) return null;
 
           return {
@@ -194,6 +239,29 @@ const DeliveryScreen = () => {
           };
         })
       );
+
+      // const itemsWithinRange = await Promise.all(
+      //   data.map(async (item) => {
+      //     const pickupCoords = item.delivery?.pickup_coordinates;
+
+      //     if (!pickupCoords || !pickupCoords[0] || !pickupCoords[1]) return null;
+
+      //     const distance = await getTravelDistance(
+      //       userLocation.latitude,
+      //       userLocation.longitude,
+      //       pickupCoords[0],
+      //       pickupCoords[1]
+      //     );
+
+      //     // Now distance is in kilometers (numeric value)
+      //     if (distance === null || distance > 30) return null;
+
+      //     return {
+      //       ...item,
+      //       distance
+      //     };
+      //   })
+      // );
 
       let filtered = itemsWithinRange.filter(Boolean) as (DeliveryDetail & { distance: number })[];
 
