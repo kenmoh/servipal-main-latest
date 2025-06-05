@@ -14,6 +14,7 @@ import { ImageType } from "@/types/order-types";
 import { ImageUrl } from "@/types/user-types";
 import authStorage from "@/storage/authStorage";
 import { Notifier, NotifierComponents } from "react-native-notifier";
+import { queryClient } from "@/app/_layout";
 
 const BACKDROP_IMAGE_HEIGHT = Dimensions.get("window").height * 0.2;
 const BACKDROP_IMAGE_WIDTH = Dimensions.get("window").width;
@@ -41,8 +42,12 @@ const profile = () => {
                         : data?.backdrop_image_url ?? images?.backdrop_image_url ?? undefined,
             };
             setImages(newImages);
+            authStorage.removeImage()
             authStorage.storeImageUrl(newImages);
-            console.log("Images uploaded successfully:", newImages);
+            queryClient.invalidateQueries({ queryKey: ['user'] });
+            queryClient.invalidateQueries({ queryKey: ['profile'] });
+            queryClient.invalidateQueries({ queryKey: ['deliveries'] });
+
             Notifier.showNotification({
                 title: 'Success',
                 description: 'Images uploaded successfully',
@@ -126,16 +131,17 @@ const profile = () => {
                         <Text alignSelf="center">{user?.email}</Text>
                     </YStack>
                     <YStack marginTop={"$10"}>
-                        <Animated.View entering={FadeInDown.duration(300).delay(100)}>
-                            <ProfileCard
-                                name={"Profile"}
-                                onPress={() =>
-                                    router.push({ pathname: "/profile/vendorProfile" })
-                                }
-                                bgColor={"rgba(0,128, 128, 0.3)"}
-                                icon={<UserRound color={"white"} />}
-                            />
-                        </Animated.View>
+                        {user?.user_type !== "rider" &&
+                            <Animated.View entering={FadeInDown.duration(300).delay(100)}>
+                                <ProfileCard
+                                    name={"Profile"}
+                                    onPress={() =>
+                                        router.push({ pathname: "/profile/vendorProfile" })
+                                    }
+                                    bgColor={"rgba(0,128, 128, 0.3)"}
+                                    icon={<UserRound color={"white"} />}
+                                />
+                            </Animated.View>}
                         {user?.user_type !== "rider" && (
                             <Animated.View entering={FadeInDown.duration(300).delay(100)}>
                                 <ProfileCard

@@ -20,10 +20,9 @@ const AppHeader = ({ icon, component, onPress }: AppHeaderProps) => {
             height: 100,
             alignItems: 'center',
             justifyContent: 'center',
-            padding: 25,
             backgroundColor: theme.background.val
         }}>
-            <XStack justifyContent='space-around' gap={15}>
+            <XStack justifyContent='space-around' gap={15} width={'100%'} alignSelf="center" alignItems="center" >
                 {icon &&
                     <Circle backgroundColor={'$cardDark'} width={'$4'} height={'$4'}>
                         <TouchableOpacity

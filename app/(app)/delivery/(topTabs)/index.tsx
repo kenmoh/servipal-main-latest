@@ -39,7 +39,7 @@ const DeliveryScreen = () => {
         setProfile(profile);
       }
     } catch (error) {
-      console.error('Failed to get user profile:', error);
+      throw Error(`Failed to get user profile: ${error}`);
     }
   }, [user?.sub, setProfile]);
 
@@ -85,6 +85,7 @@ const DeliveryScreen = () => {
     select: (data) => {
       return data?.filter(order => order.order.order_payment_status === 'paid') || []
     },
+    staleTime: 1000 * 60 * 5,
 
   });
 

@@ -97,6 +97,8 @@ export const getCurrentDispatchRiders = async (): Promise<RiderResponse[]> => {
       throw new Error(errorMessage);
     }
 
+    console.log("FROM SERVER", response.data, "XXXXXXXXXXXXXXXXXXXXXXXX");
+
     return response.data;
   } catch (error) {
     if (error instanceof Error) {

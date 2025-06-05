@@ -104,7 +104,7 @@ const Page = () => {
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: theme.background.val }}>
 
-            <AppHeader component={<AppTextInput height='$3.5' borderRadius={50} placeholder='Search Restaurants..' />} />
+            <AppHeader component={<AppTextInput height='$3.5' borderRadius={50} placeholder='Search...' />} />
             <Separator />
 
             {/* <Category categories={categories} /> */}

@@ -82,7 +82,7 @@ const index = () => {
                                     Account Number: {profile?.bank_account_number}
                                 </Text>
                                 <Text style={styles.accountInfo}>
-                                    Bank Name: {profile?.bank_name || 'moh bank'}
+                                    Bank Name: {profile?.bank_name}
                                 </Text>
                             </YStack>
                         </Card.Header>

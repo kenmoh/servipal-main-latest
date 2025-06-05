@@ -4,7 +4,7 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import * as Yup from "yup";
 import { Formik } from "formik";
 import AppTextInput from "@/components/AppInput";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { updateCurrentVendorUser } from "@/api/user";
 import { ActivityIndicator, Platform } from "react-native";
 import { useAuth } from "@/context/authContext";
@@ -15,6 +15,9 @@ import { phoneRegEx } from "@/types/user-types";
 import authStorage from "@/storage/authStorage";
 import CurrentLocationButton from "@/components/CurrentLocationButton";
 import { useLocationStore } from "@/store/locationStore";
+import { getBanks } from "@/api/payment";
+import BankPicker from "@/components/BankList";
+import AppPicker from "@/components/AppPicker";
 
 const ValidationSchema = Yup.object().shape({
     phoneNumber: Yup.string()
@@ -42,6 +45,14 @@ const Profile = () => {
     const [showOpeningHour, setShowOpeningHour] = useState(false);
     const [showClosingHour, setShowClosingHour] = useState(false);
     const { origin, destination, setOrigin, setDestination } = useLocationStore();
+
+    const { data } = useQuery({
+        queryKey: ['banks'],
+        queryFn: getBanks,
+        staleTime: 72 * 60 * 60 * 1000,
+
+    })
+
 
     const { isPending, mutate } = useMutation({
         mutationFn: updateCurrentVendorUser,
@@ -225,14 +236,16 @@ const Profile = () => {
                                 }
                             />
 
-                            <AppTextInput
+                            {/* <AppTextInput
                                 // label='Bank Name'
                                 placeholder="Bank Name"
                                 onChangeText={handleChange("bankName")}
                                 autoCapitalize="words"
                                 value={values.bankName}
                                 errorMessage={touched.bankName ? errors.bankName : undefined}
-                            />
+                            /> */}
+
+                            <AppPicker items={data || []} isBank value={values.bankName} onValueChange={handleChange('bankName')} />
 
                             <Button
                                 style={{

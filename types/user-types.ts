@@ -5,6 +5,12 @@ type Role = "dispatch" | "rider" | "customer" | "vendor";
 
 type AccountStatus = "pending" | "confirmed";
 
+export interface Bank {
+  id: number;
+  code: string;
+  name: string;
+}
+
 export type UserReturn = {
   id: string;
   dispatch_id: string;

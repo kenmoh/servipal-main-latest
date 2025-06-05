@@ -4,12 +4,14 @@ import { AuthContext, useProtectedRoute } from "@/context/authContext";
 import authStorage from '@/storage/authStorage'
 import { User, Profile, ImageUrl } from "@/types/user-types";
 import { getCurrentUser } from "@/api/user";
+import { queryClient } from "@/app/_layout";
 
 
 const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [user, setUser] = useState<User | null>(null);
     const [profile, setProfile] = useState<Profile | null>(null)
     const [images, setImages] = useState<ImageUrl | null>(null)
+
 
 
     const restoreToken = async () => {
@@ -80,9 +82,11 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
             setProfile(null);
             await Promise.all([
                 authStorage.removeToken(),
-                authStorage.removeProfile()
+                authStorage.removeProfile(),
+                authStorage.removeImage()
 
             ])
+            queryClient.clear();
         } catch (error) {
             console.error('Error signing out:', error)
         }
