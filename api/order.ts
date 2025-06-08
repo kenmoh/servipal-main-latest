@@ -5,7 +5,10 @@ import {
   CreateReview,
   DeliveryDetail,
   OrderFoodOLaundry,
+  RiderDeliveryStatus,
   SendItem,
+  DeliveryStatus,
+  OrderType,
 } from "@/types/order-types";
 
 const BASE_URL = "/orders";
@@ -189,17 +192,58 @@ export const createOrder = async (
   }
 };
 
-// Confirm Item Received by sender
-export const senderConirmDeliveryReceived = async (
-  deliveryId: string
+// Update rider delivery status
+export const riderUpdateDeliveryStatus = async (
+  deliveryId: string,
+  status: RiderDeliveryStatus
 ): Promise<DeliveryDetail> => {
   try {
     const response: ApiResponse<DeliveryDetail | ErrorResponse> =
-      await apiClient.put(`${BASE_URL}/${deliveryId}/confirm-delivery`, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      await apiClient.put(
+        `${BASE_URL}/${deliveryId}/update-delivery-status`,
+        { status },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+    if (!response.ok || !response.data || "detail" in response.data) {
+      const errorMessage =
+        response.data && "detail" in response.data
+          ? response.data.detail
+          : "Error updating delivery status.";
+      throw new Error(errorMessage);
+    }
+    return response.data;
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    }
+    throw new Error("An unexpected error occurred");
+  }
+};
+
+// Confirm Item Received by sender
+export const senderConfirmDeliveryReceived = async (
+  deliveryId: string,
+  isLaundry?: boolean
+): Promise<DeliveryDetail> => {
+  try {
+    const endpoint = isLaundry
+      ? "confirm-laundry-received"
+      : "confirm-delivery";
+    const response: ApiResponse<DeliveryDetail | ErrorResponse> =
+      await apiClient.put(
+        `${BASE_URL}/${deliveryId}/${endpoint}`,
+        {},
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
     if (!response.ok || !response.data || "detail" in response.data) {
       const errorMessage =
@@ -217,51 +261,28 @@ export const senderConirmDeliveryReceived = async (
   }
 };
 
-// Rider Update delivery status
-export const riderUpdateDeliveryStatus = async (
-  deliveryId: string
-): Promise<DeliveryDetail> => {
-  try {
-    const response: ApiResponse<DeliveryDetail | ErrorResponse> =
-      await apiClient.put(`${BASE_URL}/${deliveryId}/update-delivery-status`, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-    if (!response.ok || !response.data || "detail" in response.data) {
-      const errorMessage =
-        response.data && "detail" in response.data
-          ? response.data.detail
-          : "Error updating delivery.";
-      throw new Error(errorMessage);
-    }
-    return response.data;
-  } catch (error) {
-    if (error instanceof Error) {
-      throw new Error(error.message);
-    }
-    throw new Error("An unexpected error occurred");
-  }
-};
-
-// Rider Update delivery status
+// Cancel delivery (can only be done by rider when in-transit)
 export const cancelDelivery = async (
-  deliveryId: string
+  deliveryId: string,
+  reason?: string
 ): Promise<DeliveryDetail> => {
   try {
     const response: ApiResponse<DeliveryDetail | ErrorResponse> =
-      await apiClient.put(`${BASE_URL}/${deliveryId}/cancel-delivery`, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      await apiClient.put(
+        `${BASE_URL}/${deliveryId}/cancel-delivery`,
+        { reason },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
     if (!response.ok || !response.data || "detail" in response.data) {
       const errorMessage =
         response.data && "detail" in response.data
           ? response.data.detail
-          : "Error canelling delivery.";
+          : "Error cancelling delivery.";
       throw new Error(errorMessage);
     }
     return response.data;
@@ -272,6 +293,90 @@ export const cancelDelivery = async (
     throw new Error("An unexpected error occurred");
   }
 };
+
+// // Confirm Item Received by sender
+// export const senderConirmDeliveryReceived = async (
+//   deliveryId: string
+// ): Promise<DeliveryDetail> => {
+//   try {
+//     const response: ApiResponse<DeliveryDetail | ErrorResponse> =
+//       await apiClient.put(`${BASE_URL}/${deliveryId}/confirm-delivery`, {
+//         headers: {
+//           "Content-Type": "application/json",
+//         },
+//       });
+
+//     if (!response.ok || !response.data || "detail" in response.data) {
+//       const errorMessage =
+//         response.data && "detail" in response.data
+//           ? response.data.detail
+//           : "Error confirming delivery.";
+//       throw new Error(errorMessage);
+//     }
+//     return response.data;
+//   } catch (error) {
+//     if (error instanceof Error) {
+//       throw new Error(error.message);
+//     }
+//     throw new Error("An unexpected error occurred");
+//   }
+// };
+
+// // Rider Update delivery status
+// export const riderUpdateDeliveryStatus = async (
+//   deliveryId: string
+// ): Promise<DeliveryDetail> => {
+//   try {
+//     const response: ApiResponse<DeliveryDetail | ErrorResponse> =
+//       await apiClient.put(`${BASE_URL}/${deliveryId}/update-delivery-status`, {
+//         headers: {
+//           "Content-Type": "application/json",
+//         },
+//       });
+
+//     if (!response.ok || !response.data || "detail" in response.data) {
+//       const errorMessage =
+//         response.data && "detail" in response.data
+//           ? response.data.detail
+//           : "Error updating delivery.";
+//       throw new Error(errorMessage);
+//     }
+//     return response.data;
+//   } catch (error) {
+//     if (error instanceof Error) {
+//       throw new Error(error.message);
+//     }
+//     throw new Error("An unexpected error occurred");
+//   }
+// };
+
+// // Rider Update delivery status
+// export const cancelDelivery = async (
+//   deliveryId: string
+// ): Promise<DeliveryDetail> => {
+//   try {
+//     const response: ApiResponse<DeliveryDetail | ErrorResponse> =
+//       await apiClient.put(`${BASE_URL}/${deliveryId}/cancel-delivery`, {
+//         headers: {
+//           "Content-Type": "application/json",
+//         },
+//       });
+
+//     if (!response.ok || !response.data || "detail" in response.data) {
+//       const errorMessage =
+//         response.data && "detail" in response.data
+//           ? response.data.detail
+//           : "Error canelling delivery.";
+//       throw new Error(errorMessage);
+//     }
+//     return response.data;
+//   } catch (error) {
+//     if (error instanceof Error) {
+//       throw new Error(error.message);
+//     }
+//     throw new Error("An unexpected error occurred");
+//   }
+// };
 
 // Create review
 export const createReview = async (
@@ -337,4 +442,22 @@ export const getTravelDistance = async (
     console.error("Error calculating travel distance:", error);
     return null;
   }
+};
+
+export const isValidStatusTransition = (
+  currentStatus: DeliveryStatus,
+  newStatus: DeliveryStatus,
+  orderType: OrderType
+): boolean => {
+  const transitions: Record<DeliveryStatus, DeliveryStatus[]> = {
+    pending: ["canceled"],
+
+    "in transit": ["delivered", "canceled"],
+    delivered: orderType === "laundry" ? ["laundry received"] : ["received"],
+    "laundry received": ["delivered"],
+    received: [],
+    canceled: [],
+  };
+
+  return transitions[currentStatus]?.includes(newStatus) || false;
 };

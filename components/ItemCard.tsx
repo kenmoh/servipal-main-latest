@@ -3,8 +3,9 @@ import React from 'react'
 import { Card, View, XStack, YStack, Image, useTheme, Text, Square } from 'tamagui'
 import { Feather, MaterialCommunityIcons, AntDesign } from '@expo/vector-icons'
 import { router } from 'expo-router'
-import { DeliveryDetail, OrderStatus } from '@/types/order-types'
+import { DeliveryDetail, DeliveryStatus, OrderStatus } from '@/types/order-types'
 import { Package, Shirt, Utensils } from 'lucide-react-native'
+import { useLocationStore } from '@/store/locationStore'
 
 type CardProp = {
     data: DeliveryDetail
@@ -33,12 +34,12 @@ const DeliveryTypeIcon = React.memo(({ type, size = 12, theme }: DeliveryIconPro
 DeliveryTypeIcon.displayName = 'DeliveryTypeIcon';
 
 // Memoize the Status component
-export const Status = React.memo(({ status }: { status?: OrderStatus }) => {
-    const getStatusColors = (status?: OrderStatus) => {
+export const Status = React.memo(({ status }: { status?: DeliveryStatus }) => {
+    const getStatusColors = (status?: DeliveryStatus) => {
         switch (status) {
             case 'pending':
                 return { bg: '$pendingTransparent', color: '$pending' };
-            case 'in-transit':
+            case 'in transit':
                 return { bg: '$deliveredTransparent', color: '$delivered' };
             default:
                 return { bg: '$successTransparent', color: '$success' };
@@ -71,9 +72,36 @@ Status.displayName = 'Status';
 
 const ItemCard = React.memo(({ data, isHomeScreen = false }: CardProp) => {
     const theme = useTheme();
+    const { setOrigin, setDestination } = useLocationStore();
 
     // Memoize navigation handler
+    // const handlePress = React.useCallback(() => {
+    //     router.push({
+    //         pathname: '/delivery-detail/[id]',
+    //         params: {
+    //             id: data?.delivery?.id!,
+    //             orderNumber: data?.order.id
+    //         }
+    //     });
+    // }, [data?.delivery?.id, data?.order.id]);
+
     const handlePress = React.useCallback(() => {
+        // Set origin and destination if available
+        if (data?.delivery?.origin && data?.delivery?.pickup_coordinates) {
+            setOrigin(
+                data.delivery.origin,
+                data.delivery.pickup_coordinates as [number, number]
+            );
+        }
+
+        if (data?.delivery?.destination && data?.delivery?.dropoff_coordinates) {
+            setDestination(
+                data.delivery.destination,
+                data.delivery.dropoff_coordinates as [number, number]
+            );
+        }
+
+        // Navigate to detail screen
         router.push({
             pathname: '/delivery-detail/[id]',
             params: {
@@ -81,7 +109,16 @@ const ItemCard = React.memo(({ data, isHomeScreen = false }: CardProp) => {
                 orderNumber: data?.order.id
             }
         });
-    }, [data?.delivery?.id, data?.order.id]);
+    }, [
+        data?.delivery?.id,
+        data?.order.id,
+        data?.delivery?.origin,
+        data?.delivery?.destination,
+        data?.delivery?.pickup_coordinates,
+        data?.delivery?.dropoff_coordinates,
+        setOrigin,
+        setDestination
+    ]);
 
     // Memoize computed values
     const firstOrderItem = React.useMemo(() => data?.order.order_items[0], [data?.order.order_items]);
@@ -90,7 +127,7 @@ const ItemCard = React.memo(({ data, isHomeScreen = false }: CardProp) => {
 
     return (
         <TouchableOpacity activeOpacity={0.6} onPress={handlePress}>
-            <Card padding={10}>
+            <Card padding={10} >
                 <XStack flex={1}>
                     {/* Left side container */}
                     <XStack flex={1} gap={10}>
@@ -169,15 +206,15 @@ const ItemCard = React.memo(({ data, isHomeScreen = false }: CardProp) => {
                                 <XStack gap={5} alignItems="center" flexShrink={0}>
                                     <Feather name="clock" color={theme.icon.val} size={10} />
                                     <Text color="$text" fontFamily="$body" fontSize={11}>
-                                        {data?.delivery?.duration} mins
+                                        {data?.delivery?.duration}
                                     </Text>
                                 </XStack>
-                                <XStack gap={2} alignItems="center" flexShrink={0}>
+                                {/* <XStack gap={2} alignItems="center" flexShrink={0}>
                                     <MaterialCommunityIcons name="road-variant" color={theme.icon.val} size={11} />
                                     <Text color="$text" fontFamily="$body" fontSize={11}>
                                         {data?.delivery?.distance} km
                                     </Text>
-                                </XStack>
+                                </XStack> */}
                             </XStack>
                         </YStack>
                     </XStack>
@@ -202,7 +239,7 @@ const ItemCard = React.memo(({ data, isHomeScreen = false }: CardProp) => {
                         </Text>
                     </XStack>
 
-                    {!isHomeScreen && <Status status={data?.order?.order_status} />}
+                    {!isHomeScreen && <Status status={data?.delivery?.delivery_status} />}
                 </XStack>
             </Card>
         </TouchableOpacity>

@@ -4,6 +4,7 @@ import {
   Wallet,
   RiderResponse,
   UserProfileUpdate,
+  RiderUpdate,
 } from "@/types/user-types";
 import { apiClient } from "@/utils/client";
 import { ApiResponse } from "apisauce";
@@ -96,8 +97,6 @@ export const getCurrentDispatchRiders = async (): Promise<RiderResponse[]> => {
           : "Error loading user profile.";
       throw new Error(errorMessage);
     }
-
-    console.log("FROM SERVER", response.data, "XXXXXXXXXXXXXXXXXXXXXXXX");
 
     return response.data;
   } catch (error) {
@@ -202,7 +201,69 @@ export const updateCurrentVendorUser = async (
   }
 };
 
-// upload profile
+// Dispatch update rider
+export const updateRider = async (
+  riderId: string,
+  riderData: RiderUpdate
+): Promise<RiderUpdate> => {
+  const data = {
+    full_name: riderData.fullName,
+    phone_number: riderData.phoneNumber,
+    bike_number: riderData.bikeNumber,
+  };
+  try {
+    const response: ApiResponse<RiderUpdate | ErrorResponse> =
+      await apiClient.put(`${BASE_URL}/${riderId}/profile`, data, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+    if (!response.ok || !response.data || "detail" in response.data) {
+      const errorMessage =
+        response.data && "detail" in response.data
+          ? response.data.detail
+          : "Error updating rider profile.";
+      throw new Error(errorMessage);
+    }
+    return response.data;
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    }
+    throw new Error("An unexpected error occurred");
+  }
+};
+
+// Dispatch delete rider
+export const deleteRider = async (riderId: string): Promise<null> => {
+  try {
+    const response: ApiResponse<null | ErrorResponse> = await apiClient.delete(
+      `${BASE_URL}/${riderId}/delete`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (!response.ok || !response.data || "detail" in response.data) {
+      const errorMessage =
+        response.data && "detail" in response.data
+          ? response.data.detail
+          : "Error deleting rider.";
+      throw new Error(errorMessage);
+    }
+    return response.data;
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    }
+    throw new Error("An unexpected error occurred");
+  }
+};
+
+// upload profile image
 export const uploadProfileImage = async (
   imageData: ImageUpload
 ): Promise<ImageUpload> => {
@@ -250,83 +311,3 @@ export const uploadProfileImage = async (
     throw new Error("An unexpected error occurred");
   }
 };
-
-// upload profile
-// export const uploadProfileImage = async (
-//   imageData: ImageUpload
-// ): Promise<ImageUpload> => {
-//   const formData = new FormData();
-
-//   if (imageData.profile_image_url) {
-//     formData.append("profile_image_url", {
-//       uri: imageData.profile_image_url.uri,
-//       type: imageData.profile_image_url.type,
-//       name: imageData.profile_image_url.name,
-//     } as any);
-//   }
-
-//   try {
-//     const response: ApiResponse<ImageUpload | ErrorResponse> =
-//       await apiClient.put(`${BASE_URL}/upload-image`, formData, {
-//         headers: {
-//           "Content-Type": "multipart/form-data",
-//         },
-//       });
-
-//     if (!response.ok || !response.data || "detail" in response.data) {
-//       const errorMessage =
-//         response.data && "detail" in response.data
-//           ? response.data.detail
-//           : "Error uploading images.";
-//       throw new Error(errorMessage);
-//     }
-
-//     return response.data;
-//   } catch (error) {
-//     console.error("Upload error:", error);
-//     if (error instanceof Error) {
-//       throw new Error(error.message);
-//     }
-//     throw new Error("An unexpected error occurred");
-//   }
-// };
-
-// // upload backdrop
-// export const uploadBackdropImage = async (
-//   imageData: ImageUpload
-// ): Promise<ImageUpload> => {
-//   const formData = new FormData();
-
-//   if (imageData.backdrop_image_url) {
-//     formData.append("backdrop_image_url", {
-//       uri: imageData.backdrop_image_url.uri,
-//       type: imageData.backdrop_image_url.type,
-//       name: imageData.backdrop_image_url.name,
-//     } as any);
-//   }
-
-//   try {
-//     const response: ApiResponse<ImageUpload | ErrorResponse> =
-//       await apiClient.put(`${BASE_URL}/upload-image`, formData, {
-//         headers: {
-//           "Content-Type": "multipart/form-data",
-//         },
-//       });
-
-//     if (!response.ok || !response.data || "detail" in response.data) {
-//       const errorMessage =
-//         response.data && "detail" in response.data
-//           ? response.data.detail
-//           : "Error uploading images.";
-//       throw new Error(errorMessage);
-//     }
-
-//     return response.data;
-//   } catch (error) {
-//     console.error("Upload error:", error);
-//     if (error instanceof Error) {
-//       throw new Error(error.message);
-//     }
-//     throw new Error("An unexpected error occurred");
-//   }
-// };

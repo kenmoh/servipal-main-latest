@@ -1,7 +1,7 @@
 import { ActivityIndicator } from "react-native";
 import { useTheme, View } from "tamagui";
 
-function LoadingIndicator() {
+function LoadingIndicator({ size = 'large' }: { size?: 'large' | 'small' }) {
 
   const theme = useTheme();
   return (
@@ -11,7 +11,7 @@ function LoadingIndicator() {
       justifyContent="center"
       alignItems="center"
     >
-      <ActivityIndicator size="large" color={theme.icon.val} />
+      <ActivityIndicator size={size} color={theme.icon.val} />
     </View>
   );
 }

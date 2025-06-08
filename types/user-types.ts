@@ -135,6 +135,7 @@ export interface RiderResponse {
   email: string;
   phone_number: string;
   bike_number: string;
+  profile_image_url: string
   stats: {
     total_deliveries: number;
     pending_deliveries: number;
@@ -145,4 +146,11 @@ export interface RiderResponse {
 export interface ImageUrl {
   profile_image_url?: string;
   backdrop_image_url?: string;
+}
+
+
+export interface RiderUpdate {
+  fullName: string
+  phoneNumber: string
+  bikeNumber: string
 }

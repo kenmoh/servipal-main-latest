@@ -17,12 +17,10 @@ import {
     Button,
     View,
 } from "tamagui";
-import { AntDesign, Feather, FontAwesome6 } from "@expo/vector-icons";
-import { router, Stack, useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { useQuery } from "@tanstack/react-query";
 import {
     Phone,
-    Wallet2Icon,
     MapPin,
     Wallet,
     Info,
@@ -72,7 +70,7 @@ const ItemDetails = () => {
                         }}
                         onPress={() => setModalVisible(false)}
                     >
-                        <Text>Contact Rider</Text>
+                        <Text>Contact Rider </Text>
                     </TouchableOpacity>
                 </AppModal>
 

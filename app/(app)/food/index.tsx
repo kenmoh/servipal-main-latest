@@ -120,6 +120,7 @@ const Page = () => {
             if (status !== 'granted') return;
 
             const location = await Location.getCurrentPositionAsync({});
+            console.log('LOCATION', location.coords.latitude, location.coords.longitude)
             setUserLocation({
                 latitude: location.coords.latitude,
                 longitude: location.coords.longitude

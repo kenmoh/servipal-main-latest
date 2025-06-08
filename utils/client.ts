@@ -10,3 +10,7 @@ apiClient.addAsyncRequestTransform(async (request) => {
   if (!authToken) return;
   request.headers!["Authorization"] = "Bearer " + authToken;
 });
+
+export const mapboxClient = create({
+  baseURL: "https://api.mapbox.com",
+});

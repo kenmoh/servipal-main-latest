@@ -1,4 +1,3 @@
-import { X } from 'lucide-react-native';
 import React from 'react';
 import { Modal, View, StyleSheet, Text, TouchableWithoutFeedback } from 'react-native';
 import { useTheme } from 'tamagui';

@@ -1,39 +1,47 @@
-import { FlatList, StyleSheet } from 'react-native'
+import { FlatList } from 'react-native'
 import React from 'react'
-import { Button, useTheme, View } from 'tamagui'
+import { View } from 'tamagui'
 import RiderCard from '@/components/RiderCard'
-import { router } from 'expo-router'
+import EmptyList from '@/components/EmptyList'
 import { useQuery } from '@tanstack/react-query'
 import { RiderResponse } from '@/types/user-types'
 import { getCurrentDispatchRiders } from '@/api/user'
 import { useAuth } from '@/context/authContext'
+import LoadingIndicator from '@/components/LoadingIndicator'
 
 
 const riders = () => {
-    const theme = useTheme()
+
     const { user } = useAuth()
 
     const { data, refetch, isFetching } = useQuery({
-        queryKey: ['deliveries', user?.sub],
+        queryKey: ['riders', user?.sub],
         queryFn: () => getCurrentDispatchRiders(),
     })
 
-    console.log('XXXXXXXXXXXXXXX', data, '==========================')
+
+    if (isFetching) return <LoadingIndicator />
+
     return (
         <View backgroundColor={'$background'} flex={1}>
 
+            {
+
+                !isFetching && data?.length === 0 && <EmptyList
+                    title="No Riders Yet"
+                    description="Add your first dispatch rider to start managing deliveries efficiently"
+                    buttonTitle="Add New Rider"
+                    route="/profile/addRider"
+                />
+            }
             <FlatList
                 data={data ?? []}
                 keyExtractor={(item: RiderResponse) => item?.id?.toString()}
                 renderItem={({ item }: { item: RiderResponse }) => <RiderCard rider={item} />}
                 refreshing={isFetching}
                 onRefresh={refetch}
+
             />
-
-
-
-
-            <Button onPress={() => router.push('/addRider')}>Add Rider</Button>
 
         </View>
     )
@@ -41,4 +49,5 @@ const riders = () => {
 
 export default riders
 
-const styles = StyleSheet.create({})
+
+

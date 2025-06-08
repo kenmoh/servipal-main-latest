@@ -8,7 +8,7 @@ import { useQuery } from '@tanstack/react-query'
 import { Check, ClockIcon, Package, Package2, Shirt, ShoppingBag, Utensils } from 'lucide-react-native'
 import { useMemo, useState } from 'react'
 import { FlatList, ScrollView } from 'react-native'
-import { YStack, Text, useTheme, Card } from 'tamagui'
+import { YStack, Text, useTheme, Card, View } from 'tamagui'
 
 const UserOrders = () => {
     const theme = useTheme()
@@ -41,67 +41,77 @@ const UserOrders = () => {
     }), [data]);
 
     if (isLoading) return <LoadingIndicator />
-    if (error) return <Text color="$red10">Error loading data</Text>
+    if (error) return <Text color="$red10" alignSelf='center' alignContent='center' alignItems='center' justifyContent='center'>Error loading data</Text>
 
     return (
         <YStack backgroundColor={theme.background} flex={1} paddingHorizontal="$2">
-            <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={{
-                    paddingHorizontal: 10,
-                    gap: 10,
-                    paddingVertical: 15
-                }}
-            >
-                <StatCard
-                    icon={ClockIcon}
-                    label="Pending"
-                    value={stats.pending}
-                    color={theme.btnPrimaryColor.val}
-                />
-                <StatCard
-                    icon={Package2}
-                    label="Delivered"
-                    value={stats.delivered}
-                    color={theme.blue9.val}
-                />
-                <StatCard
-                    icon={Check}
-                    label="Completed"
-                    value={stats.completed}
-                    color={theme.green9.val}
-                />
-                <StatCard
-                    icon={Utensils}
-                    label="Food"
-                    value={stats.foodOrders}
-                    color={theme.red9.val}
-                />
-                <StatCard
-                    icon={Package}
-                    label="Package"
-                    value={stats.packageOrders}
-                    color={theme.green9.val}
-                />
-                <StatCard
-                    icon={Shirt}
-                    label="Laundry"
-                    value={stats.laundryOrders}
-                    color={theme.purple9.val}
-                />
-            </ScrollView>
+            <View marginVertical={2} backgroundColor={'$background'} alignItems='center' justifyContent='center' height={110}>
+
+                <ScrollView
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    contentContainerStyle={{
+                        paddingHorizontal: 10,
+                        gap: 10,
+                        paddingVertical: 10,
+                        height: '100%',
+
+
+                    }}
+                >
+                    <StatCard
+                        icon={ClockIcon}
+                        label="Pending"
+                        value={stats.pending}
+                        color={theme.btnPrimaryColor.val}
+                    />
+                    <StatCard
+                        icon={Package2}
+                        label="Delivered"
+                        value={stats.delivered}
+                        color={theme.blue9.val}
+                    />
+                    <StatCard
+                        icon={Check}
+                        label="Completed"
+                        value={stats.completed}
+                        color={theme.green9.val}
+                    />
+                    <StatCard
+                        icon={Utensils}
+                        label="Food"
+                        value={stats.foodOrders}
+                        color={theme.red9.val}
+                    />
+                    <StatCard
+                        icon={Package}
+                        label="Package"
+                        value={stats.packageOrders}
+                        color={theme.green9.val}
+                    />
+                    <StatCard
+                        icon={Shirt}
+                        label="Laundry"
+                        value={stats.laundryOrders}
+                        color={theme.purple9.val}
+                    />
+                </ScrollView>
+            </View>
 
             <HDivider width='100%' />
 
-            <FlatList
-                data={data}
-                keyExtractor={(item: DeliveryDetail) => item?.delivery?.id!}
-                renderItem={({ item }) => <ItemCard data={item} />}
-                ItemSeparatorComponent={() => <HDivider />}
-                refreshing={isFetching}
-                onRefresh={refetch}
-            />
+            <YStack backgroundColor={'$background'} flex={1}>
+
+
+                <FlatList
+                    data={data}
+                    keyExtractor={(item: DeliveryDetail) => item?.delivery?.id!}
+                    renderItem={({ item }) => <ItemCard data={item} />}
+                    ItemSeparatorComponent={() => <HDivider />}
+                    refreshing={isFetching}
+                    onRefresh={refetch}
+                />
+            </YStack>
         </YStack>
     )
 }

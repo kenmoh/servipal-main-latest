@@ -31,6 +31,7 @@ export interface Register {
 export interface RegisterRider {
   email: string;
   phoneNumber: string;
+  bikeNumber: string;
   fullName: string;
   password: string;
 }
@@ -68,7 +69,7 @@ export const loginApi = async (
         : "Something went wrong. Please try again.";
     throw new Error(errorMessage);
   }
-  console.log('response.problem')
+  console.log("response.problem");
   return response.data;
 };
 
@@ -115,9 +116,9 @@ export const registerRiderApi = async (
     full_name: userData.fullName,
     email: userData.email,
     password: userData.password,
-    bike_number: userData.phoneNumber,
-    phone_number: userData.phoneNumber
-  }
+    bike_number: userData.bikeNumber,
+    phone_number: userData.phoneNumber,
+  };
   try {
     const response: ApiResponse<RegisterRider | ErrorResponse> =
       await apiClient.post("/auth/register-rider", data, {

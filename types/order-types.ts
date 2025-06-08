@@ -2,13 +2,23 @@ export type Coordinates = [number | null, number | null];
 export type OrderType = "delivery" | "food" | "laundry";
 export type OrderStatus = "pending" | "in-transit" | "delivered";
 export type RequireDelivery = "pickup" | "delivery";
+export type PaymentStatus = "pending" | "paid" | "failed" | "cancelled";
+export type RiderDeliveryStatus = "in transit" | "delivered" | "canceled";
+export type SenderDeliveryStatus = "received";
+export type LaundryDeliveryStatus = "laundry received";
+export type DeliveryStatus =
+  | "pending"
+  | "in transit"
+  | "delivered"
+  | "received"
+  | "laundry received"
+  | "canceled";
 
 export interface ImageType {
   url: string;
   type: string;
   name: string;
 }
-export type PaymentStatus = "pending" | "paid" | "failed" | "cancelled";
 export interface SendItem {
   name: string;
   description: string;
@@ -24,7 +34,7 @@ export interface SendItem {
 interface Delivery {
   id: string;
   delivery_type: OrderType;
-  delivery_status: OrderStatus;
+  delivery_status: DeliveryStatus;
   sender_id: string;
   vendor_id: string;
   dispatch_id: string;
@@ -37,6 +47,7 @@ interface Delivery {
   amount_due_dispatch: string;
   created_at: string;
   pickup_coordinates?: Coordinates;
+  dropoff_coordinates?: Coordinates;
 }
 
 export interface OrderItemResponse {
