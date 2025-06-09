@@ -57,8 +57,13 @@ export const useLocationStore = create<LocationStore>((set) => ({
           result.district,
           result.city,
           result.region,
+          result.country,
         ]
           .filter(Boolean)
+          .filter(
+            (part) =>
+              typeof part === "string" && part.toLowerCase() !== "nigeria"
+          )
           .join(", ");
 
         return {

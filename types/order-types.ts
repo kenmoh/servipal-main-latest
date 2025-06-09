@@ -7,11 +7,12 @@ export type RiderDeliveryStatus = "in transit" | "delivered" | "canceled";
 export type SenderDeliveryStatus = "received";
 export type LaundryDeliveryStatus = "laundry received";
 export type DeliveryStatus =
+  | "accept"
   | "pending"
-  | "in transit"
+  | "in_transit"
   | "delivered"
   | "received"
-  | "laundry received"
+  | "laundry_received"
   | "canceled";
 
 export interface ImageType {

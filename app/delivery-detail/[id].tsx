@@ -3,6 +3,7 @@ import {
     TouchableOpacity,
     Dimensions,
     ScrollView,
+    ActivityIndicator,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import {
@@ -17,8 +18,9 @@ import {
     Button,
     View,
 } from "tamagui";
+import { Notifier, NotifierComponents } from "react-native-notifier";
 import { router, useLocalSearchParams } from "expo-router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
     Phone,
     MapPin,
@@ -29,7 +31,7 @@ import {
 } from "lucide-react-native";
 import LoadingIndicator from "@/components/LoadingIndicator";
 import { Status } from "@/components/ItemCard";
-import { fetchDelivery } from "@/api/order";
+import { fetchDelivery, senderConfirmDeliveryReceived, riderAcceptDelivery, senderMarkDeliveryInTransit, riderMarkDelivered, cancelDelivery } from "@/api/order";
 import DeliveryWrapper from "@/components/DeliveryWrapper";
 import { useAuth } from "@/context/authContext";
 import AppModal from "@/components/AppModal";
@@ -49,6 +51,92 @@ const ItemDetails = () => {
         // staleTime: 1000 * 60 * 3,
     });
 
+    const queryClient = useQueryClient();
+
+    const confirmReceivedMutation = useMutation({
+        mutationFn: () => senderConfirmDeliveryReceived(data?.delivery?.id as string),
+        onSuccess: () => queryClient.invalidateQueries({ queryKey: ["order", id] }),
+    });
+
+    const acceptDeliveryMutation = useMutation({
+        mutationFn: () => riderAcceptDelivery(data?.delivery?.id as string),
+        onSuccess: () => queryClient.invalidateQueries({ queryKey: ["order", id] }),
+    });
+
+    const markInTransitMutation = useMutation({
+        mutationFn: () => senderMarkDeliveryInTransit(data?.delivery?.id as string),
+        onSuccess: () => queryClient.invalidateQueries({ queryKey: ["order", id] }),
+    });
+
+    const markDeliveredMutation = useMutation({
+        mutationFn: () => riderMarkDelivered(data?.delivery?.id as string),
+        onSuccess: () => queryClient.invalidateQueries({ queryKey: ["order", id] }),
+    });
+
+    const cancelDeliveryMutation = useMutation({
+        mutationFn: () => cancelDelivery(data?.delivery?.id as string),
+        onSuccess: () => queryClient.invalidateQueries({ queryKey: ["order", id] }),
+    });
+
+    const getActionButton = () => {
+        if (!data || !user) return null;
+
+        // Rider can accept if order is pending and they are not assigned yet
+        if (
+            data?.delivery?.delivery_status === "pending" &&
+            !data?.delivery?.rider_id &&
+            user?.sub !== data?.delivery?.sender_id
+        ) {
+            return {
+                label: "Accept Delivery",
+                onPress: () => acceptDeliveryMutation.mutate(),
+                loading: acceptDeliveryMutation.isPending,
+            };
+        }
+
+        // Sender can mark in transit if order is accepted
+        if (
+            data?.delivery?.delivery_status === "accept" &&
+            user?.sub === data?.delivery?.sender_id
+        ) {
+            return {
+                label: "Mark In Transit",
+                onPress: () => markInTransitMutation.mutate(),
+                loading: markInTransitMutation.isPending,
+            };
+        }
+
+        // Rider can mark delivered if in transit
+        if (
+            data?.delivery?.delivery_status === "in_transit" &&
+            user?.sub === data?.delivery?.rider_id
+        ) {
+            return {
+                label: "Mark Delivered",
+                onPress: () => markDeliveredMutation.mutate(),
+                loading: markDeliveredMutation.isPending,
+            };
+        }
+
+        // Sender can confirm received if delivered
+        if (
+            data?.delivery?.delivery_status === "delivered" &&
+            user?.sub === data?.delivery?.sender_id
+        ) {
+            return {
+                label: "Confirm Received",
+                onPress: () => confirmReceivedMutation.mutate(),
+                loading: confirmReceivedMutation.isPending,
+            };
+        }
+
+        return null;
+    };
+
+    const actionButton = getActionButton();
+    const showCancel =
+        (user?.sub === data?.delivery?.sender_id || user?.sub === data?.delivery?.rider_id) &&
+        ["pending", "accept", "in_transit"].includes(data?.delivery?.delivery_status as string);
     if (isLoading) {
         return <LoadingIndicator />;
     }
@@ -138,8 +226,9 @@ const ItemDetails = () => {
                     paddingHorizontal={5}
                     alignSelf="center"
                     backgroundColor={"$profileCard"}
-                    bordered
-                    borderColor={"$inputBackground"}
+                    // bordered
+                    // borderColor={"$inputBackground"}
+                    height={'100%'}
                 >
                     <Card.Header gap={5}>
                         <XStack
@@ -240,21 +329,56 @@ const ItemDetails = () => {
                         </XStack>
                     </Card.Header>
                     <View alignContent="center">
-                        <Button
-                            bottom={10}
-                            size={"$4"}
-                            backgroundColor={"$btnPrimaryColor"}
-                            width={"90%"}
-                            textAlign="center"
-                            alignSelf="center"
-                            fontSize={20}
-                            fontFamily={"$body"}
-                            color={"$text"}
-                            fontWeight={"600"}
-                            pressStyle={{ backgroundColor: "$transparentBtnPrimaryColor" }}
-                        >
-                            Accept
-                        </Button>
+                        {actionButton && (
+                            <Button
+                                bottom={10}
+                                size={"$4"}
+                                backgroundColor={"$btnPrimaryColor"}
+                                width={"90%"}
+                                textAlign="center"
+                                alignSelf="center"
+                                fontSize={16}
+                                fontFamily={"$body"}
+                                color={"$text"}
+                                fontWeight={"600"}
+                                pressStyle={{ backgroundColor: "$transparentBtnPrimaryColor" }}
+                                onPress={actionButton.onPress}
+                                disabled={actionButton.loading}
+                            >
+                                {actionButton.loading ? (
+                                    <ActivityIndicator color="#fff" />
+                                ) : (
+                                    actionButton.label
+                                )}
+                            </Button>
+                        )}
+
+
+
+                        {showCancel && (
+                            <Button
+                                marginTop={10}
+                                size={"$4"}
+                                borderColor={"$red10"}
+                                borderWidth={1}
+                                width={"90%"}
+                                textAlign="center"
+                                alignSelf="center"
+                                fontSize={14}
+                                fontFamily={"$body"}
+                                color={"#fff"}
+                                fontWeight={"600"}
+                                pressStyle={{ backgroundColor: "$red8" }}
+                                onPress={() => cancelDeliveryMutation.mutate()}
+                                disabled={cancelDeliveryMutation.isPending}
+                            >
+                                {cancelDeliveryMutation.isPending ? (
+                                    <ActivityIndicator color="#fff" />
+                                ) : (
+                                    "Cancel Delivery"
+                                )}
+                            </Button>
+                        )}
                     </View>
                 </Card>
             </DeliveryWrapper>

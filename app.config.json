@@ -10,7 +10,7 @@
     "newArchEnabled": true,
     "ios": {
       "config": {
-        "googleMapsApiKey": "AIzaSyB3vT7E5X8lMw6cypc0YAHXlcuobLB4fbc"
+        "googleMapsApiKey": "${process.env.EXPO_PUBLIC_GOOGLE_MAP_API_KEY}"
       },
       "supportsTablet": true,
       "bundleIdentifier": "com.kenmoh.servipal",
@@ -22,7 +22,7 @@
       "googleServicesFile": "./google-services.json",
       "config": {
         "googleMaps": {
-          "apiKey": "AIzaSyB3vT7E5X8lMw6cypc0YAHXlcuobLB4fbc"
+          "apiKey": "${process.env.EXPO_PUBLIC_GOOGLE_MAP_API_KEY}"
         }
       },
       "adaptiveIcon": {

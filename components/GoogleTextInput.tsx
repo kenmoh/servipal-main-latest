@@ -53,7 +53,8 @@ const GoogleTextInput = ({ placeholder, handlePress, onChangeText, value, errorM
         //   }
         // }}
         onPress={(data, details = null) => {
-          const address = data.description;
+          // Remove trailing ", Nigeria" (with or without comma/space)
+          let address = data.description.replace(/,? ?Nigeria$/i, '');
           if (details?.geometry?.location) {
             const { lat, lng } = details.geometry.location;
             onChangeText(address);

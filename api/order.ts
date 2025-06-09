@@ -192,51 +192,14 @@ export const createOrder = async (
   }
 };
 
-// Update rider delivery status
-export const riderUpdateDeliveryStatus = async (
-  deliveryId: string,
-  status: RiderDeliveryStatus
-): Promise<DeliveryDetail> => {
-  try {
-    const response: ApiResponse<DeliveryDetail | ErrorResponse> =
-      await apiClient.put(
-        `${BASE_URL}/${deliveryId}/update-delivery-status`,
-        { status },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-    if (!response.ok || !response.data || "detail" in response.data) {
-      const errorMessage =
-        response.data && "detail" in response.data
-          ? response.data.detail
-          : "Error updating delivery status.";
-      throw new Error(errorMessage);
-    }
-    return response.data;
-  } catch (error) {
-    if (error instanceof Error) {
-      throw new Error(error.message);
-    }
-    throw new Error("An unexpected error occurred");
-  }
-};
-
 // Confirm Item Received by sender
 export const senderConfirmDeliveryReceived = async (
-  deliveryId: string,
-  isLaundry?: boolean
+  deliveryId: string
 ): Promise<DeliveryDetail> => {
   try {
-    const endpoint = isLaundry
-      ? "confirm-laundry-received"
-      : "confirm-delivery";
     const response: ApiResponse<DeliveryDetail | ErrorResponse> =
       await apiClient.put(
-        `${BASE_URL}/${deliveryId}/${endpoint}`,
+        `${BASE_URL}/${deliveryId}/confirm-delivery`,
         {},
         {
           headers: {
@@ -261,7 +224,103 @@ export const senderConfirmDeliveryReceived = async (
   }
 };
 
-// Cancel delivery (can only be done by rider when in-transit)
+// Rider Accept Delivery
+export const riderAcceptDelivery = async (
+  deliveryId: string
+): Promise<DeliveryDetail> => {
+  try {
+    const response: ApiResponse<DeliveryDetail | ErrorResponse> =
+      await apiClient.put(
+        `${BASE_URL}/${deliveryId}/accept-delivery`,
+        {},
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+    if (!response.ok || !response.data || "detail" in response.data) {
+      const errorMessage =
+        response.data && "detail" in response.data
+          ? response.data.detail
+          : "Error confirming delivery.";
+      throw new Error(errorMessage);
+    }
+    return response.data;
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    }
+    throw new Error("An unexpected error occurred");
+  }
+};
+
+// Sender Mark Delivery In Transit
+export const senderMarkDeliveryInTransit = async (
+  deliveryId: string
+): Promise<DeliveryDetail> => {
+  try {
+    const response: ApiResponse<DeliveryDetail | ErrorResponse> =
+      await apiClient.put(
+        `${BASE_URL}/${deliveryId}/in-transit`,
+        {},
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+    if (!response.ok || !response.data || "detail" in response.data) {
+      const errorMessage =
+        response.data && "detail" in response.data
+          ? response.data.detail
+          : "Error confirming delivery.";
+      throw new Error(errorMessage);
+    }
+    return response.data;
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    }
+    throw new Error("An unexpected error occurred");
+  }
+};
+
+// Rider Mark Delivery Delivered
+export const riderMarkDelivered = async (
+  deliveryId: string
+): Promise<DeliveryDetail> => {
+  try {
+    const response: ApiResponse<DeliveryDetail | ErrorResponse> =
+      await apiClient.put(
+        `${BASE_URL}/${deliveryId}/delivered`,
+        {},
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+    if (!response.ok || !response.data || "detail" in response.data) {
+      const errorMessage =
+        response.data && "detail" in response.data
+          ? response.data.detail
+          : "Error confirming delivery.";
+      throw new Error(errorMessage);
+    }
+    return response.data;
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    }
+    throw new Error("An unexpected error occurred");
+  }
+};
+
+// Cancel delivery (can only be done by rider when in-transit and sender when pending)
 export const cancelDelivery = async (
   deliveryId: string,
   reason?: string
@@ -442,22 +501,4 @@ export const getTravelDistance = async (
     console.error("Error calculating travel distance:", error);
     return null;
   }
-};
-
-export const isValidStatusTransition = (
-  currentStatus: DeliveryStatus,
-  newStatus: DeliveryStatus,
-  orderType: OrderType
-): boolean => {
-  const transitions: Record<DeliveryStatus, DeliveryStatus[]> = {
-    pending: ["canceled"],
-
-    "in transit": ["delivered", "canceled"],
-    delivered: orderType === "laundry" ? ["laundry received"] : ["received"],
-    "laundry received": ["delivered"],
-    received: [],
-    canceled: [],
-  };
-
-  return transitions[currentStatus]?.includes(newStatus) || false;
 };

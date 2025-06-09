@@ -1,42 +1,81 @@
 import { Dimensions } from "react-native";
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { FeatureCollection } from 'geojson';
-import MapView, { PROVIDER_GOOGLE } from "react-native-maps";
+import MapView, { PROVIDER_GOOGLE, Marker, Polyline } from "react-native-maps";
 // import Mapbox, { Camera, LocationPuck, MapView, ShapeSource } from '@rnmapbox/maps';
-
-
-
-const MAP_HEIGHT = Dimensions.get('window').height * 0.35
-
-const { width, height } = Dimensions.get('window');
-const ASPECT_RATIO = width / height;
-const LATITUDE_DELTA = 0.0922;
-const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
+import { useLocationStore } from '@/store/locationStore';
+import { getDirections } from '@/utils/map';
 
 
 const Map = () => {
+    const { originCoords, destinationCoords, origin, destination } = useLocationStore();
+    const [route, setRoute] = useState<number[][]>([]);
+    const [region, setRegion] = useState({
+        latitude: 9.082,
+        longitude: 8.6753,
+        latitudeDelta: 5,
+        longitudeDelta: 5,
+    });
+
+    useEffect(() => {
+        const fetchRoute = async () => {
+            if (originCoords && destinationCoords) {
+                const routeCoords = await getDirections(originCoords, destinationCoords);
+                setRoute(routeCoords);
+                // Zoom to fit
+                const allCoords = [originCoords, destinationCoords, ...routeCoords];
+                const lats = allCoords.map(c => c[0]);
+                const lngs = allCoords.map(c => c[1]);
+                const minLat = Math.min(...lats);
+                const maxLat = Math.max(...lats);
+                const minLng = Math.min(...lngs);
+                const maxLng = Math.max(...lngs);
+                setRegion({
+                    latitude: (minLat + maxLat) / 2,
+                    longitude: (minLng + maxLng) / 2,
+                    latitudeDelta: Math.max(0.05, (maxLat - minLat) * 1.5),
+                    longitudeDelta: Math.max(0.05, (maxLng - minLng) * 1.5),
+                });
+            }
+        };
+        fetchRoute();
+    }, [originCoords, destinationCoords]);
 
     return (
-
         <MapView
-            provider={PROVIDER_GOOGLE} style={{ height: '75%', width: '100%' }}
+            provider={PROVIDER_GOOGLE}
+            style={{ height: '75%', width: '100%' }}
             tintColor={'black'}
             mapType={'standard'}
-            showsPointsOfInterest={false}
             showsUserLocation={true}
             userInterfaceStyle={'dark'}
             showsMyLocationButton={true}
             showsCompass={true}
-            initialRegion={{
-                latitude: 9.082,
-                longitude: 8.6753,
-                latitudeDelta: 5,
-                longitudeDelta: 5,
-            }}
-        />
-
-
-    )
+            region={region}
+        >
+            {originCoords && (
+                <Marker
+                    coordinate={{ latitude: originCoords[0], longitude: originCoords[1] }}
+                    title={origin ? origin : "Origin"}
+                    description={origin ? origin : undefined}
+                />
+            )}
+            {destinationCoords && (
+                <Marker
+                    coordinate={{ latitude: destinationCoords[0], longitude: destinationCoords[1] }}
+                    title={destination ? destination : "Destination"}
+                    description={destination ? destination : undefined}
+                />
+            )}
+            {route.length > 0 && (
+                <Polyline
+                    coordinates={route.map(coord => ({ latitude: coord[0], longitude: coord[1] }))}
+                    strokeColor="blue"
+                    strokeWidth={4}
+                />
+            )}
+        </MapView>
+    );
 }
 
 export default Map
