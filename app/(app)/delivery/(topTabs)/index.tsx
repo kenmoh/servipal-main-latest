@@ -35,8 +35,6 @@ const DeliveryScreen = () => {
     try {
       const profile = await getCurrentUser(user?.sub);
 
-      console.log(profile)
-
       if (profile) {
         authStorage.storeProfile(profile);
         setProfile(profile);
@@ -269,7 +267,6 @@ const DeliveryScreen = () => {
   }
 
 
-  console.log(filteredData, 'FILTERED')
   return (
     <YStack backgroundColor={theme.background} flex={1} padding="$2">
       <AppTextInput height={'40'} borderRadius={50} placeholder="Search"

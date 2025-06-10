@@ -56,6 +56,8 @@ const ItemDetails = () => {
         // staleTime: 1000 * 60 * 3,
     });
 
+    console.log(data?.delivery?.rider_id === user?.sub)
+
     const queryClient = useQueryClient();
 
     const confirmReceivedMutation = useMutation({
@@ -229,6 +231,13 @@ const ItemDetails = () => {
                 loading: laundryReceivedMutation.isPending,
             };
         }
+        if (
+            data?.delivery?.delivery_status === "received"
+        ) {
+            return {
+                label: "Received",
+            };
+        }
 
         return null;
     };
@@ -381,30 +390,29 @@ const ItemDetails = () => {
                                 </Paragraph>
                             </XStack>
                         </XStack>
-                        {user?.sub === data?.delivery?.sender_id ||
-                            (user?.sub === data?.delivery?.rider_id && (
-                                <XStack gap={5}>
-                                    <Phone color={theme.icon.val} size={15} />
-                                    <XStack justifyContent="space-between" width={"96%"}>
-                                        <Paragraph
-                                            color={"$text"}
-                                            fontFamily={"$body"}
-                                            fontWeight={"300"}
-                                            fontSize={11}
-                                        >
-                                            Sender Phone
-                                        </Paragraph>
-                                        <Paragraph
-                                            color={"$text"}
-                                            fontFamily={"$body"}
-                                            fontWeight={"500"}
-                                            fontSize={12}
-                                        >
-                                            {data?.delivery?.sender_phone_number}
-                                        </Paragraph>
-                                    </XStack>
+                        {(user?.sub === data?.delivery?.sender_id || user?.sub === data?.delivery?.rider_id || user?.sub === data?.delivery?.dispatch_id) && (
+                            <XStack gap={5}>
+                                <Phone color={theme.icon.val} size={15} />
+                                <XStack justifyContent="space-between" width={"96%"}>
+                                    <Paragraph
+                                        color={"$text"}
+                                        fontFamily={"$body"}
+                                        fontWeight={"300"}
+                                        fontSize={11}
+                                    >
+                                        Sender Phone
+                                    </Paragraph>
+                                    <Paragraph
+                                        color={"$text"}
+                                        fontFamily={"$body"}
+                                        fontWeight={"500"}
+                                        fontSize={12}
+                                    >
+                                        {data?.delivery?.sender_phone_number}
+                                    </Paragraph>
                                 </XStack>
-                            ))}
+                            </XStack>
+                        )}
 
                         <XStack gap={5}>
                             <MapPin color={theme.icon.val} size={15} />
@@ -433,7 +441,7 @@ const ItemDetails = () => {
                             <Button
                                 bottom={10}
                                 size={"$4"}
-                                backgroundColor={"$btnPrimaryColor"}
+                                backgroundColor={data?.delivery?.delivery_status === 'received' ? '$cardDark' : "$btnPrimaryColor"}
                                 width={"90%"}
                                 textAlign="center"
                                 alignSelf="center"
@@ -443,7 +451,7 @@ const ItemDetails = () => {
                                 fontWeight={"600"}
                                 pressStyle={{ backgroundColor: "$transparentBtnPrimaryColor" }}
                                 onPressIn={actionButton.onPress}
-                                disabled={actionButton.loading}
+                                disabled={data?.delivery?.delivery_status === 'received'}
                             >
                                 {actionButton.loading ? (
                                     <ActivityIndicator color="#ccc" />
