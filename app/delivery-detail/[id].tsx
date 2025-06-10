@@ -31,12 +31,17 @@ import {
 } from "lucide-react-native";
 import LoadingIndicator from "@/components/LoadingIndicator";
 import { Status } from "@/components/ItemCard";
-import { fetchDelivery, senderConfirmDeliveryReceived, riderAcceptDelivery, senderMarkDeliveryInTransit, riderMarkDelivered, cancelDelivery } from "@/api/order";
+import {
+    fetchDelivery,
+    senderConfirmDeliveryReceived,
+    riderAcceptDelivery,
+    riderMarkDelivered,
+    cancelDelivery,
+    markLaundryReceived,
+} from "@/api/order";
 import DeliveryWrapper from "@/components/DeliveryWrapper";
 import { useAuth } from "@/context/authContext";
 import AppModal from "@/components/AppModal";
-
-const MAP_HEIGHT = Dimensions.get("window").height * 0.35;
 
 const ItemDetails = () => {
     const { id } = useLocalSearchParams();
@@ -44,8 +49,8 @@ const ItemDetails = () => {
     const { user } = useAuth();
     const [modalVisible, setModalVisible] = useState(false);
 
-    const { data, isLoading } = useQuery({
-        queryKey: ["order", id],
+    const { data, isLoading, refetch } = useQuery({
+        queryKey: ["delivery", id],
         queryFn: () => fetchDelivery(id as string),
         enabled: !!id,
         // staleTime: 1000 * 60 * 3,
@@ -54,28 +59,124 @@ const ItemDetails = () => {
     const queryClient = useQueryClient();
 
     const confirmReceivedMutation = useMutation({
-        mutationFn: () => senderConfirmDeliveryReceived(data?.delivery?.id as string),
-        onSuccess: () => queryClient.invalidateQueries({ queryKey: ["order", id] }),
+        mutationFn: () =>
+            senderConfirmDeliveryReceived(data?.delivery?.id as string),
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: ["deliveries", ["delivery", id]],
+            });
+            refetch();
+            Notifier.showNotification({
+                title: "Success",
+                description: "Delivery confirmed as received!",
+                Component: NotifierComponents.Alert,
+                componentProps: { alertType: "success" },
+            });
+        },
+        onError: (error: Error) => {
+            Notifier.showNotification({
+                title: "Error",
+                description: `${error.message}`,
+                Component: NotifierComponents.Alert,
+                componentProps: { alertType: "error" },
+            });
+        },
+    });
+
+    const laundryReceivedMutation = useMutation({
+        mutationFn: () =>
+            markLaundryReceived(data?.delivery?.id as string),
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: ["deliveries", ["delivery", id]],
+            });
+            refetch();
+            Notifier.showNotification({
+                title: "Success",
+                description: "Laundry item received.",
+                Component: NotifierComponents.Alert,
+                componentProps: { alertType: "success" },
+            });
+        },
+        onError: (error: Error) => {
+            Notifier.showNotification({
+                title: "Error",
+                description: `${error.message}`,
+                Component: NotifierComponents.Alert,
+                componentProps: { alertType: "error" },
+            });
+        },
     });
 
     const acceptDeliveryMutation = useMutation({
         mutationFn: () => riderAcceptDelivery(data?.delivery?.id as string),
-        onSuccess: () => queryClient.invalidateQueries({ queryKey: ["order", id] }),
-    });
-
-    const markInTransitMutation = useMutation({
-        mutationFn: () => senderMarkDeliveryInTransit(data?.delivery?.id as string),
-        onSuccess: () => queryClient.invalidateQueries({ queryKey: ["order", id] }),
+        onSuccess: () => {
+            refetch();
+            queryClient.invalidateQueries({
+                queryKey: ["deliveries", ["delivery", id]],
+            });
+            Notifier.showNotification({
+                title: "Success",
+                description: "Delivery accepted!",
+                Component: NotifierComponents.Alert,
+                componentProps: { alertType: "success" },
+            });
+        },
+        onError: (error: Error) => {
+            Notifier.showNotification({
+                title: "Error",
+                description: `${error.message.split(": ")[1]}`,
+                Component: NotifierComponents.Alert,
+                componentProps: { alertType: "error" },
+            });
+        },
     });
 
     const markDeliveredMutation = useMutation({
         mutationFn: () => riderMarkDelivered(data?.delivery?.id as string),
-        onSuccess: () => queryClient.invalidateQueries({ queryKey: ["order", id] }),
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: ["deliveries", ["delivery", id]],
+            });
+            refetch();
+            Notifier.showNotification({
+                title: "Success",
+                description: "Delivery marked as delivered!",
+                Component: NotifierComponents.Alert,
+                componentProps: { alertType: "success" },
+            });
+        },
+        onError: (error: Error) => {
+            Notifier.showNotification({
+                title: "Error",
+                description: `${error.message}`,
+                Component: NotifierComponents.Alert,
+                componentProps: { alertType: "error" },
+            });
+        },
     });
 
     const cancelDeliveryMutation = useMutation({
         mutationFn: () => cancelDelivery(data?.delivery?.id as string),
-        onSuccess: () => queryClient.invalidateQueries({ queryKey: ["order", id] }),
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: ["deliveries", ["delivery", id]],
+            });
+            Notifier.showNotification({
+                title: "Success",
+                description: "Delivery cancelled!",
+                Component: NotifierComponents.Alert,
+                componentProps: { alertType: "success" },
+            });
+        },
+        onError: (error: Error) => {
+            Notifier.showNotification({
+                title: "Error",
+                description: `${error.message}`,
+                Component: NotifierComponents.Alert,
+                componentProps: { alertType: "error" },
+            });
+        },
     });
 
     const getActionButton = () => {
@@ -94,30 +195,6 @@ const ItemDetails = () => {
             };
         }
 
-        // Sender can mark in transit if order is accepted
-        if (
-            data?.delivery?.delivery_status === "accept" &&
-            user?.sub === data?.delivery?.sender_id
-        ) {
-            return {
-                label: "Mark In Transit",
-                onPress: () => markInTransitMutation.mutate(),
-                loading: markInTransitMutation.isPending,
-            };
-        }
-
-        // Rider can mark delivered if in transit
-        if (
-            data?.delivery?.delivery_status === "in_transit" &&
-            user?.sub === data?.delivery?.rider_id
-        ) {
-            return {
-                label: "Mark Delivered",
-                onPress: () => markDeliveredMutation.mutate(),
-                loading: markDeliveredMutation.isPending,
-            };
-        }
-
         // Sender can confirm received if delivered
         if (
             data?.delivery?.delivery_status === "delivered" &&
@@ -129,14 +206,38 @@ const ItemDetails = () => {
                 loading: confirmReceivedMutation.isPending,
             };
         }
+        // Rider mark order delivered
+        if (
+            data?.delivery?.delivery_status === "accept" &&
+            user?.sub === data?.delivery?.rider_id || data?.delivery?.dispatch_id
+        ) {
+            return {
+                label: "Delivered",
+                onPress: () => markDeliveredMutation.mutate(),
+                loading: markDeliveredMutation.isPending,
+            };
+        }
+        // Laundry vendour mark received
+        if (
+            data?.delivery?.delivery_status === "delivered" &&
+            data?.delivery?.delivery_type === 'laundry' &&
+            user?.sub === data?.order?.vendor_id && user?.user_type === 'vendor'
+        ) {
+            return {
+                label: "Item Received",
+                onPress: () => laundryReceivedMutation.mutate(),
+                loading: laundryReceivedMutation.isPending,
+            };
+        }
 
         return null;
     };
 
     const actionButton = getActionButton();
     const showCancel =
-        (user?.sub === data?.delivery?.sender_id || user?.sub === data?.delivery?.rider_id) &&
-        ["pending", "accept", "in_transit"].includes(data?.delivery?.delivery_status as string);
+        (user?.sub === data?.delivery?.sender_id ||
+            user?.sub === data?.delivery?.rider_id) &&
+        ["pending", "accept"].includes(data?.delivery?.delivery_status as string);
     if (isLoading) {
         return <LoadingIndicator />;
     }
@@ -162,37 +263,34 @@ const ItemDetails = () => {
                     </TouchableOpacity>
                 </AppModal>
 
-
-
-
-                {user?.sub === data?.delivery?.sender_id && (
-
-                    <TouchableOpacity
-                        style={{
-                            backgroundColor: theme.cardDark.val,
-                            borderColor: theme.borderColor.val,
-                            borderWidth: 1,
-                            height: 40,
-                            width: "95%",
-                            alignSelf: "center",
-                            borderRadius: 8,
-                            justifyContent: "center",
-                            alignItems: "center",
-                            marginVertical: 10,
-                        }}
-                        onPress={() =>
-                            router.push({
-                                pathname: "/user-details/[userId]",
-                                params: { userId: 1 },
-                            })
-                        }
-                    >
-                        <XStack gap={10}>
-                            <User color={"white"} size={20} />
-                            <Text>CONTACT RIDER</Text>
-                        </XStack>
-                    </TouchableOpacity>
-                )}
+                {user?.sub === data?.delivery?.sender_id &&
+                    data?.delivery?.sender_id && (
+                        <TouchableOpacity
+                            style={{
+                                backgroundColor: theme.cardDark.val,
+                                borderColor: theme.borderColor.val,
+                                borderWidth: 1,
+                                height: 40,
+                                width: "95%",
+                                alignSelf: "center",
+                                borderRadius: 8,
+                                justifyContent: "center",
+                                alignItems: "center",
+                                marginVertical: 10,
+                            }}
+                            onPressIn={() =>
+                                router.push({
+                                    pathname: "/user-details/[userId]",
+                                    params: { userId: 1 },
+                                })
+                            }
+                        >
+                            <XStack gap={10}>
+                                <User color={"white"} size={20} />
+                                <Text>CONTACT RIDER</Text>
+                            </XStack>
+                        </TouchableOpacity>
+                    )}
                 {user?.sub === data?.delivery?.sender_id &&
                     data?.order.order_payment_status !== "paid" && (
                         <Button
@@ -202,7 +300,7 @@ const ItemDetails = () => {
                             width={"90%"}
                             icon={DollarSign}
                             color={"white"}
-                            onPress={() =>
+                            onPressIn={() =>
                                 router.push({
                                     pathname: "/payment/[orderId]",
                                     params: {
@@ -225,10 +323,9 @@ const ItemDetails = () => {
                     width={"95%"}
                     paddingHorizontal={5}
                     alignSelf="center"
-                    backgroundColor={"$profileCard"}
-                    // bordered
-                    // borderColor={"$inputBackground"}
-                    height={'100%'}
+                    flex={1}
+                    backgroundColor={"$background"}
+                    height={"100%"}
                 >
                     <Card.Header gap={5}>
                         <XStack
@@ -284,27 +381,30 @@ const ItemDetails = () => {
                                 </Paragraph>
                             </XStack>
                         </XStack>
-                        <XStack gap={5}>
-                            <Phone color={theme.icon.val} size={15} />
-                            <XStack justifyContent="space-between" width={"96%"}>
-                                <Paragraph
-                                    color={"$text"}
-                                    fontFamily={"$body"}
-                                    fontWeight={"300"}
-                                    fontSize={11}
-                                >
-                                    Sender Phone
-                                </Paragraph>
-                                {/* <Paragraph color={'$text'} fontFamily={'$body'} fontWeight={'500'} fontSize={12}>{data?.order_owner_phone_number}</Paragraph> */}
-                            </XStack>
-                        </XStack>
-                        {/* <XStack gap={5}>
-                        <Phone color={theme.icon.val} size={15} />
-                        <XStack justifyContent='space-between' width={'96%'}>
-                            <Paragraph color={'$text'} fontFamily={'$body'} fontWeight={'300'} fontSize={11}>Recepient Phone</Paragraph>
-                            <Paragraph color={'$text'} fontFamily={'$body'} fontWeight={'500'} fontSize={12}>{data?.order_owner_phone_number}</Paragraph>
-                        </XStack>
-                    </XStack> */}
+                        {user?.sub === data?.delivery?.sender_id ||
+                            (user?.sub === data?.delivery?.rider_id && (
+                                <XStack gap={5}>
+                                    <Phone color={theme.icon.val} size={15} />
+                                    <XStack justifyContent="space-between" width={"96%"}>
+                                        <Paragraph
+                                            color={"$text"}
+                                            fontFamily={"$body"}
+                                            fontWeight={"300"}
+                                            fontSize={11}
+                                        >
+                                            Sender Phone
+                                        </Paragraph>
+                                        <Paragraph
+                                            color={"$text"}
+                                            fontFamily={"$body"}
+                                            fontWeight={"500"}
+                                            fontSize={12}
+                                        >
+                                            {data?.delivery?.sender_phone_number}
+                                        </Paragraph>
+                                    </XStack>
+                                </XStack>
+                            ))}
 
                         <XStack gap={5}>
                             <MapPin color={theme.icon.val} size={15} />
@@ -342,42 +442,42 @@ const ItemDetails = () => {
                                 color={"$text"}
                                 fontWeight={"600"}
                                 pressStyle={{ backgroundColor: "$transparentBtnPrimaryColor" }}
-                                onPress={actionButton.onPress}
+                                onPressIn={actionButton.onPress}
                                 disabled={actionButton.loading}
                             >
                                 {actionButton.loading ? (
-                                    <ActivityIndicator color="#fff" />
+                                    <ActivityIndicator color="#ccc" />
                                 ) : (
                                     actionButton.label
                                 )}
                             </Button>
                         )}
 
-
-
                         {showCancel && (
-                            <Button
-                                marginTop={10}
-                                size={"$4"}
-                                borderColor={"$red10"}
-                                borderWidth={1}
-                                width={"90%"}
-                                textAlign="center"
-                                alignSelf="center"
-                                fontSize={14}
-                                fontFamily={"$body"}
-                                color={"#fff"}
-                                fontWeight={"600"}
-                                pressStyle={{ backgroundColor: "$red8" }}
-                                onPress={() => cancelDeliveryMutation.mutate()}
-                                disabled={cancelDeliveryMutation.isPending}
-                            >
-                                {cancelDeliveryMutation.isPending ? (
-                                    <ActivityIndicator color="#fff" />
-                                ) : (
-                                    "Cancel Delivery"
-                                )}
-                            </Button>
+                            <>
+                                <Button
+                                    marginTop={10}
+                                    size={"$4"}
+                                    borderColor={"$red10"}
+                                    borderWidth={1}
+                                    width={"90%"}
+                                    textAlign="center"
+                                    alignSelf="center"
+                                    fontSize={14}
+                                    fontFamily={"$body"}
+                                    color={"#fff"}
+                                    fontWeight={"600"}
+                                    pressStyle={{ backgroundColor: "$red8" }}
+                                    onPressIn={() => cancelDeliveryMutation.mutate()}
+                                    disabled={cancelDeliveryMutation.isPending}
+                                >
+                                    {cancelDeliveryMutation.isPending ? (
+                                        <ActivityIndicator color="#ccc" />
+                                    ) : (
+                                        "Cancel Delivery"
+                                    )}
+                                </Button>
+                            </>
                         )}
                     </View>
                 </Card>

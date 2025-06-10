@@ -9,7 +9,6 @@ export type LaundryDeliveryStatus = "laundry received";
 export type DeliveryStatus =
   | "accept"
   | "pending"
-  | "in_transit"
   | "delivered"
   | "received"
   | "laundry_received"
@@ -38,8 +37,10 @@ interface Delivery {
   delivery_status: DeliveryStatus;
   sender_id: string;
   vendor_id: string;
-  dispatch_id: string;
   rider_id: string;
+  sender_phone_number: string;
+  rider_phone_number: string;
+  dispatch_id: string;
   distance: string;
   origin?: string;
   duration?: string;

@@ -113,7 +113,7 @@ const SignIn = () => {
               fontSize={20}
               fontWeight={"bold"}
             >
-              Welcome back,
+              Welcome back!
             </Text>
             <Text
               alignSelf="flex-start"

@@ -1,52 +1,97 @@
-import { DeliveryType, fetchDeliveries } from '@/api/order'
-import HDivider from '@/components/HDivider'
-import ItemCard from '@/components/ItemCard'
-import LoadingIndicator from '@/components/LoadingIndicator'
-import { useAuth } from '@/context/authContext'
-import { DeliveryDetail } from '@/types/order-types'
-import { useQuery } from '@tanstack/react-query'
-import { Check, ClockIcon, Package, Package2, Shirt, ShoppingBag, Utensils } from 'lucide-react-native'
-import { useMemo, useState } from 'react'
-import { FlatList, ScrollView } from 'react-native'
-import { YStack, Text, useTheme, Card, View } from 'tamagui'
+import { fetchDeliveries } from "@/api/order";
+import HDivider from "@/components/HDivider";
+import ItemCard from "@/components/ItemCard";
+import LoadingIndicator from "@/components/LoadingIndicator";
+import { useAuth } from "@/context/authContext";
+import { DeliveryDetail } from "@/types/order-types";
+import { useQuery } from "@tanstack/react-query";
+import {
+    Check,
+    ClockIcon,
+    CoinsIcon,
+    Handshake,
+    Package,
+    Package2,
+    Shirt,
+    ShoppingBag,
+    Utensils,
+} from "lucide-react-native";
+import { useMemo, useState } from "react";
+import { FlatList, ScrollView } from "react-native";
+import { YStack, Text, useTheme, Card, View } from "tamagui";
 
 const UserOrders = () => {
-    const theme = useTheme()
-    const { user } = useAuth()
-    const [selectedType, setSelectedType] = useState<DeliveryType | 'all'>('all')
+    const theme = useTheme();
+    const { user } = useAuth();
 
     const { data, isLoading, error, refetch, isFetching } = useQuery({
-        queryKey: ['deliveries', user?.sub],
+        queryKey: ["deliveries", user?.sub],
         queryFn: () => fetchDeliveries(),
         select: (data) => {
             if (!user?.sub || !data) return [];
 
-            return data.filter(order =>
-                order?.delivery?.sender_id === user.sub ||
-                order?.delivery?.vendor_id === user.sub ||
-                order?.delivery?.dispatch_id === user.sub ||
-                order?.delivery?.rider_id === user.sub
+            return data.filter(
+                (order) =>
+                    order?.delivery?.sender_id === user.sub ||
+                    order?.delivery?.vendor_id === user.sub ||
+                    order?.delivery?.dispatch_id === user.sub ||
+                    order?.delivery?.rider_id === user.sub
             );
         },
-        enabled: !!user?.sub // Only fetch when user ID is available
-    })
+        enabled: !!user?.sub, // Only fetch when user ID is available
+    });
 
-    const stats = useMemo(() => ({
-        pending: data?.filter(order => order.order.order_status === 'pending').length || 0,
-        delivered: data?.filter(order => order.order.order_status === 'delivered').length || 0,
-        completed: data?.filter(order => order.order.order_status === 'in-transit').length || 0,
-        foodOrders: data?.filter(order => order.order.order_type === 'food').length || 0,
-        packageOrders: data?.filter(order => order.order.order_type === 'package').length || 0,
-        laundryOrders: data?.filter(order => order.order.order_type === 'laundry').length || 0,
-    }), [data]);
+    console.log(user?.user_type, data);
 
-    if (isLoading) return <LoadingIndicator />
-    if (error) return <Text color="$red10" alignSelf='center' alignContent='center' alignItems='center' justifyContent='center'>Error loading data</Text>
+    const stats = useMemo(
+        () => ({
+            pending:
+                data?.filter((order) => order.delivery?.delivery_status === "pending")
+                    .length || 0,
+            acepted:
+                data?.filter((order) => order.delivery?.delivery_status === "accept")
+                    .length || 0,
+            received:
+                data?.filter((order) => order.delivery?.delivery_status === "received")
+                    .length || 0,
+            delivered:
+                data?.filter((order) => order.delivery?.delivery_status === "delivered")
+                    .length || 0,
+            foodOrders:
+                data?.filter((order) => order.order.order_type === "food").length || 0,
+            packageOrders:
+                data?.filter((order) => order.order.order_type === "package").length ||
+                0,
+            laundryOrders:
+                data?.filter((order) => order.order.order_type === "laundry").length ||
+                0,
+        }),
+        [data]
+    );
+
+    if (isLoading) return <LoadingIndicator />;
+    if (error)
+        return (
+            <Text
+                color="$red10"
+                alignSelf="center"
+                alignContent="center"
+                alignItems="center"
+                justifyContent="center"
+            >
+                Error loading data
+            </Text>
+        );
 
     return (
         <YStack backgroundColor={theme.background} flex={1} paddingHorizontal="$2">
-            <View marginVertical={2} backgroundColor={'$background'} alignItems='center' justifyContent='center' height={110}>
-
+            <View
+                marginVertical={2}
+                backgroundColor={"$background"}
+                alignItems="center"
+                justifyContent="center"
+                height={110}
+            >
                 <ScrollView
                     horizontal
                     showsHorizontalScrollIndicator={false}
@@ -54,11 +99,21 @@ const UserOrders = () => {
                         paddingHorizontal: 10,
                         gap: 10,
                         paddingVertical: 10,
-                        height: '100%',
-
-
+                        height: "100%",
                     }}
                 >
+                    <StatCard
+                        icon={CoinsIcon}
+                        label="Total Orders"
+                        value={data?.length || 0}
+                        color={theme.gray10.val}
+                    />
+                    <StatCard
+                        icon={Check}
+                        label="Received"
+                        value={stats.received}
+                        color={theme.successTransparent.val}
+                    />
                     <StatCard
                         icon={ClockIcon}
                         label="Pending"
@@ -66,16 +121,17 @@ const UserOrders = () => {
                         color={theme.btnPrimaryColor.val}
                     />
                     <StatCard
+                        icon={Handshake}
+                        label="Accepted"
+                        value={stats.acepted}
+                        color={theme.gray11.val}
+                    />
+
+                    <StatCard
                         icon={Package2}
                         label="Delivered"
                         value={stats.delivered}
                         color={theme.blue9.val}
-                    />
-                    <StatCard
-                        icon={Check}
-                        label="Completed"
-                        value={stats.completed}
-                        color={theme.green9.val}
                     />
                     <StatCard
                         icon={Utensils}
@@ -98,11 +154,9 @@ const UserOrders = () => {
                 </ScrollView>
             </View>
 
-            <HDivider width='100%' />
+            <HDivider width="100%" />
 
-            <YStack backgroundColor={'$background'} flex={1}>
-
-
+            <YStack backgroundColor={"$background"} flex={1}>
                 <FlatList
                     data={data}
                     keyExtractor={(item: DeliveryDetail) => item?.delivery?.id!}
@@ -113,17 +167,21 @@ const UserOrders = () => {
                 />
             </YStack>
         </YStack>
-    )
-}
+    );
+};
 
+export default UserOrders;
 
-export default UserOrders
-
-const StatCard = ({ icon: Icon, label, value, color }: {
-    icon: any,
-    label: string,
-    value: number,
-    color: string
+const StatCard = ({
+    icon: Icon,
+    label,
+    value,
+    color,
+}: {
+    icon: any;
+    label: string;
+    value: number;
+    color: string;
 }) => (
     <Card
         bordered
@@ -138,28 +196,12 @@ const StatCard = ({ icon: Icon, label, value, color }: {
     >
         <Icon size={24} color={color} />
         <YStack alignItems="center">
-            <Text
-                fontSize={18}
-                fontWeight="700"
-                color="$text"
-            >
+            <Text fontSize={18} fontWeight="700" color="$text">
                 {value}
             </Text>
-            <Text
-                fontSize={11}
-                color="$icon"
-                fontFamily="$body"
-            >
+            <Text fontSize={11} color="$icon" fontFamily="$body">
                 {label}
             </Text>
         </YStack>
     </Card>
 );
-
-
-
-
-
-
-
-

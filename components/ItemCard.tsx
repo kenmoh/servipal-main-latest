@@ -38,11 +38,19 @@ export const Status = React.memo(({ status }: { status?: DeliveryStatus }) => {
     const getStatusColors = (status?: DeliveryStatus) => {
         switch (status) {
             case 'pending':
-                return { bg: '$pendingTransparent', color: '$pending' };
-            case 'in transit':
-                return { bg: '$deliveredTransparent', color: '$delivered' };
+                return { bg: 'rgba(255, 193, 7, 0.12)', color: 'gold' };
+            case 'accept':
+                return { bg: 'rgba(33, 150, 243, 0.10)', color: '#0D47A1' };
+            case 'delivered':
+                return { bg: 'rgba(45, 243, 111, 0.29)', color: 'green' };
+            case 'received':
+                return { bg: 'rgba(211, 7, 247, 0.32)', color: 'pink' };
+            case 'laundry_received':
+                return { bg: 'rgba(255, 152, 0, 0.10)', color: '#E65100' };
+            case 'canceled':
+                return { bg: 'rgba(244, 67, 54, 0.10)', color: '#B71C1C' };
             default:
-                return { bg: '$successTransparent', color: '$success' };
+                return { bg: 'rgba(120, 144, 156, 0.10)', color: '#263238' };
         }
     };
 
@@ -62,7 +70,8 @@ export const Status = React.memo(({ status }: { status?: DeliveryStatus }) => {
                 fontSize={11}
                 textTransform='capitalize'
             >
-                {status}
+                {/* { status?.replace(/_/g, ' ')} */}
+                {status === 'accept' ? 'Acepted' : status}
             </Text>
         </View>
     );

@@ -34,6 +34,9 @@ const DeliveryScreen = () => {
     if (!user?.sub) return;
     try {
       const profile = await getCurrentUser(user?.sub);
+
+      console.log(profile)
+
       if (profile) {
         authStorage.storeProfile(profile);
         setProfile(profile);
@@ -83,16 +86,17 @@ const DeliveryScreen = () => {
         deliveryType: selectedType === "all" ? undefined : selectedType,
       }),
     select: (data) => {
-      return data?.filter(order => order.order.order_payment_status === 'paid') || []
+      return data?.filter(order => order.order.order_payment_status === 'paid' && order.delivery?.delivery_status === 'pending') || []
     },
     staleTime: 1000 * 60 * 5,
+
 
   });
 
   // Handle location change and Memoize user location change
   const handleLocationChange = useCallback((newLocation: { latitude: number; longitude: number }) => {
     setUserLocation(newLocation);
-    distanceCache.clear(); // Clear cache when location changes significantly
+    distanceCache.clear();
   }, []);
 
   useLocationTracking(handleLocationChange);
@@ -168,44 +172,10 @@ const DeliveryScreen = () => {
     right: 10,
   }), [theme.btnPrimaryColor?.val]);
 
-  // Filter function
-  // const filteredData = useMemo(() => {
-  //   if (!searchQuery.trim() || !data) return data;
-
-  //   const searchTerm = searchQuery.toLowerCase().trim();
-  //   return data.filter(item => {
-  //     const origin = item.delivery?.origin?.toLowerCase() || '';
-  //     const destination = item.delivery?.destination?.toLowerCase() || '';
-
-  //     return origin.includes(searchTerm) || destination.includes(searchTerm);
-  //   });
-  // }, [data, searchQuery]);
 
   const handleSearch = useCallback((text: string) => {
     setSearchQuery(text);
   }, []);
-
-
-  // Filter deliveries within 30km
-  // const filteredData = useMemo(() => {
-  //   if (!data || !locationPermission) return []
-
-  //   let filtered = data.filter(item => {
-  //     const distance = parseFloat(item?.delivery?.distance!)
-  //     return distance <= 30
-  //   })
-
-  //   if (searchQuery.trim()) {
-  //     const searchTerm = searchQuery.toLowerCase().trim()
-  //     filtered = filtered.filter(item => {
-  //       const origin = item.delivery?.origin?.toLowerCase() || ''
-  //       const destination = item.delivery?.destination?.toLowerCase() || ''
-  //       return origin.includes(searchTerm) || destination.includes(searchTerm)
-  //     })
-  //   }
-
-  //   return filtered
-  // }, [data, searchQuery, locationPermission])
 
 
   // Filter deliveries within 30km
@@ -232,7 +202,7 @@ const DeliveryScreen = () => {
           ) return null;
 
           const distance = await getItemDistance([pickupCoords[0], pickupCoords[1]]);
-          if (distance === null || distance > 30) return null;
+          if (distance === null || distance > 100) return null;
 
           return {
             ...item,
@@ -240,29 +210,6 @@ const DeliveryScreen = () => {
           };
         })
       );
-
-      // const itemsWithinRange = await Promise.all(
-      //   data.map(async (item) => {
-      //     const pickupCoords = item.delivery?.pickup_coordinates;
-
-      //     if (!pickupCoords || !pickupCoords[0] || !pickupCoords[1]) return null;
-
-      //     const distance = await getTravelDistance(
-      //       userLocation.latitude,
-      //       userLocation.longitude,
-      //       pickupCoords[0],
-      //       pickupCoords[1]
-      //     );
-
-      //     // Now distance is in kilometers (numeric value)
-      //     if (distance === null || distance > 30) return null;
-
-      //     return {
-      //       ...item,
-      //       distance
-      //     };
-      //   })
-      // );
 
       let filtered = itemsWithinRange.filter(Boolean) as (DeliveryDetail & { distance: number })[];
 
@@ -287,20 +234,6 @@ const DeliveryScreen = () => {
     };
   }, [data, searchQuery, locationPermission, userLocation]);
 
-
-
-  // const handleSearch = useMemo(
-  //   () => debounce((text: string) => {
-  //     setSearchQuery(text);
-  //   }, 500),
-  //   []
-  // );
-
-  // useEffect(() => {
-  //   return () => {
-  //     handleSearch.cancel();
-  //   };
-  // }, [handleSearch]);
 
   if (!locationPermission) {
     return <LocationPermission onRetry={checkLocationPermission} />
@@ -336,7 +269,7 @@ const DeliveryScreen = () => {
   }
 
 
-
+  console.log(filteredData, 'FILTERED')
   return (
     <YStack backgroundColor={theme.background} flex={1} padding="$2">
       <AppTextInput height={'40'} borderRadius={50} placeholder="Search"
