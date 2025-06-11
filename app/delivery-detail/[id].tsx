@@ -60,7 +60,7 @@ const ItemDetails = () => {
         queryFn: () => getRiderProfile(data?.delivery?.rider_id as string),
         refetchOnWindowFocus: true,
         refetchOnMount: true,
-        enabled: !!data?.delivery?.rider_id
+        
     });
 
 
@@ -289,13 +289,13 @@ const ItemDetails = () => {
     if (isLoading) {
         return <LoadingIndicator />;
     }
-
+console.log(profileData, data)
     return (
         <>
             <DeliveryWrapper>
 
                 {user?.sub === data?.delivery?.sender_id &&
-                    data?.delivery?.sender_id && data?.delivery?.delivery_status === 'accepted' &&(
+                    data?.delivery?.sender_id && data?.delivery?.delivery_status !== 'pending' &&(
                         <TouchableOpacity
                             style={{
                                 backgroundColor: theme.cardDark.val,
@@ -314,11 +314,11 @@ const ItemDetails = () => {
                                     pathname: "/user-details/[userId]",
                                     params: {
                                         userId: data?.delivery?.rider_id!,
-                                        name: profileData?.business_name || profileData?.full_name,
+                                        name: profileData?.full_name || profileData?.business_name,
                                         bikeNumber: profileData?.bike_number,
                                         address: profileData?.business_address,
-                                        phone: profileData?.phone_number
-
+                                        phone: profileData?.phone_number,
+                                        profile: profileData?.profile_image_url,
 
                                     },
                                 })

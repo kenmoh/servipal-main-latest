@@ -281,7 +281,7 @@ const DeliveryScreen = () => {
       </YStack>
     );
   }
-console.log(user?.user_type)
+
   return (
     <YStack backgroundColor={theme.background} flex={1} padding="$2">
       <AppTextInput

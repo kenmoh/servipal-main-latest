@@ -111,6 +111,7 @@ const AddRider = () => {
             });
 
             handleSuccess();
+            reset();
         },
         onError: handleError,
     });
@@ -126,7 +127,6 @@ const AddRider = () => {
     //     onError: handleError,
     // });
 
-    console.log(updateMutation.data, 'XXXXXXXXXXXXXXXXXXXX')
 
     const onSubmit = (data: FormData) => {
         if (isEditing) {
@@ -134,7 +134,7 @@ const AddRider = () => {
         } else {
             createMutation.mutate(data as CreateFormData);
         }
-        reset();
+      
     };
 
     return (

@@ -23,7 +23,7 @@ const ValidationSchema = Yup.object().shape({
     phoneNumber: Yup.string()
         .required()
         .matches(phoneRegEx, "Enter a valid phone number")
-        .max(11)
+        .max(13)
         .min(10)
         .label("Phone Number"),
     location: Yup.string().required().label("Location"),
@@ -143,7 +143,7 @@ const Profile = () => {
                                 // label='Company Registration Number'
                                 placeholder="Company Reg No."
                                 editable={
-                                    profile?.business_registration_number === "" ? true : false
+                                    profile?.business_registration_number === null ? true : false
                                 }
                                 onChangeText={handleChange("companyRegNo")}
                                 value={values.companyRegNo}
@@ -169,7 +169,7 @@ const Profile = () => {
                             <AppTextInput
                                 // label='Company Name'
                                 placeholder="Company Name"
-                                editable={profile?.business_name === "" ? true : false}
+                                editable={profile?.business_name === null ? true : false}
                                 onChangeText={handleChange("companyName")}
                                 autoCapitalize="words"
                                 value={values.companyName}

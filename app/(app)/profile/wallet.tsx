@@ -69,7 +69,7 @@ const index = () => {
                                     <XStack alignItems='baseline' gap={'$1'} marginTop="$2">
                                         <Text style={[styles.currency, { fontFamily: "Poppins-Thin" }]}>₦</Text>
                                         <Text style={[styles.amount, { fontFamily: "Poppins-Thin" }]}>
-                                            {isBalanceHidden ? '****' : formatCurrency(data?.balance || 0)}
+                                            {isBalanceHidden ? '****' : formatCurrency(data?.escrow_balance || 0)}
                                         </Text>
                                     </XStack>
                                 </YStack>

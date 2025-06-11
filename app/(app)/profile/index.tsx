@@ -124,7 +124,7 @@ const profile = () => {
 
                     <YStack alignSelf="center" marginTop={"$2"}>
                         <Heading letterSpacing={"$1"} fontSize={"$4"} alignSelf="center">
-                            {profile?.business_name || profile?.full_name}
+                            {profile?.full_name || profile?.business_name}
                         </Heading>
 
                         <Text alignSelf="center">{profile?.phone_number}</Text>
