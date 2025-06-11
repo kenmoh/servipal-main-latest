@@ -71,6 +71,16 @@ export type Login = {
   password: string;
 };
 
+export interface RiderProfile {
+  profile_image_url?: string;
+  full_name: string;
+  email: string;
+  phone_number: string;
+  business_address: string;
+  business_name: string;
+  bike_number: string;
+}
+
 export interface Profile {
   user_id: string;
   full_name?: string;
@@ -135,7 +145,7 @@ export interface RiderResponse {
   email: string;
   phone_number: string;
   bike_number: string;
-  profile_image_url: string
+  profile_image_url: string;
   stats: {
     total_deliveries: number;
     pending_deliveries: number;
@@ -148,9 +158,8 @@ export interface ImageUrl {
   backdrop_image_url?: string;
 }
 
-
 export interface RiderUpdate {
-  fullName: string
-  phoneNumber: string
-  bikeNumber: string
+  fullName: string;
+  phoneNumber: string;
+  bikeNumber: string;
 }

@@ -61,7 +61,7 @@ type FormData = z.infer<typeof sendItemSchema>;
 
 const ItemInfo = () => {
   // Get location data from Zustand store
-  const { origin, originCoords, destination, destinationCoords } =
+  const { origin, originCoords, setDestination, setOrigin, destination, destinationCoords } =
     useLocationStore();
 
   const theme = useTheme();
@@ -113,7 +113,17 @@ const ItemInfo = () => {
           alertType: "info",
         },
       });
-      router.replace("/(app)/delivery");
+      router.push({
+        pathname: '/payment/[orderId]',
+        params: {
+          orderId: data?.order.id ?? "",
+          deliveryFee: data?.delivery?.delivery_fee,
+          orderNumber: data?.order?.order_number,
+          deliveryType: data?.delivery?.delivery_type,
+          orderItems: JSON.stringify(data?.order.order_items ?? []),
+          paymentLink: data?.order.payment_link,
+        },
+      });
       return;
     },
     onError: (error) => {
@@ -132,6 +142,8 @@ const ItemInfo = () => {
 
   const onSubmit = (data: FormData) => {
     mutate(data);
+    setOrigin('', [0, 0])
+    setDestination('', [0, 0])
   };
 
   // Update form from Zustand state

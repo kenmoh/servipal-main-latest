@@ -3,8 +3,7 @@ import { jwtDecode } from "jwt-decode";
 import { AuthContext, useProtectedRoute } from "@/context/authContext";
 import authStorage from '@/storage/authStorage'
 import { User, Profile, ImageUrl } from "@/types/user-types";
-import { getCurrentUser } from "@/api/user";
-import { queryClient } from "@/app/_layout";
+
 
 
 const AuthProvider = ({ children }: { children: ReactNode }) => {
@@ -86,7 +85,6 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
                 authStorage.removeImage()
 
             ])
-            queryClient.clear();
         } catch (error) {
             console.error('Error signing out:', error)
         }

@@ -1,7 +1,7 @@
 import { StyleSheet, Dimensions, View, Pressable } from 'react-native'
 import React from 'react'
 import { Text, useTheme, YStack, XStack, Avatar, Button } from 'tamagui'
-import { router } from 'expo-router'
+import { router, useLocalSearchParams } from 'expo-router'
 import { Mail, Phone, MapPin, Bike } from 'lucide-react-native'
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window')
@@ -9,6 +9,7 @@ const MODAL_HEIGHT = SCREEN_HEIGHT * 0.70
 
 const Modal = () => {
     const theme = useTheme()
+    const { name, phone } = useLocalSearchParams()
 
     const handleContentPress = (e: any) => {
         e.stopPropagation();
@@ -25,7 +26,7 @@ const Modal = () => {
                         </Avatar>
 
                         <YStack alignItems="center" gap={4}>
-                            <Text color="$text" fontSize={20} fontWeight="600">John Doe</Text>
+                            <Text color="$text" fontSize={20} fontWeight="600">{name}</Text>
                             <Text color="$gray11" fontSize={14}>Customer</Text>
                         </YStack>
                     </YStack>
@@ -38,7 +39,7 @@ const Modal = () => {
                         </XStack>
                         <XStack alignItems="center" gap={10}>
                             <Phone size={20} color={theme.gray11.val} />
-                            <Text color="$text" fontSize={14}>+234 123 456 7890</Text>
+                            <Text color="$text" fontSize={14}>+{phone}</Text>
                         </XStack>
                         <XStack alignItems="center" gap={10}>
                             <MapPin size={20} color={theme.gray11.val} />

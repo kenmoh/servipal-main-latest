@@ -58,7 +58,7 @@ const AppPicker = ({
                             color={theme.text.val}
                             style={{ backgroundColor: theme.cardDark.val }}
                             label={item.name}
-                            value={isBank ? item.code : item.id}
+                            value={isBank ? item.code : item.name}
                             key={isBank ? item.code : item.id}
                         />
                     ))}

@@ -5,6 +5,7 @@ import {
   RiderResponse,
   UserProfileUpdate,
   RiderUpdate,
+  RiderProfile,
 } from "@/types/user-types";
 import { apiClient } from "@/utils/client";
 import { ApiResponse } from "apisauce";
@@ -23,7 +24,7 @@ export interface ImageUpload {
 
 const BASE_URL = "/users";
 
-// Get current logged in user
+// Get user profile
 export const getCurrentUser = async (userId: string): Promise<Profile> => {
   try {
     const response: ApiResponse<Profile | ErrorResponse> = await apiClient.get(
@@ -40,6 +41,34 @@ export const getCurrentUser = async (userId: string): Promise<Profile> => {
         response.data && "detail" in response.data
           ? response.data.detail
           : "Error loading user profile.";
+      throw new Error(errorMessage);
+    }
+
+    return response.data;
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    }
+    throw new Error("An unexpected error occurred");
+  }
+};
+// Get rider profile
+export const getRiderProfile = async (
+  userId: string
+): Promise<RiderProfile> => {
+  try {
+    const response: ApiResponse<RiderProfile | ErrorResponse> =
+      await apiClient.get(`${BASE_URL}/${userId}/rider-profile`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+    if (!response.ok || !response.data || "detail" in response.data) {
+      const errorMessage =
+        response.data && "detail" in response.data
+          ? response.data.detail
+          : "Error loading rider profile.";
       throw new Error(errorMessage);
     }
 

@@ -19,16 +19,18 @@ import LocationPermission from "@/components/Locationpermission";
 import { distanceCache } from "@/utils/distance-cache";
 import { useLocationTracking } from "@/hooks/useLocationTracking";
 
-
 const DeliveryScreen = () => {
   const theme = useTheme();
   const { user, setProfile } = useAuth();
   const [selectedType, setSelectedType] = useState<DeliveryType | "all">("all");
   const [searchQuery, setSearchQuery] = useState("");
-  const [locationPermission, setLocationPermission] = useState<boolean | null>(null)
-  const [userLocation, setUserLocation] = useState<{ latitude: number; longitude: number } | null>(null);
-
-
+  const [locationPermission, setLocationPermission] = useState<boolean | null>(
+    null
+  );
+  const [userLocation, setUserLocation] = useState<{
+    latitude: number;
+    longitude: number;
+  } | null>(null);
 
   const getUserProfile = useCallback(async () => {
     if (!user?.sub) return;
@@ -45,11 +47,11 @@ const DeliveryScreen = () => {
   }, [user?.sub, setProfile]);
 
   const checkLocationPermission = useCallback(async () => {
-    const { status } = await Location.getForegroundPermissionsAsync()
-    const isLocationEnabled = await Location.hasServicesEnabledAsync()
+    const { status } = await Location.getForegroundPermissionsAsync();
+    const isLocationEnabled = await Location.hasServicesEnabledAsync();
 
-    setLocationPermission(status === 'granted' && isLocationEnabled)
-  }, [])
+    setLocationPermission(status === "granted" && isLocationEnabled);
+  }, []);
 
   useEffect(() => {
     const getUserLocation = async () => {
@@ -59,10 +61,10 @@ const DeliveryScreen = () => {
         const location = await Location.getCurrentPositionAsync({});
         setUserLocation({
           latitude: location.coords.latitude,
-          longitude: location.coords.longitude
+          longitude: location.coords.longitude,
         });
       } catch (error) {
-        console.error('Error getting user location:', error);
+        console.error("Error getting user location:", error);
       }
     };
 
@@ -70,32 +72,37 @@ const DeliveryScreen = () => {
   }, [locationPermission]);
 
   useEffect(() => {
-    checkLocationPermission()
-  }, [checkLocationPermission])
+    checkLocationPermission();
+  }, [checkLocationPermission]);
 
   useEffect(() => {
     getUserProfile();
   }, [getUserProfile]);
 
   const { data, isLoading, error, refetch, isFetching } = useQuery({
-    queryKey: ["deliveries", selectedType],
-    queryFn: () =>
-      fetchDeliveries({
-        deliveryType: selectedType === "all" ? undefined : selectedType,
-      }),
+    queryKey: ["deliveries"],
+    queryFn: () => fetchDeliveries(),
     select: (data) => {
-      return data?.filter(order => order.order.order_payment_status === 'paid' && order.delivery?.delivery_status === 'pending') || []
+      return (
+        data?.filter(
+          (order) =>
+            order.order.order_payment_status === "paid" &&
+            order.delivery?.delivery_status === "pending"
+        ) || []
+      );
     },
-    staleTime: 1000 * 60 * 5,
 
-
+    refetchOnWindowFocus: true,
   });
 
-  // Handle location change and Memoize user location change
-  const handleLocationChange = useCallback((newLocation: { latitude: number; longitude: number }) => {
-    setUserLocation(newLocation);
-    distanceCache.clear();
-  }, []);
+  // Handle location change
+  const handleLocationChange = useCallback(
+    (newLocation: { latitude: number; longitude: number }) => {
+      setUserLocation(newLocation);
+      distanceCache.clear();
+    },
+    []
+  );
 
   useLocationTracking(handleLocationChange);
 
@@ -145,7 +152,8 @@ const DeliveryScreen = () => {
   const renderSeparator = useCallback(() => <HDivider />, []);
 
   const keyExtractor = useCallback(
-    (item: DeliveryDetail, index: number) => item?.delivery?.id ?? `delivery-${index}`,
+    (item: DeliveryDetail, index: number) =>
+      item?.delivery?.id ?? `delivery-${index}`,
     []
   );
 
@@ -158,23 +166,24 @@ const DeliveryScreen = () => {
   }, [refetch]);
 
   // Memoize button style
-  const fabStyle = useMemo(() => ({
-    alignItems: "center" as const,
-    justifyContent: "center" as const,
-    height: 60,
-    width: 60,
-    borderRadius: 50,
-    backgroundColor: theme.btnPrimaryColor?.val,
-    position: "absolute" as const,
-    bottom: 10,
-    right: 10,
-  }), [theme.btnPrimaryColor?.val]);
-
+  const fabStyle = useMemo(
+    () => ({
+      alignItems: "center" as const,
+      justifyContent: "center" as const,
+      height: 60,
+      width: 60,
+      borderRadius: 50,
+      backgroundColor: theme.btnPrimaryColor?.val,
+      position: "absolute" as const,
+      bottom: 10,
+      right: 10,
+    }),
+    [theme.btnPrimaryColor?.val]
+  );
 
   const handleSearch = useCallback((text: string) => {
     setSearchQuery(text);
   }, []);
-
 
   // Filter deliveries within 30km
   const [filteredData, setFilteredData] = useState<DeliveryDetail[]>([]);
@@ -197,29 +206,37 @@ const DeliveryScreen = () => {
             pickupCoords[1] === null ||
             typeof pickupCoords[0] !== "number" ||
             typeof pickupCoords[1] !== "number"
-          ) return null;
+          )
+            return null;
 
-          const distance = await getItemDistance([pickupCoords[0], pickupCoords[1]]);
+          const distance = await getItemDistance([
+            pickupCoords[0],
+            pickupCoords[1],
+          ]);
           if (distance === null || distance > 100) return null;
 
           return {
             ...item,
-            distance
+            distance,
           };
         })
       );
 
-      let filtered = itemsWithinRange.filter(Boolean) as (DeliveryDetail & { distance: number })[];
+      let filtered = itemsWithinRange.filter(Boolean) as (DeliveryDetail & {
+        distance: number;
+      })[];
 
       // Sort by distance (closest first)
       filtered.sort((a, b) => a.distance - b.distance);
 
       if (searchQuery.trim()) {
         const searchTerm = searchQuery.toLowerCase().trim();
-        filtered = filtered.filter(item => {
-          const origin = item?.delivery?.origin?.toLowerCase() || '';
-          const destination = item?.delivery?.destination?.toLowerCase() || '';
-          return origin.includes(searchTerm) || destination.includes(searchTerm);
+        filtered = filtered.filter((item) => {
+          const origin = item?.delivery?.origin?.toLowerCase() || "";
+          const destination = item?.delivery?.destination?.toLowerCase() || "";
+          return (
+            origin.includes(searchTerm) || destination.includes(searchTerm)
+          );
         });
       }
 
@@ -232,9 +249,8 @@ const DeliveryScreen = () => {
     };
   }, [data, searchQuery, locationPermission, userLocation]);
 
-
   if (!locationPermission) {
-    return <LocationPermission onRetry={checkLocationPermission} />
+    return <LocationPermission onRetry={checkLocationPermission} />;
   }
 
   if (isLoading) return <LoadingIndicator />;
@@ -265,12 +281,13 @@ const DeliveryScreen = () => {
       </YStack>
     );
   }
-
-
+console.log(user?.user_type)
   return (
     <YStack backgroundColor={theme.background} flex={1} padding="$2">
-      <AppTextInput height={'40'} borderRadius={50} placeholder="Search"
-
+      <AppTextInput
+        height={"40"}
+        borderRadius={50}
+        placeholder="Search"
         onChangeText={handleSearch}
         value={searchQuery}
       />
@@ -288,9 +305,10 @@ const DeliveryScreen = () => {
         initialNumToRender={10}
         windowSize={10}
       />
-      <TouchableOpacity onPress={handleSendItemPress} style={fabStyle}>
-        <Send color={theme.text?.val} size={25} />
-      </TouchableOpacity>
+
+     {( user?.user_type !== 'dispatch' || user?.user_type !== 'rider') &&<TouchableOpacity onPress={handleSendItemPress} style={fabStyle}>
+             <Send color={theme.text?.val} size={25} />
+           </TouchableOpacity>}
     </YStack>
   );
 };

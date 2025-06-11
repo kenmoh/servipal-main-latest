@@ -3,7 +3,7 @@ import React from 'react'
 import { Card, View, XStack, YStack, Image, useTheme, Text, Square } from 'tamagui'
 import { Feather, MaterialCommunityIcons, AntDesign } from '@expo/vector-icons'
 import { router } from 'expo-router'
-import { DeliveryDetail, DeliveryStatus, OrderStatus } from '@/types/order-types'
+import { DeliveryDetail, DeliveryStatus, OrderStatus, PaymentStatus } from '@/types/order-types'
 import { Package, Shirt, Utensils } from 'lucide-react-native'
 import { useLocationStore } from '@/store/locationStore'
 
@@ -17,6 +17,8 @@ type DeliveryIconProps = {
     size?: number;
     theme: any;
 }
+
+
 
 // Memoize the DeliveryTypeIcon component
 const DeliveryTypeIcon = React.memo(({ type, size = 12, theme }: DeliveryIconProps) => {
@@ -39,10 +41,10 @@ export const Status = React.memo(({ status }: { status?: DeliveryStatus }) => {
         switch (status) {
             case 'pending':
                 return { bg: 'rgba(255, 193, 7, 0.12)', color: 'gold' };
-            case 'accept':
+            case 'accepted':
                 return { bg: 'rgba(33, 150, 243, 0.10)', color: '#0D47A1' };
             case 'delivered':
-                return { bg: 'rgba(45, 243, 111, 0.29)', color: 'green' };
+                return { bg: 'rgba(45, 243, 111, 0.10)', color: '#bbb' };
             case 'received':
                 return { bg: 'rgba(211, 7, 247, 0.32)', color: 'pink' };
             case 'laundry_received':
@@ -70,12 +72,54 @@ export const Status = React.memo(({ status }: { status?: DeliveryStatus }) => {
                 fontSize={11}
                 textTransform='capitalize'
             >
-                {/* { status?.replace(/_/g, ' ')} */}
-                {status === 'accept' ? 'Acepted' : status}
+                {status}
             </Text>
         </View>
     );
 });
+
+
+// Memoize the Status component
+export const PaymentStatusColor = React.memo(({ status }: { status?: PaymentStatus }) => {
+    const getPaymentStatusColors = (status?: PaymentStatus) => {
+        switch (status) {
+            case 'pending':
+                return { bg: 'rgba(255, 193, 7, 0.12)', color: 'gold' };
+            case 'paid':
+                return { bg: 'rgba(45, 243, 111, 0.10)', color: '#bbb' };
+            case 'cancelled':
+                return { bg: 'rgba(244, 67, 54, 0.10)', color: '#B71C1C' };
+            case 'failed':
+                return { bg: 'rgba(244, 67, 54, 0.10)', color: '#B71C1C' };
+            default:
+                return { bg: 'rgba(120, 144, 156, 0.10)', color: '#263238' };
+        }
+    };
+
+    const colors = getPaymentStatusColors(status);
+
+    return (
+        <View
+            backgroundColor={colors.bg}
+            paddingVertical={6}
+            paddingHorizontal={10}
+            borderRadius={20}
+        >
+            <Text
+                color={colors.color}
+                fontFamily={'$heading'}
+                fontWeight={'800'}
+                fontSize={11}
+                textTransform='capitalize'
+            >
+                {/* { status?.replace(/_/g, ' ')} */}
+                {status}
+            </Text>
+        </View>
+    );
+});
+
+
 
 Status.displayName = 'Status';
 
@@ -248,7 +292,10 @@ const ItemCard = React.memo(({ data, isHomeScreen = false }: CardProp) => {
                         </Text>
                     </XStack>
 
-                    {!isHomeScreen && <Status status={data?.delivery?.delivery_status} />}
+                    {!isHomeScreen && <XStack gap={5}>
+                        <Status status={data?.delivery?.delivery_status} />
+                        <PaymentStatusColor status={data?.order?.order_payment_status} />
+                    </XStack>}
                 </XStack>
             </Card>
         </TouchableOpacity>

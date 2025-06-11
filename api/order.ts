@@ -16,22 +16,20 @@ const BASE_URL = "/orders";
 export type DeliveryType = "food" | "laundry" | "package";
 
 interface FetchDeliveriesParams {
-  deliveryType?: DeliveryType;
   skip?: number;
   limit?: number;
 }
 
 // Fetch Deliveries
 export const fetchDeliveries = async ({
-  deliveryType,
   skip = 0,
   limit = 25,
 }: FetchDeliveriesParams = {}): Promise<DeliveryDetail[]> => {
   const params = new URLSearchParams();
 
-  if (deliveryType) {
-    params.append("delivery_type", deliveryType.toString());
-  }
+  // if (deliveryType) {
+  //   params.append("delivery_type", deliveryType.toString());
+  // }
   if (typeof skip === "number") {
     params.append("skip", skip.toString());
   }

@@ -7,7 +7,7 @@ export type RiderDeliveryStatus = "in transit" | "delivered" | "canceled";
 export type SenderDeliveryStatus = "received";
 export type LaundryDeliveryStatus = "laundry received";
 export type DeliveryStatus =
-  | "accept"
+  | "accepted"
   | "pending"
   | "delivered"
   | "received"

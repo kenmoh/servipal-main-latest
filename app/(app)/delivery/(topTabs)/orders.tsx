@@ -13,7 +13,6 @@ import {
     Package,
     Package2,
     Shirt,
-    ShoppingBag,
     Utensils,
 } from "lucide-react-native";
 import { useMemo, useState } from "react";
@@ -38,10 +37,9 @@ const UserOrders = () => {
                     order?.delivery?.rider_id === user.sub
             );
         },
-        enabled: !!user?.sub, // Only fetch when user ID is available
+
     });
 
-    console.log(user?.user_type, data);
 
     const stats = useMemo(
         () => ({
@@ -49,7 +47,7 @@ const UserOrders = () => {
                 data?.filter((order) => order.delivery?.delivery_status === "pending")
                     .length || 0,
             acepted:
-                data?.filter((order) => order.delivery?.delivery_status === "accept")
+                data?.filter((order) => order.delivery?.delivery_status === "accepted")
                     .length || 0,
             received:
                 data?.filter((order) => order.delivery?.delivery_status === "received")

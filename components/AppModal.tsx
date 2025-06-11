@@ -1,3 +1,4 @@
+import { Profile } from '@/types/user-types';
 import React from 'react';
 import { Modal, View, StyleSheet, Text, TouchableWithoutFeedback } from 'react-native';
 import { useTheme } from 'tamagui';
@@ -7,6 +8,7 @@ interface AppModalProps {
     visible: boolean;
     onClose: () => void;
     children: React.ReactNode;
+
 }
 
 const AppModal = ({ visible, onClose, children }: AppModalProps) => {
@@ -21,10 +23,8 @@ const AppModal = ({ visible, onClose, children }: AppModalProps) => {
         >
             <TouchableWithoutFeedback onPress={onClose}>
                 <View style={styles.overlay}>
-                    <Text>ken</Text>
                     <TouchableWithoutFeedback>
                         <View style={[styles.modalContent, { backgroundColor: theme.background.val }]}>
-
                             {children}
                         </View>
                     </TouchableWithoutFeedback>
