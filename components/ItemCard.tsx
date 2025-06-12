@@ -233,7 +233,7 @@ const ItemCard = React.memo(({ data, isHomeScreen = false }: CardProp) => {
                                     fontSize={11}
                                     numberOfLines={2}
                                 >
-                                    {data?.delivery?.origin}
+                                    {data?.delivery? data?.delivery?.origin: ''}
                                 </Text>
                             </XStack>
 
@@ -251,7 +251,7 @@ const ItemCard = React.memo(({ data, isHomeScreen = false }: CardProp) => {
                                     fontSize={11}
                                     numberOfLines={2}
                                 >
-                                    {data?.delivery?.destination}
+                                    {data?.delivery?data?.delivery?.destination:''}
                                 </Text>
                             </XStack>
 
@@ -259,7 +259,7 @@ const ItemCard = React.memo(({ data, isHomeScreen = false }: CardProp) => {
                                 <XStack gap={5} alignItems="center" flexShrink={0}>
                                     <Feather name="clock" color={theme.icon.val} size={10} />
                                     <Text color="$text" fontFamily="$body" fontSize={11}>
-                                        {data?.delivery?.duration}
+                                        {data?.delivery?data?.delivery?.duration:''}
                                     </Text>
                                 </XStack>
                                 {/* <XStack gap={2} alignItems="center" flexShrink={0}>
@@ -285,12 +285,12 @@ const ItemCard = React.memo(({ data, isHomeScreen = false }: CardProp) => {
                     paddingLeft={80}
                     paddingRight={10}
                 >
-                    <XStack gap={5} alignItems="center">
+                    {data?.delivery && <XStack gap={5} alignItems="center">
                         <AntDesign name="wallet" color={theme.icon.val} size={10} />
                         <Text color="$text" fontFamily="$heading" fontSize={12} fontWeight="700">
                             ₦ {Number(data?.delivery?.delivery_fee).toFixed(2)}
                         </Text>
-                    </XStack>
+                    </XStack>}
 
                     {!isHomeScreen && <XStack gap={5}>
                         <Status status={data?.delivery?.delivery_status} />

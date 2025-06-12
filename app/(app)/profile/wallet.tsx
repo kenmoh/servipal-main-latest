@@ -1,4 +1,4 @@
-import { StyleSheet, Text, FlatList} from 'react-native'
+import { StyleSheet, Text, FlatList } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient';
 import { Button, Card, Heading, View, XStack, YStack } from 'tamagui'
 import { ArrowDown, ArrowUp, Eye, EyeOff } from 'lucide-react-native';
@@ -10,7 +10,7 @@ import { useAuth } from '@/context/authContext';
 import { getCurrentUserWallet } from '@/api/user';
 import { useState } from 'react';
 import { formatCurrency } from '@/utils/formatCurrency';
-import {Transaction} from '@/types/user-types'
+import { Transaction } from '@/types/user-types'
 
 
 const index = () => {
@@ -100,14 +100,13 @@ const index = () => {
                 <Heading fontSize={'$4'}>Transactions</Heading>
             </View>
 
-             <FlatList
-                    data={data?.transactions || []}
-                    keyExtractor={(item: Transaction) => item?.id!}
-                    renderItem={({ item }) => <Transactioncard data={item} />}
-                    ItemSeparatorComponent={() => <HDivider />}
-                    refreshing={isFetching}
-                    onRefresh={refetch}
-                />
+            <FlatList
+                data={data?.transactions || []}
+                keyExtractor={(item: Transaction) => item?.id!}
+                renderItem={({ item }) => <Transactioncard data={item} />}
+                refreshing={isFetching}
+                onRefresh={refetch}
+            />
 
         </View>
     )

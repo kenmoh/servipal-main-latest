@@ -113,6 +113,7 @@ export interface Transaction {
   wallet_id: string;
   created_at: string;
   amount: number;
+  payment_by: string;
   transaction_type: TransactionType;
 }
 export interface Wallet {
@@ -163,3 +164,22 @@ export interface RiderUpdate {
   phoneNumber: string;
   bikeNumber: string;
 }
+
+// Salads
+// Soups
+// Pasta & Noodles
+// Pizza
+// Burgers & Sandwiches
+// Seafood
+// Steaks & Grilled Items
+// Others
+// Breads & Bakery
+// Sides
+// Low-Carb
+// Gluten-Free
+// Healthy Options
+// Vegetarian;
+// Vegan;
+// Chef's Specials
+// Seasonal Items
+// Combo Meals

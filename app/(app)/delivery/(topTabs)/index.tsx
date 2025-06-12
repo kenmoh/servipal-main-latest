@@ -18,6 +18,7 @@ import AppTextInput from "@/components/AppInput";
 import LocationPermission from "@/components/Locationpermission";
 import { distanceCache } from "@/utils/distance-cache";
 import { useLocationTracking } from "@/hooks/useLocationTracking";
+import FAB from "@/components/FAB";
 
 const DeliveryScreen = () => {
   const theme = useTheme();
@@ -165,21 +166,6 @@ const DeliveryScreen = () => {
     refetch();
   }, [refetch]);
 
-  // Memoize button style
-  const fabStyle = useMemo(
-    () => ({
-      alignItems: "center" as const,
-      justifyContent: "center" as const,
-      height: 60,
-      width: 60,
-      borderRadius: 50,
-      backgroundColor: theme.btnPrimaryColor?.val,
-      position: "absolute" as const,
-      bottom: 10,
-      right: 10,
-    }),
-    [theme.btnPrimaryColor?.val]
-  );
 
   const handleSearch = useCallback((text: string) => {
     setSearchQuery(text);
@@ -306,9 +292,7 @@ const DeliveryScreen = () => {
         windowSize={10}
       />
 
-      {user?.user_type === 'dispatch' || user?.user_type === 'rider' ? '' : <TouchableOpacity onPress={handleSendItemPress} style={fabStyle}>
-        <Send color={theme.text?.val} size={25} />
-      </TouchableOpacity>}
+      {user?.user_type === 'dispatch' || user?.user_type === 'rider' ? '' : <FAB onPress={handleSendItemPress} />}
     </YStack>
   );
 };

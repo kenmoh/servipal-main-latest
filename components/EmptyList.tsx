@@ -37,6 +37,7 @@ const EmptyList = ({
             justifyContent="center"
             alignItems="center"
             backgroundColor='$background'
+            alignSelf='center'
         >
 
             <YStack
@@ -45,6 +46,7 @@ const EmptyList = ({
                 alignItems="center"
                 gap="$4"
                 padding="$4"
+                alignSelf='center'
 
 
             >

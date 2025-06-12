@@ -32,6 +32,7 @@ export interface CreateCategory {
 }
 export interface CategoryResponse extends CreateCategory {
   id: string;
+  category_type: string
 }
 
 export interface MenuItem {

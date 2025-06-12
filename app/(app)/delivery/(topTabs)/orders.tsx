@@ -29,10 +29,18 @@ const UserOrders = () => {
         select: (data) => {
             if (!user?.sub || !data) return [];
 
+            // return data.filter(
+            //     (order) =>
+            //         order?.delivery?.sender_id === user.sub ||
+            //         order?.delivery?.vendor_id === user.sub ||
+            //         order?.delivery?.dispatch_id === user.sub ||
+            //         order?.delivery?.rider_id === user.sub
+            // );
+
             return data.filter(
                 (order) =>
-                    order?.delivery?.sender_id === user.sub ||
-                    order?.delivery?.vendor_id === user.sub ||
+                    order?.order?.user_id === user.sub ||
+                    order?.order?.vendor_id === user.sub ||
                     order?.delivery?.dispatch_id === user.sub ||
                     order?.delivery?.rider_id === user.sub
             );
@@ -80,7 +88,7 @@ const UserOrders = () => {
                 Error loading data
             </Text>
         );
-
+    
     return (
         <YStack backgroundColor={theme.background} flex={1} paddingHorizontal="$2">
             <View
@@ -157,7 +165,7 @@ const UserOrders = () => {
             <YStack backgroundColor={"$background"} flex={1}>
                 <FlatList
                     data={data}
-                    keyExtractor={(item: DeliveryDetail) => item?.delivery?.id!}
+                    keyExtractor={(item: DeliveryDetail) => item?.order?.id!}
                     renderItem={({ item }) => <ItemCard data={item} />}
                     ItemSeparatorComponent={() => <HDivider />}
                     refreshing={isFetching}

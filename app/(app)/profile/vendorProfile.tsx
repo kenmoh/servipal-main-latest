@@ -236,15 +236,6 @@ const Profile = () => {
                                 }
                             />
 
-                            {/* <AppTextInput
-                                // label='Bank Name'
-                                placeholder="Bank Name"
-                                onChangeText={handleChange("bankName")}
-                                autoCapitalize="words"
-                                value={values.bankName}
-                                errorMessage={touched.bankName ? errors.bankName : undefined}
-                            /> */}
-
                             <AppPicker items={data || []} isBank value={values.bankName} onValueChange={handleChange('bankName')} />
 
                             <Button

@@ -16,6 +16,11 @@ import Swiper from 'react-native-swiper'
 import { LinearGradient } from 'expo-linear-gradient'
 import { getCoordinatesFromAddress } from '@/utils/geocoding'
 import { getTravelDistance } from '@/api/order'
+import FAB from '@/components/FAB'
+import { router } from 'expo-router'
+import { useAuth } from '@/context/authContext'
+import { Plus } from 'lucide-react-native'
+import { fetchCategories } from "@/api/item";
 
 export interface RestaurantWithDistance extends CompanyProfile {
     distance: number;
@@ -92,25 +97,25 @@ export const featuredRestaurants = [
         rating: 4.8
     }
 ];
-const categories = [
-    { id: 1, name: 'Pizza' },
-    { id: 2, name: 'Burger' },
-    { id: 3, name: 'Chicken' },
-    { id: 4, name: 'Salad' },
-    { id: 5, name: 'Pasta' },
-    { id: 6, name: 'Dessert' },
-    { id: 7, name: 'Drinks' },
-    { id: 8, name: 'Seafood' }
-];
+
 const Page = () => {
     const theme = useTheme()
+    const { user } = useAuth()
     const [userLocation, setUserLocation] = useState<{ latitude: number; longitude: number } | null>(null);
     const [filteredRestaurants, setFilteredRestaurants] = useState<(CompanyProfile & { distance: number })[]>([]);
     const [filteredFeatured, setFilteredFeatured] = useState<RestaurantWithDistance[]>([]);
+    const [hasItem, setHasItem] = useState(false)
     const { data, isPending } = useQuery({
         queryKey: ['restaurants'],
         queryFn: fetchRestaurants
     })
+
+     const { data: categories } = useQuery({
+        queryKey: ["categories"],
+        queryFn: fetchCategories,
+        select: (categories) => categories?.filter(category => category.category_type === "food") || []
+
+    });
 
 
     // Get user's location
@@ -130,92 +135,100 @@ const Page = () => {
         getUserLocation();
     }, []);
 
-
-
-
     useEffect(() => {
-        const filterRestaurants = async () => {
-            if (!data || !userLocation) return;
+    const filterRestaurants = async () => {
+        if (!data || !userLocation) return;
+        
+        const restaurantsWithDistance = await Promise.all(
+            data.map(async (restaurant) => {
+                const coordinates = await getCoordinatesFromAddress(restaurant.location);
+                if (!coordinates) return null;
+                
+                const distance = await getTravelDistance(
+                    userLocation.latitude,
+                    userLocation.longitude,
+                    coordinates.lat,
+                    coordinates.lng
+                );
+                
+                if (!distance || distance > 100) return null;
+                
+                return {
+                    ...restaurant,
+                    distance
+                } as RestaurantWithDistance;
+            })
+        );
 
-            const restaurantsWithDistance = await Promise.all(
-                data.map(async (restaurant) => {
-                    const coordinates = await getCoordinatesFromAddress(restaurant.location);
-                    if (!coordinates) return null;
+        // Filter out null values first
+        const validRestaurants = restaurantsWithDistance
+            .filter((item): item is RestaurantWithDistance => item !== null);
 
-                    const distance = await getTravelDistance(
-                        userLocation.latitude,
-                        userLocation.longitude,
-                        coordinates.lat,
-                        coordinates.lng
-                    );
+        let currentVendorRestaurant = null;
+        let otherRestaurants = validRestaurants; // Use validRestaurants, not restaurantsWithDistance
 
-                    console.log('DISTANCE', distance)
-                    console.log('DISTANCE')
+        if (user?.user_type === 'vendor') {
+            // Find the current vendor's restaurant
+            currentVendorRestaurant = validRestaurants.find(restaurant => restaurant.id === user.sub);
+            setHasItem(true)
+            
+            // Remove current vendor's restaurant from others list
+            otherRestaurants = validRestaurants.filter(restaurant => restaurant.id !== user.sub);
+            
+        }
 
-                    if (!distance || distance > 6000) return null;
+        // Sort other restaurants by distance
+        otherRestaurants.sort((a, b) => a.distance - b.distance);
 
-                    return {
-                        ...restaurant,
-                        distance
-                    } as RestaurantWithDistance;
-                })
-            );
+        // Combine results - current vendor first, then others
+        const finalResults = currentVendorRestaurant 
+            ? [currentVendorRestaurant, ...otherRestaurants]
+            : otherRestaurants;
 
-            const filtered = restaurantsWithDistance
-                // .filter(Boolean)
-                .filter((item): item is RestaurantWithDistance => item !== null)
-                .sort((a, b) => a!.distance - b!.distance);
+        setFilteredRestaurants(finalResults as (CompanyProfile & { distance: number })[]);
+    };
 
-            setFilteredRestaurants(filtered as (CompanyProfile & { distance: number })[]);
-        };
-
-        filterRestaurants();
-    }, [data, userLocation]);
-
-
+    filterRestaurants();
+}, [data, userLocation, user?.id, user?.user_type]);
 
 
     if (isPending) {
         return <LoadingIndicator />
     }
-
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: theme.background.val }}>
 
             <AppHeader component={<AppTextInput height='$3.5' borderRadius={50} placeholder='Search Restaurants..' />} />
             <Separator />
 
-            {/* <Category categories={categories} /> */}
+            {filteredRestaurants.length > 0 && <FlatList
+                            // data={data}
+                            data={filteredRestaurants}
+                            ListHeaderComponent={() => (
+                                <>
+                                    <Category categories={categories || []} />
+                                    <FeaturedRestaurants />
+                                    {/* <FeaturedRestaurants restaurants={data || []} /> */}
+                                </>
+                            )}
+                            stickyHeaderIndices={[1]}
+                            showsVerticalScrollIndicator={false}
+                            keyExtractor={item => item.id}
+                            renderItem={({ item }: { item: CompanyProfile & { distance: number } }) => (
+                                <StoreCard item={item} distance={item.distance} screenType='RESTAURANT' />
+                            )}
+                            contentContainerStyle={{
+                                paddingBottom: 10
+                            }}
+                        />}
 
-            <FlatList
-                // data={data}
-                data={filteredRestaurants}
-                ListHeaderComponent={() => (
-                    <>
-                        <Category categories={categories} />
-                        <FeaturedRestaurants />
-                        {/* <FeaturedRestaurants restaurants={data || []} /> */}
-                    </>
-                )}
-                stickyHeaderIndices={[1]}
-                showsVerticalScrollIndicator={false}
-                keyExtractor={item => item.id}
-                renderItem={({ item }: { item: CompanyProfile & { distance: number } }) => (
-                    <StoreCard item={item} distance={item.distance} screenType='RESTAURANT' />
-                )}
-                // renderItem={({ item }: { item: CompanyProfile }) => <StoreCard item={item}  />}
-                contentContainerStyle={{
-                    paddingBottom: 10
-                }}
-            />
-
-
+            {!hasItem && user?.user_type === 'vendor'  ?  <FAB icon={<Plus size={25} color={theme.text.val} />} onPress={() => router.push({ pathname: '/store-detail/addMenu' })} />:""}
 
         </SafeAreaView>
     )
 }
 
-
+ 
 export default Page
 
 interface FeaturedRestaurantsProps {

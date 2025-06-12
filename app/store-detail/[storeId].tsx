@@ -223,8 +223,8 @@ const StoreDetails = () => {
               />
             </View>
 
-            <XStack alignItems="baseline" justifyContent="space-between">
-              <YStack marginTop={"$7"} paddingHorizontal={10}>
+            <XStack  alignItems="baseline" justifyContent="space-between">
+              <YStack flex={1} marginTop={"$7"} paddingHorizontal={10}>
                 <Heading
                   letterSpacing={0}
                   color={"$text"}
@@ -256,6 +256,7 @@ const StoreDetails = () => {
                     color={"$icon"}
                     fontFamily={"$body"}
                     fontSize={"$2"}
+                    alignSelf={'flex-shrink'}
                   >
                     {address}
                   </Paragraph>
@@ -267,7 +268,7 @@ const StoreDetails = () => {
                     fontFamily={"$body"}
                     fontSize={"$2"}
                   >
-                    {openingHour}
+                    {openingHour} {'-'}
                   </Paragraph>
                   <Paragraph
                     color={"$icon"}

@@ -1,6 +1,6 @@
 import { StyleSheet } from "react-native";
 import React, { useState } from "react";
-import { ScrollView, View, Button, Text } from "tamagui";
+import { ScrollView, View, Button, Text, XStack } from "tamagui";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
@@ -11,10 +11,9 @@ import AppModal from "@/components/AppModal";
 import { createCategory, createItem, fetchCategories } from "@/api/item";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Notifier, NotifierComponents } from "react-native-notifier";
-import { router } from "expo-router";
-import { Plug, Plus } from "lucide-react-native";
 import LoadingIndicator from "@/components/LoadingIndicator";
 import { queryClient } from "../_layout";
+import { useAuth } from '@/context/authContext'
 
 const itemTypeEnum = z.enum(["food", "package", "product", "laundry"]);
 
@@ -48,6 +47,7 @@ type FormData = z.infer<typeof schema>;
 const addMenu = () => {
     const [visble, setVisble] = useState(false);
     const [selectedItemType, setSelectedItemType] = useState<string>("food");
+    const {user} = useAuth()
 
     const {
         control,
@@ -81,7 +81,8 @@ const addMenu = () => {
     const { data: categories } = useQuery({
         queryKey: ["categories"],
         queryFn: fetchCategories,
-        // staleTime: 1000 * 60 * 10
+        select: (categories) => categories?.filter(category => category.category_type === "food") || []
+
     });
 
     const { mutate, isPending } = useMutation({
@@ -98,7 +99,11 @@ const addMenu = () => {
             });
             setVisble(false);
             resetCategoryForm();
+            
+            queryClient.invalidateQueries({queryKey: ['storeItems', user?.sub]})
             queryClient.invalidateQueries({ queryKey: ["categories"] });
+            queryClient.invalidateQueries({queryKey: ['restaurants']})
+
             return;
         },
         onError: (error) => {
@@ -150,7 +155,7 @@ const addMenu = () => {
     return (
         <>
             <ScrollView backgroundColor={"$background"} flex={1}>
-                <Button
+                {/*    <Button
                     borderRadius={"$10"}
                     variant="outlined"
                     marginRight={"$4"}
@@ -161,7 +166,7 @@ const addMenu = () => {
                 >
                     <Plus size={20} color={"white"} />
                     Add Category
-                </Button>
+                </Button>*/}
 
                 <View marginTop={"$3"} marginBottom={"$12"}>
                     <Controller
@@ -178,54 +183,56 @@ const addMenu = () => {
                             />
                         )}
                     />
+                    <XStack alignSelf="center" gap={5} justifyContent="center" alignItems="center">
 
-                    <Controller
-                        control={control}
-                        name="price"
-                        render={({ field: { onChange, onBlur, value } }) => (
-                            <AppTextInput
-                                placeholder="Price"
-                                label="Price"
-                                onBlur={onBlur}
-                                onChangeText={(text) => onChange(Number(text))}
-                                value={value?.toString()}
-                                keyboardType="numeric"
-                                errorMessage={errors.price?.message}
+                        <View width={'47.5%'}>
+                            <Controller
+                                control={control}
+                                name="price"
+                                render={({ field: { onChange, onBlur, value } }) => (
+                                    <AppTextInput
+                                        placeholder="Price"
+                                        label="Price"
+                                        onBlur={onBlur}
+                                        onChangeText={(text) => onChange(Number(text))}
+                                        value={value?.toString()}
+                                        keyboardType="numeric"
+                                        errorMessage={errors.price?.message}
+                                    />
+                                )}
                             />
-                        )}
-                    />
-
-                    <Controller
-                        control={control}
-                        name="itemType"
-                        render={({ field: { onChange, value } }) => (
-                            // <AppPicker
-                            //     items={itemTypeOptions}
-                            //     onValueChange={onChange}
-                            //     value={value}
-                            //     placeholder="Select Item Type"
-                            // />
-
-                            <AppPicker
-                                label="Item Type"
-                                items={itemTypeOptions}
-                                onValueChange={(val) => {
-                                    onChange(val);
-                                    setSelectedItemType(val);
-                                    // Reset category and side if not food
-                                    if (val !== "food") {
-                                        reset({
-                                            ...control._formValues,
-                                            category_id: "",
-                                            side: "",
-                                        });
-                                    }
-                                }}
-                                value={value}
-                                placeholder="Select Item Type"
+                        </View>
+                        <View width={'47.5%'}>
+                            <Controller
+                                control={control}
+                                name="itemType"
+                                render={({ field: { onChange, value } }) => (
+                                    <AppPicker
+                                        isBank={true}
+                                        label="Item Type"
+                                        items={itemTypeOptions}
+                                        onValueChange={(val) => {
+                                            onChange(val);
+                                            setSelectedItemType(val);
+                                            // Reset category and side if not food
+                                            if (val !== "food") {
+                                                reset({
+                                                    ...control._formValues,
+                                                    category_id: "",
+                                                    side: "",
+                                                });
+                                            }
+                                        }}
+                                        value={value}
+                                        placeholder="Select Item Type"
+                                    />
+                                )}
                             />
-                        )}
-                    />
+
+                        </View>
+
+
+                    </XStack>
 
                     {selectedItemType !== "laundry" && (
                         <>

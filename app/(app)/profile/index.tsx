@@ -2,7 +2,7 @@ import { StyleSheet, Dimensions } from "react-native";
 import React, { useState } from "react";
 import ProfileCard from "@/components/ProfileCard";
 import Animated, { FadeInDown } from "react-native-reanimated";
-import { UserRound, UsersRound, LogOutIcon, Wallet } from "lucide-react-native";
+import { UserRound, UsersRound, LogOutIcon, Wallet, KeyRound } from "lucide-react-native";
 
 import { Heading, Text, useTheme, View, YStack } from "tamagui";
 import { router } from "expo-router";
@@ -170,7 +170,7 @@ const profile = () => {
                                     router.push({ pathname: "/profile/changePassword" })
                                 }
                                 bgColor={"rgba(221, 218, 11, 0.7)"}
-                                icon={<LogOutIcon color={"white"} />}
+                                icon={<KeyRound color={"white"} />}
                             />
                         </Animated.View>
                         <Animated.View entering={FadeInDown.duration(300).delay(100)}>
