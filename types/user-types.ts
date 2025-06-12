@@ -108,7 +108,7 @@ export interface UserProfileUpdate {
 
 type TransactionType = "credit" | "debit";
 
-interface Transaction {
+export interface Transaction {
   id: string;
   wallet_id: string;
   created_at: string;

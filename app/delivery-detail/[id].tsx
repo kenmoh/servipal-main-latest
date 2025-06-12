@@ -41,7 +41,7 @@ import {
 } from "@/api/order";
 import DeliveryWrapper from "@/components/DeliveryWrapper";
 import { useAuth } from "@/context/authContext";
-import { getCurrentUser, getRiderProfile } from "@/api/user";
+import { getRiderProfile } from "@/api/user";
 
 const ItemDetails = () => {
     const { id } = useLocalSearchParams();
@@ -55,14 +55,6 @@ const ItemDetails = () => {
         refetchOnWindowFocus: true,
         refetchOnMount: true,
     });
-    const { data: profileData, isLoading: profileLoading } = useQuery({
-        queryKey: ["profile", data?.delivery?.rider_id],
-        queryFn: () => getRiderProfile(data?.delivery?.rider_id as string),
-        refetchOnWindowFocus: true,
-        refetchOnMount: true,
-        
-    });
-
 
     const queryClient = useQueryClient();
 
@@ -289,47 +281,43 @@ const ItemDetails = () => {
     if (isLoading) {
         return <LoadingIndicator />;
     }
-console.log(profileData, data)
+
     return (
         <>
             <DeliveryWrapper>
 
-                {user?.sub === data?.delivery?.sender_id &&
-                    data?.delivery?.sender_id && data?.delivery?.delivery_status !== 'pending' &&(
-                        <TouchableOpacity
-                            style={{
-                                backgroundColor: theme.cardDark.val,
-                                borderColor: theme.borderColor.val,
-                                borderWidth: 1,
-                                height: 40,
-                                width: "85%",
-                                alignSelf: "center",
-                                borderRadius: 8,
-                                justifyContent: "center",
-                                alignItems: "center",
-                                marginVertical: 10,
-                            }}
-                            onPressIn={() =>
-                                router.push({
-                                    pathname: "/user-details/[userId]",
-                                    params: {
-                                        userId: data?.delivery?.rider_id!,
-                                        name: profileData?.full_name || profileData?.business_name,
-                                        bikeNumber: profileData?.bike_number,
-                                        address: profileData?.business_address,
-                                        phone: profileData?.phone_number,
-                                        profile: profileData?.profile_image_url,
-
-                                    },
-                                })
-                            }
-                        >
-                            <XStack gap={10}>
-                                <User color={"white"} size={20} />
-                                <Text>CONTACT RIDER</Text>
-                            </XStack>
-                        </TouchableOpacity>
-                    )}
+               {user?.sub === data?.delivery?.sender_id &&
+    data?.delivery?.sender_id && 
+    data?.delivery?.delivery_status !== 'pending' && 
+    data?.delivery?.delivery_status !== 'received' && (
+        <TouchableOpacity
+            style={{
+                backgroundColor: theme.cardDark.val,
+                borderColor: theme.borderColor.val,
+                borderWidth: 1,
+                height: 40,
+                width: "85%",
+                alignSelf: "center",
+                borderRadius: 8,
+                justifyContent: "center",
+                alignItems: "center",
+                marginVertical: 10,
+            }}
+            onPressIn={() =>
+                router.push({
+                    pathname: "/user-details/[userId]",
+                    params: {
+                        userId: data?.delivery?.rider_id!
+                    },
+                })
+            }
+        >
+            <XStack gap={10}>
+                <User color={"white"} size={20} />
+                <Text>CONTACT RIDER</Text>
+            </XStack>
+        </TouchableOpacity>
+    )}
                 {user?.sub === data?.delivery?.sender_id &&
                     data?.order.order_payment_status !== "paid" && (
                         <Button

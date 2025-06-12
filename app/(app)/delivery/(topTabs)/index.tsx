@@ -306,9 +306,9 @@ const DeliveryScreen = () => {
         windowSize={10}
       />
 
-     {( user?.user_type !== 'dispatch' || user?.user_type !== 'rider') &&<TouchableOpacity onPress={handleSendItemPress} style={fabStyle}>
-             <Send color={theme.text?.val} size={25} />
-           </TouchableOpacity>}
+      {user?.user_type === 'dispatch' || user?.user_type === 'rider' ? '' : <TouchableOpacity onPress={handleSendItemPress} style={fabStyle}>
+        <Send color={theme.text?.val} size={25} />
+      </TouchableOpacity>}
     </YStack>
   );
 };

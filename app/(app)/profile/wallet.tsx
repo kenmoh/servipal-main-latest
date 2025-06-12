@@ -1,27 +1,30 @@
-import { StyleSheet, Text } from 'react-native'
+import { StyleSheet, Text, FlatList} from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient';
 import { Button, Card, Heading, View, XStack, YStack } from 'tamagui'
 import { ArrowDown, ArrowUp, Eye, EyeOff } from 'lucide-react-native';
 import Animated, { FadeInUp } from 'react-native-reanimated';
 import Transactioncard from '@/components/Transactioncard';
+import HDivider from "@/components/HDivider";
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@/context/authContext';
 import { getCurrentUserWallet } from '@/api/user';
 import { useState } from 'react';
 import { formatCurrency } from '@/utils/formatCurrency';
+import {Transaction} from '@/types/user-types'
 
 
 const index = () => {
     const { user, profile } = useAuth()
     const [isBalanceHidden, setIsBalanceHidden] = useState(false);
 
-    const { data } = useQuery({
+    const { data, isFetching, refetch } = useQuery({
         queryKey: ['wallet', user?.sub],
         queryFn: getCurrentUserWallet
 
     })
 
     console.log(data)
+
     return (
         <View flex={1} backgroundColor={'$background'}>
             <Animated.View
@@ -33,6 +36,7 @@ const index = () => {
                     alignSelf='center'
                     overflow='hidden'
                     elevation={5}
+
                 >
                     <LinearGradient
                         colors={['#f46b45', '#eea849']}
@@ -41,7 +45,7 @@ const index = () => {
                         end={[1, 0]}
                     >
                         <Card.Header padding="$4">
-                            <XStack justifyContent='space-between' alignItems='center' marginBottom="$4">
+                            <XStack justifyContent='space-between' alignItems='center' marginBottom="$5">
                                 <YStack>
                                     <XStack alignItems='center' gap="$2">
                                         <Text style={styles.label}>Main Balance</Text>
@@ -64,8 +68,6 @@ const index = () => {
                                 <YStack>
 
                                     <Text style={[styles.label]}>Escrow Balance</Text>
-
-
                                     <XStack alignItems='baseline' gap={'$1'} marginTop="$2">
                                         <Text style={[styles.currency, { fontFamily: "Poppins-Thin" }]}>₦</Text>
                                         <Text style={[styles.amount, { fontFamily: "Poppins-Thin" }]}>
@@ -80,9 +82,6 @@ const index = () => {
                             <YStack gap="$2">
                                 <Text style={styles.accountInfo}>
                                     Account Number: {profile?.bank_account_number}
-                                </Text>
-                                <Text style={styles.accountInfo}>
-                                    Bank Name: {profile?.bank_name}
                                 </Text>
                             </YStack>
                         </Card.Header>
@@ -101,10 +100,14 @@ const index = () => {
                 <Heading fontSize={'$4'}>Transactions</Heading>
             </View>
 
-            <Transactioncard />
-            <Transactioncard />
-            <Transactioncard />
-            <Transactioncard />
+             <FlatList
+                    data={data?.transactions || []}
+                    keyExtractor={(item: Transaction) => item?.id!}
+                    renderItem={({ item }) => <Transactioncard data={item} />}
+                    ItemSeparatorComponent={() => <HDivider />}
+                    refreshing={isFetching}
+                    onRefresh={refetch}
+                />
 
         </View>
     )
