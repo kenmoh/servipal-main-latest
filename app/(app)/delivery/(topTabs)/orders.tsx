@@ -88,7 +88,7 @@ const UserOrders = () => {
                 Error loading data
             </Text>
         );
-    
+console.log(data[0]?.order, data.length)
     return (
         <YStack backgroundColor={theme.background} flex={1} paddingHorizontal="$2">
             <View
