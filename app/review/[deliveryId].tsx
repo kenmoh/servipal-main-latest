@@ -5,10 +5,25 @@ import { useLocalSearchParams } from "expo-router";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Notifier, NotifierComponents } from "react-native-notifier";
 import { useState } from "react";
+import AppPicker from "@/components/AppPicker";
+
+const RATINGS = [
+    { id: "1", name: "1 Star" },
+    { id: "2", name: "2 Stars" },
+    { id: "3", name: "3 Stars" },
+    { id: "4", name: "4 Stars" },
+    { id: "5", name: "5 Stars" },
+];
+
+const RATE_TARGETS = [
+    { id: "rider", name: "Rider" },
+    { id: "vendor", name: "Vendor" },
+];
 
 const ReviewPage = () => {
     const { deliveryId } = useLocalSearchParams();
-    const [rating, setRating] = useState(0);
+    const [rating, setRating] = useState("");
+    const [rateTarget, setRateTarget] = useState("");
     const [comment, setComment] = useState("");
     const queryClient = useQueryClient();
 
@@ -39,17 +54,32 @@ const ReviewPage = () => {
     return (
         <View backgroundColor={"$background"} flex={1} padding="$4">
             <YStack gap="$4">
-                <Text fontSize={20} fontWeight="bold">Rate Your Delivery</Text>
+                <Text fontSize={20} fontWeight="bold">Write a Review</Text>
 
                 <YStack gap="$2">
-                    <Text>Your Rating</Text>
-                    {/* TODO: Add star rating component */}
+                    <Text>Who are you rating?</Text>
+                    <AppPicker
+                        items={RATE_TARGETS}
+                        placeholder="Select who to rate"
+                        value={rateTarget}
+                        onValueChange={(id) => setRateTarget(id)}
+                    />
                 </YStack>
 
                 <YStack gap="$2">
-                    <Text>Your Review</Text>
+                    <Text>Rating</Text>
+                    <AppPicker
+                        items={RATINGS}
+                        placeholder="Select rating"
+                        value={rating}
+                        onValueChange={(id) => setRating(id)}
+                    />
+                </YStack>
+
+                <YStack gap="$2">
+                    <Text>Comment</Text>
                     <TextArea
-                        placeholder="Share your experience..."
+                        placeholder="Write your review..."
                         value={comment}
                         onChangeText={setComment}
                         minHeight={100}
@@ -59,7 +89,7 @@ const ReviewPage = () => {
                 <Button
                     backgroundColor={"$btnPrimaryColor"}
                     onPress={() => submitReviewMutation.mutate()}
-                    disabled={submitReviewMutation.isPending}
+                    disabled={submitReviewMutation.isPending || !rateTarget || !rating}
                 >
                     Submit Review
                 </Button>

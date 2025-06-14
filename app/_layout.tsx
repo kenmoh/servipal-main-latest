@@ -23,6 +23,8 @@ import { useCartStore } from "@/store/cartStore";
 import { useLocationStore } from "@/store/locationStore";
 import { Trash } from "lucide-react-native";
 
+const BACKGORUND_COLOR = "#18191c"
+
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
@@ -46,7 +48,6 @@ export default function RootLayout() {
   const colorScheme = useColorScheme();
   const { clearCart } = useCartStore();
   const { reset } = useLocationStore();
-  const theme = useTheme()
 
   const handleClearCart = () => {
     clearCart();
@@ -85,9 +86,9 @@ export default function RootLayout() {
               <AuthProvider>
                 <Stack
                   screenOptions={{
-                    navigationBarColor: "#18191c",
+                    navigationBarColor: BACKGORUND_COLOR,
                     contentStyle: {
-                      backgroundColor: "#18191c",
+                      backgroundColor: BACKGORUND_COLOR,
                     },
                   }}
                 >
@@ -124,23 +125,23 @@ export default function RootLayout() {
                     options={{
                       title: 'Download Receipt',
                       headerStyle: {
-                        backgroundColor: theme.background.val
-                      }
+                        backgroundColor: BACKGORUND_COLOR,
+                      },
                     }}
                   />
                   <Stack.Screen name='report/[deliveryId]' options={{
                     title: 'Report an Issue',
                     headerStyle: {
-                      backgroundColor: theme.background.val
-                    }
+                      backgroundColor: BACKGORUND_COLOR,
+                    },
                   }} />
                   <Stack.Screen
                     name="review/[deliveryId]"
                     options={{
                       title: 'Leave a Review',
                       headerStyle: {
-                        backgroundColor: theme.background.val
-                      }
+                        backgroundColor: BACKGORUND_COLOR,
+                      },
                     }}
                   />
                   <Stack.Screen
@@ -148,7 +149,7 @@ export default function RootLayout() {
                     options={{
                       title: "Cart",
                       headerStyle: {
-                        backgroundColor: theme.background.val
+                        backgroundColor: BACKGORUND_COLOR,
                       },
                       headerRight: () => (
                         <AddItemBtn
