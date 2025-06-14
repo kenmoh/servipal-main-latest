@@ -74,7 +74,7 @@ const StoreDetails = () => {
                     )}
                     removeClippedSubviews={true}
                     ListHeaderComponent={<Category categories={groups || []} />}
-                    ListEmptyComponent={
+                    ListEmptyComponent={!isFetching &&
                         <EmptyList
                             title="No Menu Items"
                             description="Add your first menu item to start selling"

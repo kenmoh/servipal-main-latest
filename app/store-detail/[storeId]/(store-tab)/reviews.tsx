@@ -15,6 +15,7 @@ const reviews = () => {
     return (
         <View backgroundColor={'$background'} flex={1}>
             <FlatList
+                showsVerticalScrollIndicator={false}
                 data={dummyReviews || []}
                 keyExtractor={(item) => item.id}
                 renderItem={({ item }: { item: Review }) => <ReviewCard data={item} />}

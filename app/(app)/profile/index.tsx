@@ -1,5 +1,5 @@
 import { StyleSheet, Dimensions } from "react-native";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ProfileCard from "@/components/ProfileCard";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { UserRound, UsersRound, LogOutIcon, Wallet, KeyRound } from "lucide-react-native";
@@ -26,11 +26,21 @@ const profile = () => {
     const [profileUri, setProfileUri] = useState<ImageUrl | null | string>(null);
     const { user, profile, images, setImages } = useAuth();
 
+    // Load stored images on component mount
+    useEffect(() => {
+        const loadStoredImages = async () => {
+            const storedImages = await authStorage.getImageUrl();
+            if (storedImages) {
+                setImages(storedImages);
+            }
+        };
+        loadStoredImages();
+    }, []);
 
     // Single mutation for uploading images
     const uploadMutation = useMutation({
         mutationFn: uploadProfileImage,
-        onSuccess: (data) => {
+        onSuccess: async (data) => {
             const newImages = {
                 profile_image_url:
                     typeof data?.profile_image_url === "object" && data?.profile_image_url !== null
@@ -41,9 +51,14 @@ const profile = () => {
                         ? data.backdrop_image_url.uri
                         : data?.backdrop_image_url ?? images?.backdrop_image_url ?? undefined,
             };
+
+            // Update context
             setImages(newImages);
-            authStorage.removeImage()
-            authStorage.storeImageUrl(newImages);
+
+            // Store in secure storage
+            await authStorage.storeImageUrl(newImages);
+
+            // Invalidate queries
             queryClient.invalidateQueries({ queryKey: ['user'] });
             queryClient.invalidateQueries({ queryKey: ['profile'] });
             queryClient.invalidateQueries({ queryKey: ['deliveries'] });
@@ -56,9 +71,7 @@ const profile = () => {
                 componentProps: {
                     alertType: 'success'
                 }
-
-
-            })
+            });
         },
         onError: (error) => {
             Notifier.showNotification({
@@ -69,15 +82,12 @@ const profile = () => {
                 componentProps: {
                     alertType: 'error'
                 }
-
-
-            })
+            });
         },
     });
 
     const handleProfileImageSelect = (imageData: ImageData) => {
         setProfileUri(imageData.uri);
-
         uploadMutation.mutate({
             profile_image_url: imageData,
         });
@@ -85,8 +95,6 @@ const profile = () => {
 
     const handleBackdropImageSelect = (imageData: ImageData) => {
         setBackdropUri(imageData.uri);
-
-        // Upload only backdrop image
         uploadMutation.mutate({
             backdrop_image_url: imageData,
         });
@@ -94,6 +102,7 @@ const profile = () => {
 
     const theme = useTheme();
     const { signOut } = useAuth();
+
     return (
         <>
             <View backgroundColor={"$background"} flex={1}>
@@ -107,7 +116,6 @@ const profile = () => {
                                 borderRadius={0}
                                 isBackdropImage
                                 initialImage={images?.backdrop_image_url || null}
-
                             />
                         </View>
                     </View>
