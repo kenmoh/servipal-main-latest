@@ -49,9 +49,7 @@ const StoreHeader = () => {
                             }}
                         />
                     </View>
-                    {/* {user?.user_type === 'vendor' && <View position='absolute' right={'$2'} top={'$1.5'}>
-                        <AddItemBtn icon={<Plus color={theme.text.val} />} onPress={() => router.push({ pathname: "/store-detail/addMenu" })} />
-                    </View>} */}
+                  
                     <View marginTop="$3">
                         <Heading
                             color={"$text"}

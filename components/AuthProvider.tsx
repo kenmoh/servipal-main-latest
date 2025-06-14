@@ -2,13 +2,13 @@ import React, { ReactNode, useEffect, useState } from "react";
 import { jwtDecode } from "jwt-decode";
 import { AuthContext, useProtectedRoute } from "@/context/authContext";
 import authStorage from '@/storage/authStorage'
-import { User, Profile, ImageUrl } from "@/types/user-types";
+import { User, Profile, UserDetails, ImageUrl } from "@/types/user-types";
 
 
 
 const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [user, setUser] = useState<User | null>(null);
-    const [profile, setProfile] = useState<Profile | null>(null)
+    const [profile, setProfile] = useState<UserDetails | null>(null)
     const [images, setImages] = useState<ImageUrl | null>(null)
 
 

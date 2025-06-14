@@ -11,33 +11,6 @@ export interface Bank {
   name: string;
 }
 
-export type UserReturn = {
-  id: string;
-  dispatch_id: string;
-  full_name: string;
-  bank_name: string;
-  email: string;
-  username: string;
-  phone_number: string;
-  bank_account_number: string;
-  account_holder_name: string;
-  location: string;
-  profile_image: string;
-  user_type: Role;
-  company_name: string;
-  company_reg_number: string;
-  notification_token: string;
-  plate_number: string;
-  is_suspended: true;
-  account_status: AccountStatus;
-  confirm_email: number;
-  opening_hour: string;
-  closing_hour: string;
-  confirm_phone_number: number;
-  created_at: string;
-  updated_at: string;
-  dispatch: string;
-};
 
 interface Review {
   rating: string;
@@ -93,6 +66,8 @@ export interface Profile {
   business_address?: string;
   closing_hours?: string;
   opening_hours?: string;
+  profile_image_url: string
+  backdrop_image_url: string
 }
 
 export interface UserProfileUpdate {
@@ -129,6 +104,8 @@ export interface UserDetails {
   user_type: string;
   profile: Profile;
 }
+
+
 export interface CurrentUserDetails extends UserDetails {
   wallet: Wallet;
 }

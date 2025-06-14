@@ -24,6 +24,36 @@ export interface ImageUpload {
 
 const BASE_URL = "/users";
 
+
+// Get current user profile
+export const getCurrentUserProfile = async (): Promise<UserDetails> => {
+  try {
+    const response: ApiResponse<UserDetails | ErrorResponse> = await apiClient.get(
+      `${BASE_URL}/current-user-profile`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (!response.ok || !response.data || "detail" in response.data) {
+      const errorMessage =
+        response.data && "detail" in response.data
+          ? response.data.detail
+          : "Error loading user profile.";
+      throw new Error(errorMessage);
+    }
+
+    return response.data;
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    }
+    throw new Error("An unexpected error occurred");
+  }
+};
+
 // Get user profile
 export const getCurrentUser = async (userId: string): Promise<Profile> => {
   try {

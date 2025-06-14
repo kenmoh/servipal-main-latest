@@ -74,14 +74,14 @@ const StoreDetails = () => {
                     )}
                     removeClippedSubviews={true}
                     ListHeaderComponent={<Category categories={groups || []} />}
-                    ListEmptyComponent={!isFetching &&
+                    ListEmptyComponent={!isFetching ? (
                         <EmptyList
                             title="No Menu Items"
                             description="Add your first menu item to start selling"
                             buttonTitle="Add Menu Item"
                             route="/store-detail/addMenu"
                         />
-                    }
+                    ) : null}
                     showsVerticalScrollIndicator={false}
                     contentContainerStyle={{ paddingBottom: 80 }}
                     refreshing={isFetching}

@@ -32,7 +32,7 @@ const StoreCard = ({
                         storeId: item?.id,
                         companyName: item?.company_name,
                         backDrop: item?.backdrop_image_url,
-                        profileImage: item?.backdrop_image_url,
+                        profileImage: item?.profile_image,
                         openingHour: item?.opening_hour,
                         closingHour: item?.closing_hour,
                         address: item?.location,

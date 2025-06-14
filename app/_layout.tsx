@@ -12,7 +12,7 @@ import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 import "react-native-reanimated";
-import { TamaguiProvider } from "tamagui";
+import { TamaguiProvider, useTheme } from "tamagui";
 import { NotifierWrapper } from "react-native-notifier";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
@@ -46,6 +46,7 @@ export default function RootLayout() {
   const colorScheme = useColorScheme();
   const { clearCart } = useCartStore();
   const { reset } = useLocationStore();
+  const theme = useTheme()
 
   const handleClearCart = () => {
     clearCart();
@@ -119,11 +120,35 @@ export default function RootLayout() {
                     }}
                   />
                   <Stack.Screen
+                    name="receipt/[deliveryId]"
+                    options={{
+                      title: 'Download Receipt',
+                      headerStyle: {
+                        backgroundColor: theme.background.val
+                      }
+                    }}
+                  />
+                  <Stack.Screen name='report/[deliveryId]' options={{
+                    title: 'Report an Issue',
+                    headerStyle: {
+                      backgroundColor: theme.background.val
+                    }
+                  }} />
+                  <Stack.Screen
+                    name="review/[deliveryId]"
+                    options={{
+                      title: 'Leave a Review',
+                      headerStyle: {
+                        backgroundColor: theme.background.val
+                      }
+                    }}
+                  />
+                  <Stack.Screen
                     name="cart/index"
                     options={{
                       title: "Cart",
                       headerStyle: {
-                        backgroundColor: "#18191c",
+                        backgroundColor: theme.background.val
                       },
                       headerRight: () => (
                         <AddItemBtn

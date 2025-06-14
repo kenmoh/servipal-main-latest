@@ -1,4 +1,4 @@
-import { Profile, ImageUrl } from "@/types/user-types";
+import { Profile, UserDetails, ImageUrl } from "@/types/user-types";
 import * as SecureStore from "expo-secure-store";
 import { jwtDecode } from "jwt-decode";
 
@@ -69,7 +69,7 @@ const removeToken = async () => {
   }
 };
 
-const storeProfile = async (profile: Profile) => {
+const storeProfile = async (profile: UserDetails) => {
   try {
     const profileString = JSON.stringify(profile);
     await SecureStore.setItemAsync(profileKey, profileString);
@@ -79,11 +79,11 @@ const storeProfile = async (profile: Profile) => {
   }
 };
 
-const getProfile = async (): Promise<Profile | null> => {
+const getProfile = async (): Promise<UserDetails | null> => {
   try {
     const profileString = await SecureStore.getItemAsync(profileKey);
     if (!profileString) return null;
-    return JSON.parse(profileString) as Profile;
+    return JSON.parse(profileString) as UserDetails;
   } catch (error) {
     console.error("Error getting user profile:", error);
     return null;

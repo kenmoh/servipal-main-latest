@@ -12,7 +12,7 @@ import * as Location from "expo-location";
 
 import { router } from "expo-router";
 import { useAuth } from "@/context/authContext";
-import { getCurrentUser } from "@/api/user";
+import { getCurrentUser, getCurrentUserProfile } from "@/api/user";
 import authStorage from "@/storage/authStorage";
 import AppTextInput from "@/components/AppInput";
 import LocationPermission from "@/components/Locationpermission";
@@ -37,7 +37,8 @@ const DeliveryScreen = () => {
   const getUserProfile = useCallback(async () => {
     if (!user?.sub) return;
     try {
-      const profile = await getCurrentUser(user?.sub);
+      // const profile = await getCurrentUser(user?.sub);
+      const profile = await getCurrentUserProfile()
 
       if (profile) {
         authStorage.storeProfile(profile);

@@ -1,16 +1,16 @@
 import { router, useSegments } from "expo-router";
 import { createContext, useContext, useEffect, useState } from "react";
 import * as SecureStore from "expo-secure-store";
-import { Profile, User, ImageUrl } from "@/types/user-types";
+import { Profile, UserDetails, User, ImageUrl } from "@/types/user-types";
 
 type AuthContextType = {
   // signIn: () => {} | void;
   signOut: () => void;
   setUser: (user: User | null) => void;
-  setProfile: (profile: Profile | null) => void;
+  setProfile: (profile: UserDetails | null) => void;
   setImages: (images: ImageUrl | null) => void;
   user?: User | null;
-  profile: Profile | null;
+  profile: UserDetails | null;
   images: ImageUrl | null;
 };
 

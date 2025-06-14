@@ -286,38 +286,38 @@ const ItemDetails = () => {
         <>
             <DeliveryWrapper>
 
-               {user?.sub === data?.delivery?.sender_id &&
-    data?.delivery?.sender_id && 
-    data?.delivery?.delivery_status !== 'pending' && 
-    data?.delivery?.delivery_status !== 'received' && (
-        <TouchableOpacity
-            style={{
-                backgroundColor: theme.cardDark.val,
-                borderColor: theme.borderColor.val,
-                borderWidth: 1,
-                height: 40,
-                width: "85%",
-                alignSelf: "center",
-                borderRadius: 8,
-                justifyContent: "center",
-                alignItems: "center",
-                marginVertical: 10,
-            }}
-            onPressIn={() =>
-                router.push({
-                    pathname: "/user-details/[userId]",
-                    params: {
-                        userId: data?.delivery?.rider_id!
-                    },
-                })
-            }
-        >
-            <XStack gap={10}>
-                <User color={"white"} size={20} />
-                <Text>CONTACT RIDER</Text>
-            </XStack>
-        </TouchableOpacity>
-    )}
+                {user?.sub === data?.delivery?.sender_id &&
+                    data?.delivery?.sender_id &&
+                    data?.delivery?.delivery_status !== 'pending' &&
+                    data?.delivery?.delivery_status !== 'received' && (
+                        <TouchableOpacity
+                            style={{
+                                backgroundColor: theme.cardDark.val,
+                                borderColor: theme.borderColor.val,
+                                borderWidth: 1,
+                                height: 40,
+                                width: "85%",
+                                alignSelf: "center",
+                                borderRadius: 8,
+                                justifyContent: "center",
+                                alignItems: "center",
+                                marginVertical: 10,
+                            }}
+                            onPressIn={() =>
+                                router.push({
+                                    pathname: "/user-details/[userId]",
+                                    params: {
+                                        userId: data?.delivery?.rider_id!
+                                    },
+                                })
+                            }
+                        >
+                            <XStack gap={10}>
+                                <User color={"white"} size={20} />
+                                <Text>CONTACT RIDER</Text>
+                            </XStack>
+                        </TouchableOpacity>
+                    )}
                 {user?.sub === data?.delivery?.sender_id &&
                     data?.order.order_payment_status !== "paid" && (
                         <Button
@@ -521,6 +521,78 @@ const ItemDetails = () => {
                                     )}
                                 </Button>
                             </>
+                        )}
+                    </XStack>
+
+                    {/* Additional Action Buttons */}
+                    <XStack marginTop="$4" gap="$2" width="90%" alignSelf="center" justifyContent="space-between">
+                        {data?.delivery?.delivery_status === "received" && (
+                            <>
+                                <Button
+                                    size={"$4"}
+                                    backgroundColor={"$cardDark"}
+                                    width="32%"
+                                    textAlign="center"
+                                    fontSize={12}
+                                    fontFamily={"$body"}
+                                    color={"$text"}
+                                    fontWeight={"500"}
+                                    pressStyle={{ backgroundColor: "$cardDarkHover" }}
+                                    onPressIn={() => {
+                                        // Handle review action
+                                        router.push({
+                                            pathname: "/review/[deliveryId]",
+                                            params: { deliveryId: id as string }
+                                        });
+                                    }}
+                                >
+                                    Review
+                                </Button>
+
+                                <Button
+                                    size={"$4"}
+                                    backgroundColor={"$cardDark"}
+                                    width="32%"
+                                    textAlign="center"
+                                    fontSize={12}
+                                    fontFamily={"$body"}
+                                    color={"$text"}
+                                    fontWeight={"500"}
+                                    pressStyle={{ backgroundColor: "$cardDarkHover" }}
+                                    onPressIn={() => {
+                                        // Handle report action
+                                        router.push({
+                                            pathname: "/report/[deliveryId]",
+                                            params: { deliveryId: id as string }
+                                        });
+                                    }}
+                                >
+                                    Report
+                                </Button>
+                            </>
+                        )}
+
+                        {data?.order?.order_payment_status === "paid" && (
+                            <Button
+                                size={"$4"}
+                                backgroundColor={"$cardDark"}
+                                width={data?.delivery?.delivery_status === "received" ? "32%" : "100%"}
+                                textAlign="center"
+                                fontSize={12}
+                                fontFamily={"$body"}
+                                color={"$text"}
+                                fontWeight={"500"}
+                                pressStyle={{ backgroundColor: "$cardDarkHover" }}
+                                onPressIn={() => {
+                                    // Handle receipt action
+                                    router.push({
+                                        pathname: "/receipt/[deliveryId]",
+                                        params: { deliveryId: id as string }
+                                    });
+                                }}
+                            >
+                                Receipt
+                            </Button>
                         )}
                     </XStack>
                 </Card>

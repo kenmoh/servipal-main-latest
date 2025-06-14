@@ -131,11 +131,11 @@ const profile = () => {
                     </View>
 
                     <YStack alignSelf="center" marginTop={"$2"}>
-                        <Heading letterSpacing={"$1"} fontSize={"$4"} alignSelf="center">
-                            {profile?.full_name || profile?.business_name}
+                        <Heading textTransform='capitalize' letterSpacing={"$1"} fontSize={"$4"} alignSelf="center">
+                            {profile?.profile?.full_name || profile?.profile?.business_name}
                         </Heading>
 
-                        <Text alignSelf="center">{profile?.phone_number}</Text>
+                        <Text alignSelf="center">{profile?.profile?.phone_number}</Text>
                         <Text alignSelf="center">{user?.email}</Text>
                     </YStack>
                     <YStack marginTop={"$10"}>
