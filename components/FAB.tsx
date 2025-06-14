@@ -3,7 +3,7 @@ import React, { useMemo } from 'react'
 import { useTheme } from 'tamagui'
 import { Send } from 'lucide-react-native'
 
-const FAB = ({ onPress, icon }: { icon?: React.ReactNode, onPress: () => void }) => {
+const FAB = ({ onPress, icon, disabled }: { disabled?: boolean, icon?: React.ReactNode, onPress: () => void }) => {
     const theme = useTheme()
 
     // Memoize button style
@@ -22,7 +22,7 @@ const FAB = ({ onPress, icon }: { icon?: React.ReactNode, onPress: () => void })
         [theme.btnPrimaryColor?.val]
     );
     return (
-        <TouchableOpacity onPress={onPress} style={fabStyle}>
+        <TouchableOpacity disabled={disabled} onPress={onPress} style={fabStyle}>
             {icon || <Send color={theme.text?.val} size={25} />}
         </TouchableOpacity>
     )

@@ -5,6 +5,10 @@ export interface Review {
   rating: number;
   comment: string;
   created_at: string;
+  user: {
+    full_name: string;
+    profile_image: string;
+  };
 }
 
 export interface ItemImage {
@@ -32,7 +36,7 @@ export interface CreateCategory {
 }
 export interface CategoryResponse extends CreateCategory {
   id: string;
-  category_type: string
+  category_type: "food" | "product";
 }
 
 export interface MenuItem {

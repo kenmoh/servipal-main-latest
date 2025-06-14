@@ -1,134 +1,164 @@
-import React, { useEffect, useState } from 'react'
-import { StyleSheet, FlatList, ScrollView, Image } from 'react-native'
-import { Card, Heading, Paragraph, XStack, YStack, Text, Separator } from 'tamagui'
-import StoreCard from '@/components/StoreCard'
-import * as Location from 'expo-location'
-import { Button, useTheme, View } from 'tamagui'
-import { useQuery } from '@tanstack/react-query'
-import { fetchRestaurants } from '@/api/user'
-import LoadingIndicator from '@/components/LoadingIndicator'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import Category from '@/components/Category'
-import AppTextInput from '@/components/AppInput'
-import AppHeader from '@/components/AppHeader'
-import { CompanyProfile } from '@/types/user-types'
-import Swiper from 'react-native-swiper'
-import { LinearGradient } from 'expo-linear-gradient'
-import { getCoordinatesFromAddress } from '@/utils/geocoding'
-import { getTravelDistance } from '@/api/order'
-import FAB from '@/components/FAB'
-import { router } from 'expo-router'
-import { useAuth } from '@/context/authContext'
-import { Plus } from 'lucide-react-native'
+import React, { useEffect, useState } from "react";
+import { StyleSheet, FlatList, ScrollView, Image } from "react-native";
+import {
+    Card,
+    Heading,
+    Paragraph,
+    XStack,
+    YStack,
+    Text,
+    Separator,
+} from "tamagui";
+import StoreCard from "@/components/StoreCard";
+import * as Location from "expo-location";
+import { Button, useTheme, View } from "tamagui";
+import { useQuery } from "@tanstack/react-query";
+import { fetchRestaurants } from "@/api/user";
+import LoadingIndicator from "@/components/LoadingIndicator";
+import { SafeAreaView } from "react-native-safe-area-context";
+import Category from "@/components/Category";
+import AppTextInput from "@/components/AppInput";
+import AppHeader from "@/components/AppHeader";
+import { CompanyProfile } from "@/types/user-types";
+import Swiper from "react-native-swiper";
+import { LinearGradient } from "expo-linear-gradient";
+import { getCoordinatesFromAddress } from "@/utils/geocoding";
+import { getTravelDistance } from "@/api/order";
+import FAB from "@/components/FAB";
+import { router } from "expo-router";
+import { useAuth } from "@/context/authContext";
+import { Plus } from "lucide-react-native";
 import { fetchCategories } from "@/api/item";
+import RefreshButton from "@/components/RefreshButton";
 
 export interface RestaurantWithDistance extends CompanyProfile {
     distance: number;
 }
 export const featuredRestaurants = [
     {
-        id: 'f1',
-        company_name: 'Burger Palace',
-        location: 'Victoria Island, Lagos',
-        company_logo: 'https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=500',
-        rating: 4.8
+        id: "f1",
+        company_name: "Burger Palace",
+        location: "Victoria Island, Lagos",
+        company_logo:
+            "https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=500",
+        rating: 4.8,
     },
     {
-        id: 'f2',
-        company_name: 'Pizza Hub',
-        location: 'Lekki Phase 1, Lagos',
-        company_logo: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=500',
-        rating: 4.5
+        id: "f2",
+        company_name: "Pizza Hub",
+        location: "Lekki Phase 1, Lagos",
+        company_logo:
+            "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=500",
+        rating: 4.5,
     },
     {
-        id: 'f3',
-        company_name: 'Chicken Republic',
-        location: 'Ikeja GRA, Lagos',
-        company_logo: 'https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?w=500',
-        rating: 4.6
+        id: "f3",
+        company_name: "Chicken Republic",
+        location: "Ikeja GRA, Lagos",
+        company_logo:
+            "https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?w=500",
+        rating: 4.6,
     },
     {
-        id: 'f4',
-        company_name: 'Mama Kitchen',
-        location: 'Ajah, Lagos',
-        company_logo: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=500',
-        rating: 4.9
+        id: "f4",
+        company_name: "Mama Kitchen",
+        location: "Ajah, Lagos",
+        company_logo:
+            "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=500",
+        rating: 4.9,
     },
     {
-        id: 'f5',
-        company_name: 'Seafood Paradise',
-        location: 'Victoria Island, Lagos',
-        company_logo: 'https://images.unsplash.com/photo-1559847844-5315695dadae?w=500',
-        rating: 4.7
+        id: "f5",
+        company_name: "Seafood Paradise",
+        location: "Victoria Island, Lagos",
+        company_logo:
+            "https://images.unsplash.com/photo-1559847844-5315695dadae?w=500",
+        rating: 4.7,
     },
     {
-        id: 'f6',
-        company_name: 'Suya Express',
-        location: 'Ikoyi, Lagos',
-        company_logo: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=500',
-        rating: 4.4
+        id: "f6",
+        company_name: "Suya Express",
+        location: "Ikoyi, Lagos",
+        company_logo:
+            "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=500",
+        rating: 4.4,
     },
     {
-        id: 'f7',
-        company_name: 'Rice Bowl',
-        location: 'Maryland, Lagos',
-        company_logo: 'https://images.unsplash.com/photo-1603133872878-684f208fb84b?w=500',
-        rating: 4.3
+        id: "f7",
+        company_name: "Rice Bowl",
+        location: "Maryland, Lagos",
+        company_logo:
+            "https://images.unsplash.com/photo-1603133872878-684f208fb84b?w=500",
+        rating: 4.3,
     },
     {
-        id: 'f8',
-        company_name: 'Pasta Paradise',
-        location: 'Yaba, Lagos',
-        company_logo: 'https://images.unsplash.com/photo-1473093295043-cdd812d0e601?w=500',
-        rating: 4.6
+        id: "f8",
+        company_name: "Pasta Paradise",
+        location: "Yaba, Lagos",
+        company_logo:
+            "https://images.unsplash.com/photo-1473093295043-cdd812d0e601?w=500",
+        rating: 4.6,
     },
     {
-        id: 'f9',
-        company_name: 'Sweet Sensation',
-        location: 'Surulere, Lagos',
-        company_logo: 'https://images.unsplash.com/photo-1621274403997-37aace184f49?w=500',
-        rating: 4.5
+        id: "f9",
+        company_name: "Sweet Sensation",
+        location: "Surulere, Lagos",
+        company_logo:
+            "https://images.unsplash.com/photo-1621274403997-37aace184f49?w=500",
+        rating: 4.5,
     },
     {
-        id: 'f10',
-        company_name: 'Local Dishes',
-        location: 'Ikeja, Lagos',
-        company_logo: 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?w=500',
-        rating: 4.8
-    }
+        id: "f10",
+        company_name: "Local Dishes",
+        location: "Ikeja, Lagos",
+        company_logo:
+            "https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?w=500",
+        rating: 4.8,
+    },
 ];
 
 const Page = () => {
-    const theme = useTheme()
-    const { user } = useAuth()
-    const [userLocation, setUserLocation] = useState<{ latitude: number; longitude: number } | null>(null);
-    const [filteredRestaurants, setFilteredRestaurants] = useState<(CompanyProfile & { distance: number })[]>([]);
-    const [filteredFeatured, setFilteredFeatured] = useState<RestaurantWithDistance[]>([]);
-    const [hasItem, setHasItem] = useState(false)
-    const { data, isPending } = useQuery({
-        queryKey: ['restaurants'],
-        queryFn: fetchRestaurants
-    })
+    const theme = useTheme();
+    const { user } = useAuth();
+    const [userLocation, setUserLocation] = useState<{
+        latitude: number;
+        longitude: number;
+    } | null>(null);
+    const [filteredRestaurants, setFilteredRestaurants] = useState<
+        (CompanyProfile & { distance: number })[]
+    >([]);
+    const [filteredFeatured, setFilteredFeatured] = useState<
+        RestaurantWithDistance[]
+    >([]);
 
-     const { data: categories } = useQuery({
-        queryKey: ["categories"],
-        queryFn: fetchCategories,
-        select: (categories) => categories?.filter(category => category.category_type === "food") || []
-
+    const [hasItem, setHasItem] = useState(false);
+    const { data, isFetching, error, refetch } = useQuery({
+        queryKey: ["restaurants"],
+        queryFn: fetchRestaurants,
     });
 
+    const { data: categories } = useQuery({
+        queryKey: ["categories"],
+        queryFn: fetchCategories,
+        select: (categories) =>
+            categories?.filter((category) => category.category_type === "food") || [],
+    });
 
     // Get user's location
     useEffect(() => {
         const getUserLocation = async () => {
             const { status } = await Location.requestForegroundPermissionsAsync();
-            if (status !== 'granted') return;
+            if (status !== "granted") return;
 
             const location = await Location.getCurrentPositionAsync({});
-            console.log('LOCATION', location.coords.latitude, location.coords.longitude)
+            console.log(
+                "LOCATION",
+                location.coords.latitude,
+                location.coords.longitude
+            );
             setUserLocation({
                 latitude: location.coords.latitude,
-                longitude: location.coords.longitude
+                longitude: location.coords.longitude,
             });
         };
 
@@ -136,107 +166,140 @@ const Page = () => {
     }, []);
 
     useEffect(() => {
-    const filterRestaurants = async () => {
-        if (!data || !userLocation) return;
-        
-        const restaurantsWithDistance = await Promise.all(
-            data.map(async (restaurant) => {
-                const coordinates = await getCoordinatesFromAddress(restaurant.location);
-                if (!coordinates) return null;
-                
-                const distance = await getTravelDistance(
-                    userLocation.latitude,
-                    userLocation.longitude,
-                    coordinates.lat,
-                    coordinates.lng
+        const filterRestaurants = async () => {
+            if (!data || !userLocation) return;
+
+            const restaurantsWithDistance = await Promise.all(
+                data.map(async (restaurant) => {
+                    const coordinates = await getCoordinatesFromAddress(
+                        restaurant.location
+                    );
+                    if (!coordinates) return null;
+
+                    const distance = await getTravelDistance(
+                        userLocation.latitude,
+                        userLocation.longitude,
+                        coordinates.lat,
+                        coordinates.lng
+                    );
+
+                    if (!distance || distance > 100) return null;
+
+                    return {
+                        ...restaurant,
+                        distance,
+                    } as RestaurantWithDistance;
+                })
+            );
+
+            // Filter out null values first
+            const validRestaurants = restaurantsWithDistance.filter(
+                (item): item is RestaurantWithDistance => item !== null
+            );
+
+            let currentVendorRestaurant = null;
+            let otherRestaurants = validRestaurants; // Use validRestaurants, not restaurantsWithDistance
+
+            if (user?.user_type === "vendor") {
+                // Find the current vendor's restaurant
+                currentVendorRestaurant = validRestaurants.find(
+                    (restaurant) => restaurant.id === user.sub
                 );
-                
-                if (!distance || distance > 100) return null;
-                
-                return {
-                    ...restaurant,
-                    distance
-                } as RestaurantWithDistance;
-            })
+                setHasItem(true);
+
+                // Remove current vendor's restaurant from others list
+                otherRestaurants = validRestaurants.filter(
+                    (restaurant) => restaurant.id !== user.sub
+                );
+            }
+
+            // Sort other restaurants by distance
+            otherRestaurants.sort((a, b) => a.distance - b.distance);
+
+            // Combine results - current vendor first, then others
+            const finalResults = currentVendorRestaurant
+                ? [currentVendorRestaurant, ...otherRestaurants]
+                : otherRestaurants;
+
+            setFilteredRestaurants(
+                finalResults as (CompanyProfile & { distance: number })[]
+            );
+        };
+
+        filterRestaurants();
+    }, [data, userLocation, user?.sub, user?.user_type]);
+
+    if (isFetching) return <LoadingIndicator />;
+    if (error)
+        return (
+            <RefreshButton label="Error loading restaurants" onPress={refetch} />
         );
 
-        // Filter out null values first
-        const validRestaurants = restaurantsWithDistance
-            .filter((item): item is RestaurantWithDistance => item !== null);
-
-        let currentVendorRestaurant = null;
-        let otherRestaurants = validRestaurants; // Use validRestaurants, not restaurantsWithDistance
-
-        if (user?.user_type === 'vendor') {
-            // Find the current vendor's restaurant
-            currentVendorRestaurant = validRestaurants.find(restaurant => restaurant.id === user.sub);
-            setHasItem(true)
-            
-            // Remove current vendor's restaurant from others list
-            otherRestaurants = validRestaurants.filter(restaurant => restaurant.id !== user.sub);
-            
-        }
-
-        // Sort other restaurants by distance
-        otherRestaurants.sort((a, b) => a.distance - b.distance);
-
-        // Combine results - current vendor first, then others
-        const finalResults = currentVendorRestaurant 
-            ? [currentVendorRestaurant, ...otherRestaurants]
-            : otherRestaurants;
-
-        setFilteredRestaurants(finalResults as (CompanyProfile & { distance: number })[]);
-    };
-
-    filterRestaurants();
-}, [data, userLocation, user?.id, user?.user_type]);
-
-
-    if (isPending) {
-        return <LoadingIndicator />
-    }
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: theme.background.val }}>
-
-            <AppHeader component={<AppTextInput height='$3.5' borderRadius={50} placeholder='Search Restaurants..' />} />
+            <AppHeader
+                component={
+                    <AppTextInput
+                        height="$3.5"
+                        borderRadius={50}
+                        placeholder="Search Restaurants.."
+                    />
+                }
+            />
             <Separator />
 
-            {filteredRestaurants.length > 0 && <FlatList
-                            // data={data}
-                            data={filteredRestaurants}
-                            ListHeaderComponent={() => (
-                                <>
-                                    <Category categories={categories || []} />
-                                    <FeaturedRestaurants />
-                                    {/* <FeaturedRestaurants restaurants={data || []} /> */}
-                                </>
-                            )}
-                            stickyHeaderIndices={[1]}
-                            showsVerticalScrollIndicator={false}
-                            keyExtractor={item => item.id}
-                            renderItem={({ item }: { item: CompanyProfile & { distance: number } }) => (
-                                <StoreCard item={item} distance={item.distance} screenType='RESTAURANT' />
-                            )}
-                            contentContainerStyle={{
-                                paddingBottom: 10
-                            }}
-                        />}
+            {filteredRestaurants.length > 0 && (
+                <FlatList
+                    // data={data}
+                    data={filteredRestaurants}
+                    ListHeaderComponent={() => (
+                        <>
+                            <Category categories={categories || []} />
+                            <FeaturedRestaurants />
+                            {/* <FeaturedRestaurants restaurants={data || []} /> */}
+                        </>
+                    )}
+                    stickyHeaderIndices={[1]}
+                    showsVerticalScrollIndicator={false}
+                    keyExtractor={(item) => item.id}
+                    renderItem={({
+                        item,
+                    }: {
+                        item: CompanyProfile & { distance: number };
+                    }) => (
+                        <StoreCard
+                            item={item}
+                            distance={item.distance}
+                            screenType="RESTAURANT"
+                        />
+                    )}
+                    contentContainerStyle={{
+                        paddingBottom: 10,
+                    }}
+                />
+            )}
 
-            {!hasItem && user?.user_type === 'vendor'  ?  <FAB icon={<Plus size={25} color={theme.text.val} />} onPress={() => router.push({ pathname: '/store-detail/addMenu' })} />:""}
-
+            {!hasItem && user?.user_type === "vendor" ? (
+                <FAB
+                    disabled={!hasItem}
+                    icon={<Plus size={25} color={theme.text.val} />}
+                    onPress={() => router.push({ pathname: "/store-detail/addMenu" })}
+                />
+            ) : (
+                ""
+            )}
         </SafeAreaView>
-    )
-}
+    );
+};
 
- 
-export default Page
+export default Page;
 
 interface FeaturedRestaurantsProps {
-    restaurants: CompanyProfile[]
+    restaurants: CompanyProfile[];
 }
 
 export const FeaturedRestaurants = () => {
-    const theme = useTheme()
+    const theme = useTheme();
 
     return (
         <YStack height={220}>
@@ -246,7 +309,9 @@ export const FeaturedRestaurants = () => {
                 justifyContent="space-between"
                 alignItems="center"
             >
-                <Heading color="$text" fontSize={16}>Featured Restaurants</Heading>
+                <Heading color="$text" fontSize={16}>
+                    Featured Restaurants
+                </Heading>
                 {/* <Text color="$btnPrimaryColor" fontSize={12}>See All</Text> */}
             </XStack>
 
@@ -262,11 +327,7 @@ export const FeaturedRestaurants = () => {
                 containerStyle={{ paddingHorizontal: 10 }}
             >
                 {featuredRestaurants?.map((restaurant) => (
-                    <YStack
-                        key={restaurant.id}
-                        width="90%"
-                        marginHorizontal="$2"
-                    >
+                    <YStack key={restaurant.id} width="90%" marginHorizontal="$2">
                         <Card
                             width="100%"
                             height={160}
@@ -284,21 +345,16 @@ export const FeaturedRestaurants = () => {
                             />
                             {/* Gradient overlay for better text visibility */}
                             <LinearGradient
-                                colors={['transparent', 'rgba(0,0,0,0.7)']}
+                                colors={["transparent", "rgba(0,0,0,0.7)"]}
                                 style={{
-                                    position: 'absolute',
+                                    position: "absolute",
                                     bottom: 0,
                                     left: 0,
                                     right: 0,
                                     height: 80,
                                 }}
                             />
-                            <YStack
-                                position="absolute"
-                                bottom={0}
-                                padding="$3"
-                                width="100%"
-                            >
+                            <YStack position="absolute" bottom={0} padding="$3" width="100%">
                                 <Heading
                                     fontSize={14}
                                     color="white"
@@ -329,13 +385,13 @@ export const FeaturedRestaurants = () => {
                 ))}
             </Swiper>
         </YStack>
-    )
-}
+    );
+};
 
 const styles = StyleSheet.create({
     image: {
-        width: '100%',
-        height: '100%',
-        resizeMode: 'cover'
-    }
-})
+        width: "100%",
+        height: "100%",
+        resizeMode: "cover",
+    },
+});

@@ -53,15 +53,18 @@ const AppPicker = ({
                     selectedValue={value}
                     onValueChange={(itemValue) => onValueChange(itemValue)}
                 >
-                    {items?.map((item) => (
-                        <Picker.Item
-                            color={theme.text.val}
-                            style={{ backgroundColor: theme.cardDark.val }}
-                            label={item?.name}
-                            value={isBank ? item.code : item?.id}
-                            key={isBank ? item?.code : item?.id}
-                        />
-                    ))}
+                    {items?.map((item) => {
+                        const itemKey = isBank ? `${item.code}` : `${item.id}`;
+                        return (
+                            <Picker.Item
+                                key={itemKey}
+                                color={theme.text.val}
+                                style={{ backgroundColor: theme.cardDark.val }}
+                                label={item?.name}
+                                value={isBank ? item.code : item?.id}
+                            />
+                        );
+                    })}
                 </Picker>
             </View>
         </View>

@@ -20,7 +20,7 @@ const StoreCard = ({
     screenType: "RESTAURANT" | "LAUNDRY";
 }) => {
     const theme = useTheme();
-    const {user} = useAuth()
+    const { user } = useAuth()
 
     return (
         <TouchableOpacity
@@ -93,35 +93,35 @@ const StoreCard = ({
                     width="100%"
                     gap="$1"
                 >
-                   {user?.user_type === 'vendor' && user?.sub === item?.id ?<View
+                    {user?.user_type === 'vendor' && user?.sub === item?.id ? <View
                         backgroundColor='rgba(0, 0, 255, 0.5)'
                         alignSelf={'flex-start'}
                         paddingHorizontal={'$2'}
                         paddingVertical={'$1.5'}
                         borderRadius={20}
-                   >
+                    >
                         <Paragraph
-                        fontSize={16}
-                        color="white"
-                        numberOfLines={1}
-                        style={{
-                            fontFamily: "Poppins-Bold",
-                        }}
-                    >
-                        🏪{item?.company_name}
-                    </Paragraph>
-                   </View>
-                   :
-                       <Paragraph
-                        fontSize={16}
-                        color="white"
-                        numberOfLines={1}
-                        style={{
-                            fontFamily: "Poppins-Bold",
-                        }}
-                    >
-                        {item?.company_name}
-                    </Paragraph>}
+                            fontSize={16}
+                            color="white"
+                            numberOfLines={1}
+                            style={{
+                                fontFamily: "Poppins-Bold",
+                            }}
+                        >
+                            🏪{item?.company_name}
+                        </Paragraph>
+                    </View>
+                        :
+                        <Paragraph
+                            fontSize={16}
+                            color="white"
+                            numberOfLines={1}
+                            style={{
+                                fontFamily: "Poppins-Bold",
+                            }}
+                        >
+                            {item?.company_name}
+                        </Paragraph>}
                     <XStack alignItems="center" gap="$2">
                         <Paragraph
                             fontSize={12}

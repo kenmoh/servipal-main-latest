@@ -14,7 +14,7 @@ const AddItemBtn = ({ onPress, icon, isDisabled = false, label = 'Add Menu' }: {
             marginRight={'$2.5'}
             alignSelf='flex-end'
             borderRadius={'$10'}
-            height={'$2.5'}
+            height={'$3.5'}
             backgroundColor={'$transparentBtnPrimaryColor'}
         >
             {icon}

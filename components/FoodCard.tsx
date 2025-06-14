@@ -4,6 +4,8 @@ import React from 'react'
 import { Card, Heading, Paragraph, Checkbox, Square, useTheme, XStack, YStack } from 'tamagui'
 import { Check } from 'lucide-react-native'
 import { useCartStore } from '@/store/cartStore'
+import { useAuth } from '@/context/authContext'
+import { Notifier, NotifierComponents } from 'react-native-notifier'
 
 const FoodCard = ({ item, onPress, screenType }: {
     item: MenuItem,
@@ -11,6 +13,7 @@ const FoodCard = ({ item, onPress, screenType }: {
     onPress: (id: string) => void
 }) => {
     const theme = useTheme()
+    const { user } = useAuth()
     const cartItems = useCartStore(state => state.cart.order_items)
 
     // Check if item exists in cart
@@ -58,12 +61,21 @@ const FoodCard = ({ item, onPress, screenType }: {
                 </XStack>
                 <Checkbox
                     checked={isChecked}
-                    // onCheckedChange={() => onPress(item.id)}
                     position="absolute"
                     right={10}
-                    top={10}
-                    hitSlop={50}
-                    onPressIn={() => onPress(item.id)}
+                    bottom={10}
+                    hitSlop={25}
+                    size={'$6'}
+                    disabled={user?.user_type === 'vendor'}
+                    onPressIn={user?.sub !== item?.user_id ? () => onPress(item.id) : () => Notifier.showNotification({
+                        title: "Not Allowed",
+                        description: "You cannot order from your restaurant",
+                        Component: NotifierComponents.Alert,
+                        duration: 3000,
+                        componentProps: {
+                            alertType: "warn",
+                        },
+                    })}
                 >
                     <Checkbox.Indicator>
                         <Check color={theme.btnPrimaryColor.val} />

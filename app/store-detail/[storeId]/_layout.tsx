@@ -2,9 +2,8 @@ import { StyleSheet } from "react-native";
 import React from "react";
 import { Stack } from "expo-router";
 import { useTheme } from "tamagui";
-import AddItemBtn from "@/components/AddItemBtn";
 
-const StoreDetailLayout = () => {
+const StoreTabLayout = () => {
     const theme = useTheme();
     return (
         <Stack
@@ -15,31 +14,19 @@ const StoreDetailLayout = () => {
                 },
             }}
         >
-            <Stack.Screen
-                name="[storeId]"
-                options={{
-                    headerShown: false,
-                    headerStyle: {
-                        backgroundColor: "transparent",
 
-                    },
-                }}
-            />
             <Stack.Screen
-                name="addMenu"
-
+                name="(store-tab)"
                 options={{
-                    title: 'Add Menu',
-                    animation: 'slide_from_bottom'
+                    headerTransparent: true,
+                    headerShown: false
 
                 }}
             />
-
-
         </Stack>
     );
 };
 
-export default StoreDetailLayout;
+export default StoreTabLayout;
 
 const styles = StyleSheet.create({});

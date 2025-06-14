@@ -2,6 +2,7 @@ import { fetchDeliveries } from "@/api/order";
 import HDivider from "@/components/HDivider";
 import ItemCard from "@/components/ItemCard";
 import LoadingIndicator from "@/components/LoadingIndicator";
+import RefreshButton from "@/components/RefreshButton";
 import { useAuth } from "@/context/authContext";
 import { DeliveryDetail } from "@/types/order-types";
 import { useQuery } from "@tanstack/react-query";
@@ -12,12 +13,13 @@ import {
     Handshake,
     Package,
     Package2,
+    RefreshCcw,
     Shirt,
     Utensils,
 } from "lucide-react-native";
 import { useMemo, useState } from "react";
 import { FlatList, ScrollView } from "react-native";
-import { YStack, Text, useTheme, Card, View } from "tamagui";
+import { YStack, Text, useTheme, Card, View, Button } from "tamagui";
 
 const UserOrders = () => {
     const theme = useTheme();
@@ -76,19 +78,8 @@ const UserOrders = () => {
     );
 
     if (isLoading) return <LoadingIndicator />;
-    if (error)
-        return (
-            <Text
-                color="$red10"
-                alignSelf="center"
-                alignContent="center"
-                alignItems="center"
-                justifyContent="center"
-            >
-                Error loading data
-            </Text>
-        );
-console.log(data[0]?.order, data.length)
+    if (error) return <RefreshButton onPress={refetch} label="Error loading orders" />
+
     return (
         <YStack backgroundColor={theme.background} flex={1} paddingHorizontal="$2">
             <View

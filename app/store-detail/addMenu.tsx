@@ -47,7 +47,7 @@ type FormData = z.infer<typeof schema>;
 const addMenu = () => {
     const [visble, setVisble] = useState(false);
     const [selectedItemType, setSelectedItemType] = useState<string>("food");
-    const {user} = useAuth()
+    const { user } = useAuth()
 
     const {
         control,
@@ -99,10 +99,10 @@ const addMenu = () => {
             });
             setVisble(false);
             resetCategoryForm();
-            
-            queryClient.invalidateQueries({queryKey: ['storeItems', user?.sub]})
+
+            queryClient.invalidateQueries({ queryKey: ['storeItems', user?.sub] })
             queryClient.invalidateQueries({ queryKey: ["categories"] });
-            queryClient.invalidateQueries({queryKey: ['restaurants']})
+            queryClient.invalidateQueries({ queryKey: ['restaurants'] })
 
             return;
         },
@@ -154,7 +154,7 @@ const addMenu = () => {
 
     return (
         <>
-            <ScrollView backgroundColor={"$background"} flex={1}>
+            <ScrollView backgroundColor={"$background"} flex={1} showsVerticalScrollIndicator={false}>
                 {/*    <Button
                     borderRadius={"$10"}
                     variant="outlined"

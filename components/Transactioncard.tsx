@@ -18,7 +18,7 @@ const Transactioncard = ({ data }: { data: Transaction }) => {
                         width={'$2'}
                         height={'$2'}
                         backgroundColor={data?.transaction_type === 'credit' ? 'rgba(4, 255, 130, 0.2)' : 'rgba(255, 0, 0, 0.2)'}>
-                        {data?.transaction_type === 'credit' ? <ArrowDown color={'green'} size={12} /> : <ArrowUp color={'red'} size={12} />}
+                        {data?.transaction_type === 'credit' ? <ArrowDown color={'teal'} size={12} /> : <ArrowUp color={'red'} size={12} />}
                     </Circle>
                     <YStack>
                         <Text textTransform='capitalize' fontSize={12} fontWeight={'400'}>{data?.payment_by}</Text>

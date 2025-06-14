@@ -6,10 +6,10 @@ import LoadingIndicator from "@/components/LoadingIndicator";
 import { DeliveryDetail } from "@/types/order-types";
 import { useQuery } from "@tanstack/react-query";
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { FlatList, TouchableOpacity, ListRenderItem } from "react-native";
-import { YStack, Text, useTheme, Button, Separator } from "tamagui";
+import { FlatList, ListRenderItem } from "react-native";
+import { YStack, useTheme, Separator } from "tamagui";
 import * as Location from "expo-location";
-import { RefreshCcw, Send } from "lucide-react-native";
+
 import { router } from "expo-router";
 import { useAuth } from "@/context/authContext";
 import { getCurrentUser } from "@/api/user";
@@ -19,6 +19,7 @@ import LocationPermission from "@/components/Locationpermission";
 import { distanceCache } from "@/utils/distance-cache";
 import { useLocationTracking } from "@/hooks/useLocationTracking";
 import FAB from "@/components/FAB";
+import RefreshButton from "@/components/RefreshButton";
 
 const DeliveryScreen = () => {
   const theme = useTheme();
@@ -241,32 +242,7 @@ const DeliveryScreen = () => {
 
   if (isLoading) return <LoadingIndicator />;
 
-  if (error) {
-    return (
-      <YStack
-        flex={1}
-        backgroundColor={theme.background}
-        alignItems="center"
-        justifyContent="center"
-        gap="$4"
-      >
-        <Text color="$red10" fontSize={16}>
-          Error loading deliveries
-        </Text>
-        <Button
-          borderRadius={50}
-          backgroundColor="$btnPrimaryColor"
-          color="$text"
-          size="$4"
-          onPress={handleRefresh}
-          pressStyle={{ opacity: 0.8 }}
-        >
-          <RefreshCcw color={theme.text.val} size={20} />
-          Try Again
-        </Button>
-      </YStack>
-    );
-  }
+  if (error) return <RefreshButton onPress={refetch} label="Error loading deliveries" />
 
   return (
     <YStack backgroundColor={theme.background} flex={1} padding="$2">

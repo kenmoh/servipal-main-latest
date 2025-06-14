@@ -2,13 +2,17 @@ import { Dimensions, StyleSheet } from 'react-native'
 import React, { useRef, useState } from 'react'
 import { Button, ScrollView, Text, View } from 'tamagui';
 
-type Category = {
-    id: number
+
+
+
+export type CategoryType = {
+    id: string
     name: string
+    category_type: 'food' | 'product'
 }
 
 
-const Category = ({ categories }: { categories: Category[] }) => {
+const Category = ({ categories }: { categories: CategoryType[] }) => {
     const [activeCategory, setActiveCategory] = useState(categories[0]?.name);
     const scrollRef = useRef<ScrollView>(null);
     const buttonWidth = 100;
@@ -24,9 +28,8 @@ const Category = ({ categories }: { categories: Category[] }) => {
         });
     };
     return (
-        <View height={'$6'}>
+        <View height={'$5'} backgroundColor={'$background'}>
             <ScrollView
-                style={{ marginVertical: 10, backgroundColor: '$profileCard' }}
                 ref={scrollRef}
                 horizontal
                 showsHorizontalScrollIndicator={false}
