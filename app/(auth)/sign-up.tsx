@@ -142,7 +142,7 @@ const SignUp = () => {
                                     editable={!isPending}
 
                                 />
-                                <AppPicker items={roleData} value={values?.userType} onValueChange={handleChange('userType')} />
+                                <AppPicker items={roleData} isBank={false} value={values?.userType} onValueChange={handleChange('userType')} />
                                 <AppTextInput
 
                                     value={values.password}

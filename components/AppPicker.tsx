@@ -16,6 +16,7 @@ type PickerProps = {
     value: string;
     placeholder?: string;
     isBank?: boolean;
+    enabled?: boolean
     onValueChange: (val: string) => void;
 };
 const AppPicker = ({
@@ -25,6 +26,7 @@ const AppPicker = ({
     placeholder,
     onValueChange,
     isBank,
+    enabled=true
 }: PickerProps) => {
     const theme = useTheme();
     return (
@@ -50,18 +52,20 @@ const AppPicker = ({
                     }}
                     mode="dropdown"
                     placeholder={placeholder}
+                    enabled={enabled}
                     selectedValue={value}
                     onValueChange={(itemValue) => onValueChange(itemValue)}
                 >
                     {items?.map((item) => {
                         const itemKey = isBank ? `${item.code}` : `${item.id}`;
+                        const itemValue = isBank ? itemKey : item.name
                         return (
                             <Picker.Item
                                 key={itemKey}
                                 color={theme.text.val}
                                 style={{ backgroundColor: theme.cardDark.val }}
                                 label={item?.name}
-                                value={isBank ? item.code : item?.id}
+                                value={itemValue}
                             />
                         );
                     })}

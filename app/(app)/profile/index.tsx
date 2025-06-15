@@ -8,23 +8,22 @@ import { Heading, Text, useTheme, View, YStack } from "tamagui";
 import { router } from "expo-router";
 import ProfileImagePicker from "@/components/ProfileImagePicker";
 import { useAuth } from "@/context/authContext";
-import { useMutation } from "@tanstack/react-query";
-import { uploadProfileImage, ImageData, ImageUpload } from "@/api/user";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { uploadProfileImage, ImageData, ImageUpload, getCurrentUserProfile } from "@/api/user";
 import { ImageType } from "@/types/order-types";
-import { ImageUrl } from "@/types/user-types";
+import { ImageUrl, UserDetails } from "@/types/user-types";
 import authStorage from "@/storage/authStorage";
 import { Notifier, NotifierComponents } from "react-native-notifier";
 import { queryClient } from "@/app/_layout";
+import { logOutUser } from "@/api/auth";
 
 const BACKDROP_IMAGE_HEIGHT = Dimensions.get("window").height * 0.2;
 const BACKDROP_IMAGE_WIDTH = Dimensions.get("window").width;
 
 const profile = () => {
-    const [backdropUri, setBackdropUri] = useState<ImageType | ImageUpload | null | string>(
-        null
-    );
+    const [backdropUri, setBackdropUri] = useState<ImageType | ImageUpload | null | string>(null);
     const [profileUri, setProfileUri] = useState<ImageUrl | null | string>(null);
-    const { user, profile, images, setImages } = useAuth();
+    const { user, images, profile, setImages, setProfile } = useAuth();
 
     // Load stored images on component mount
     useEffect(() => {
@@ -37,6 +36,16 @@ const profile = () => {
         loadStoredImages();
     }, []);
 
+    // Logout user (server side)
+    const { mutate } = useMutation({
+        mutationKey: ['logout'],
+        mutationFn: logOutUser,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['profile', user?.sub] });
+            console.log('Log out')
+        }
+    })
+
     // Single mutation for uploading images
     const uploadMutation = useMutation({
         mutationFn: uploadProfileImage,
@@ -45,11 +54,11 @@ const profile = () => {
                 profile_image_url:
                     typeof data?.profile_image_url === "object" && data?.profile_image_url !== null
                         ? data.profile_image_url.uri
-                        : data?.profile_image_url ?? images?.profile_image_url ?? undefined,
+                        : data?.profile_image_url ?? profile?.profile?.profile_image_url ?? undefined,
                 backdrop_image_url:
                     typeof data?.backdrop_image_url === "object" && data?.backdrop_image_url !== null
                         ? data.backdrop_image_url.uri
-                        : data?.backdrop_image_url ?? images?.backdrop_image_url ?? undefined,
+                        : data?.backdrop_image_url ?? profile?.profile?.backdrop_image_url ?? undefined,
             };
 
             // Update context
@@ -100,8 +109,16 @@ const profile = () => {
         });
     };
 
-    const theme = useTheme();
     const { signOut } = useAuth();
+
+    const handleLogout = async () => {
+        try {
+            await authStorage.removeProfile();
+            signOut();
+            mutate()
+        } catch (error) {
+        }
+    }
 
     return (
         <>
@@ -115,7 +132,7 @@ const profile = () => {
                                 height={BACKDROP_IMAGE_HEIGHT}
                                 borderRadius={0}
                                 isBackdropImage
-                                initialImage={images?.backdrop_image_url || null}
+                                initialImage={profile?.profile?.backdrop_image_url || null}
                             />
                         </View>
                     </View>
@@ -126,7 +143,7 @@ const profile = () => {
                             width={100}
                             height={100}
                             borderRadius={50}
-                            initialImage={images?.profile_image_url || null}
+                            initialImage={profile?.profile?.profile_image_url || null}
                         />
                     </View>
 
@@ -136,7 +153,7 @@ const profile = () => {
                         </Heading>
 
                         <Text alignSelf="center">{profile?.profile?.phone_number}</Text>
-                        <Text alignSelf="center">{user?.email}</Text>
+                        <Text alignSelf="center">{profile?.email}</Text>
                     </YStack>
                     <YStack marginTop={"$10"}>
                         {user?.user_type !== "rider" &&
@@ -184,7 +201,7 @@ const profile = () => {
                         <Animated.View entering={FadeInDown.duration(300).delay(100)}>
                             <ProfileCard
                                 name={"Logout"}
-                                onPress={() => signOut()}
+                                onPress={handleLogout}
                                 bgColor={"rgba(255, 0, 0, 0.3)"}
                                 icon={<LogOutIcon color={"white"} />}
                             />

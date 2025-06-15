@@ -155,20 +155,7 @@ const addMenu = () => {
     return (
         <>
             <ScrollView backgroundColor={"$background"} flex={1} showsVerticalScrollIndicator={false}>
-                {/*    <Button
-                    borderRadius={"$10"}
-                    variant="outlined"
-                    marginRight={"$4"}
-                    onPress={() => setVisble(true)}
-                    alignSelf="flex-end"
-                    width={"50%"}
-                    height={"$3"}
-                >
-                    <Plus size={20} color={"white"} />
-                    Add Category
-                </Button>*/}
-
-                <View marginTop={"$3"} marginBottom={"$12"}>
+                  <View marginTop={"$3"} marginBottom={"$12"}>
                     <Controller
                         control={control}
                         name="name"
@@ -211,6 +198,7 @@ const addMenu = () => {
                                         isBank={true}
                                         label="Item Type"
                                         items={itemTypeOptions}
+                                        enabled={false}
                                         onValueChange={(val) => {
                                             onChange(val);
                                             setSelectedItemType(val);

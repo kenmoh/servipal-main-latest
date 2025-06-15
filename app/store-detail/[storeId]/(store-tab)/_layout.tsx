@@ -1,12 +1,11 @@
 import { Dimensions, StyleSheet, Image } from 'react-native'
-import { router, withLayoutContext } from "expo-router";
+import { withLayoutContext } from "expo-router";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import { useTheme, View, XStack, YStack, Heading, Paragraph } from 'tamagui';
 import { useAuth } from '@/context/authContext';
 import { useLocalSearchParams } from 'expo-router';
 import { AntDesign, Feather } from "@expo/vector-icons";
-import AddItemBtn from '@/components/AddItemBtn';
-import { Plus } from 'lucide-react-native';
+
 
 const StoreTabs = withLayoutContext(createMaterialTopTabNavigator().Navigator);
 
@@ -24,6 +23,7 @@ const StoreHeader = () => {
         profileImage,
     } = useLocalSearchParams();
 
+    console.log('Backdrop: ', backDrop, 'Profile: ', profileImage)
     return (
         <View backgroundColor={theme.background.val}>
             <View backgroundColor={theme.cardBackground.val}>
@@ -38,9 +38,7 @@ const StoreHeader = () => {
                 <View padding="$4" backgroundColor={'$cardBackground'}>
                     <View position="absolute" top={-35} left={20}>
                         <Image
-                            source={{
-                                uri: profileImage || require("@/assets/images/Pizza.jpeg"),
-                            }}
+                            source={{ uri: profileImage || require("@/assets/images/Burge.jpg") }}
                             style={{
                                 height: 65,
                                 width: 65,
@@ -49,7 +47,7 @@ const StoreHeader = () => {
                             }}
                         />
                     </View>
-                  
+
                     <View marginTop="$3">
                         <Heading
                             color={"$text"}

@@ -94,7 +94,6 @@ const removeProfile = async () => {
   try {
     await SecureStore.deleteItemAsync(profileKey);
   } catch (error) {
-    console.error("Error removing user profile:", error);
     throw new Error("Error removing user profile");
   }
 };

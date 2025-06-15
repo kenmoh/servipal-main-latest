@@ -11,10 +11,9 @@ import { fetchVendorItems } from "@/api/item";
 import { MenuItem } from "@/types/item-types";
 import { useCartStore } from "@/store/cartStore";
 import EmptyList from "@/components/EmptyList";
-import { dummyMenuItems } from './dummyData';
-import AddItemBtn from "@/components/AddItemBtn";
+
 import FAB from "@/components/FAB";
-import { Menu, Plus } from "lucide-react-native";
+import { Menu } from "lucide-react-native";
 
 const groups: CategoryType[] = [
     { id: "1", name: "Starters", category_type: "food" },
@@ -38,7 +37,7 @@ const StoreDetails = () => {
         (item: MenuItem) => {
             if (checkedItems.has(item.id)) {
                 removeItem(item.id);
-                setCheckedItems(prev => {
+                setCheckedItems((prev) => {
                     const newChecked = new Set(prev);
                     newChecked.delete(item.id);
                     return newChecked;
@@ -49,7 +48,7 @@ const StoreDetails = () => {
                     price: Number(item.price),
                     image: item.images[0]?.url || "",
                 });
-                setCheckedItems(prev => {
+                setCheckedItems((prev) => {
                     const newChecked = new Set(prev);
                     newChecked.add(item.id);
                     return newChecked;
@@ -74,14 +73,16 @@ const StoreDetails = () => {
                     )}
                     removeClippedSubviews={true}
                     ListHeaderComponent={<Category categories={groups || []} />}
-                    ListEmptyComponent={!isFetching ? (
-                        <EmptyList
-                            title="No Menu Items"
-                            description="Add your first menu item to start selling"
-                            buttonTitle="Add Menu Item"
-                            route="/store-detail/addMenu"
-                        />
-                    ) : null}
+                    ListEmptyComponent={
+                        !isFetching ? (
+                            <EmptyList
+                                title="No Menu Items"
+                                description="Add your first menu item to start selling"
+                                buttonTitle="Add Menu Item"
+                                route="/store-detail/addMenu"
+                            />
+                        ) : null
+                    }
                     showsVerticalScrollIndicator={false}
                     contentContainerStyle={{ paddingBottom: 80 }}
                     refreshing={isFetching}
@@ -96,11 +97,21 @@ const StoreDetails = () => {
                 onPress={() => router.push({ pathname: "/cart" })}
             />
 
-            {user?.user_type === "vendor" && <FAB icon={<Menu color={'white'} />} onPress={() => router.push({ pathname: "/store-detail/addMenu" })} />}
-
+            {user?.user_type === "vendor" && data && data[0]?.user_id === user?.sub && (
+                <FAB
+                    icon={<Menu color={"white"} />}
+                    onPress={() =>
+                        router.push({
+                            pathname:
+                                screenType === "RESTAURANT"
+                                    ? "/store-detail/addMenu"
+                                    : "/store-detail/addLaundryItem",
+                        })
+                    }
+                />
+            )}
         </View>
     );
 };
-
 
 export default StoreDetails;

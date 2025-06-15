@@ -2,7 +2,7 @@ import { CompanyProfile } from "@/types/user-types";
 import { AntDesign } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { StyleSheet, Image, Dimensions, TouchableOpacity } from "react-native";
-import { Card, Paragraph, YStack, XStack, Text, useTheme, View } from "tamagui";
+import { Card, Paragraph, YStack, XStack, useTheme, View } from "tamagui";
 import { LinearGradient } from "expo-linear-gradient";
 import { useAuth } from '@/context/authContext'
 
@@ -32,7 +32,7 @@ const StoreCard = ({
                         storeId: item?.id,
                         companyName: item?.company_name,
                         backDrop: item?.backdrop_image_url,
-                        profileImage: item?.profile_image,
+                        profileImage: item?.backdrop_image_url,
                         openingHour: item?.opening_hour,
                         closingHour: item?.closing_hour,
                         address: item?.location,
@@ -53,12 +53,7 @@ const StoreCard = ({
                 height={IMAGET_HEIGHT}
                 elevation={2}
             >
-                {/*<View backgroundColor='red'>
-                <Text>
-                    🏪 Your Restaurant
-                </Text>
 
-                </View>*/}
                 {/* Background Image */}
                 <Image
                     source={{ uri: item?.backdrop_image_url }}

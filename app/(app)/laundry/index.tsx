@@ -1,146 +1,300 @@
-import { StyleSheet, FlatList, Image } from 'react-native'
-import { Card, Heading, Paragraph, XStack, YStack, Text, Separator } from 'tamagui'
-import React from 'react'
-import StoreCard from '@/components/StoreCard'
-import { Button, useTheme, View } from 'tamagui'
-import { useQuery } from '@tanstack/react-query'
-import { fetchRestaurants } from '@/api/user'
-import LoadingIndicator from '@/components/LoadingIndicator'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import Category from '@/components/Category'
-import AppTextInput from '@/components/AppInput'
-import AppHeader from '@/components/AppHeader'
-import { CompanyProfile } from '@/types/user-types'
-import Swiper from 'react-native-swiper'
-import { LinearGradient } from 'expo-linear-gradient'
+import React, { useEffect, useState } from "react";
+import { StyleSheet, FlatList, ScrollView, Image } from "react-native";
+import {
+    Card,
+    Heading,
+    Paragraph,
+    XStack,
+    YStack,
+    Text,
+    Separator,
+} from "tamagui";
+import StoreCard from "@/components/StoreCard";
+import * as Location from "expo-location";
+import { Button, useTheme, View } from "tamagui";
+import { useQuery } from "@tanstack/react-query";
+import { fetchLaundryVendors, fetchRestaurants } from "@/api/user";
+import LoadingIndicator from "@/components/LoadingIndicator";
+import { SafeAreaView } from "react-native-safe-area-context";
+import Category from "@/components/Category";
+import AppTextInput from "@/components/AppInput";
+import AppHeader from "@/components/AppHeader";
+import { CompanyProfile } from "@/types/user-types";
+import Swiper from "react-native-swiper";
+import { LinearGradient } from "expo-linear-gradient";
+import { getCoordinatesFromAddress } from "@/utils/geocoding";
+import { getTravelDistance } from "@/api/order";
+import FAB from "@/components/FAB";
+import { router } from "expo-router";
+import { useAuth } from "@/context/authContext";
+import { Plus } from "lucide-react-native";
+import { fetchCategories } from "@/api/item";
+import RefreshButton from "@/components/RefreshButton";
 
-
-export const featuredRestaurants = [
+export interface LaundryWithDistance extends CompanyProfile {
+    distance: number;
+}
+export const featuredLaundryVendors = [
     {
-        id: 'f1',
-        company_name: 'Burger Palace',
-        location: 'Victoria Island, Lagos',
-        company_logo: 'https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=500',
-        rating: 4.8
+        id: "f1",
+        company_name: "Burger Palace",
+        location: "Victoria Island, Lagos",
+        company_logo:
+            "https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=500",
+        rating: 4.8,
     },
     {
-        id: 'f2',
-        company_name: 'Pizza Hub',
-        location: 'Lekki Phase 1, Lagos',
-        company_logo: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=500',
-        rating: 4.5
+        id: "f2",
+        company_name: "Pizza Hub",
+        location: "Lekki Phase 1, Lagos",
+        company_logo:
+            "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=500",
+        rating: 4.5,
     },
     {
-        id: 'f3',
-        company_name: 'Chicken Republic',
-        location: 'Ikeja GRA, Lagos',
-        company_logo: 'https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?w=500',
-        rating: 4.6
+        id: "f3",
+        company_name: "Chicken Republic",
+        location: "Ikeja GRA, Lagos",
+        company_logo:
+            "https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?w=500",
+        rating: 4.6,
     },
     {
-        id: 'f4',
-        company_name: 'Mama Kitchen',
-        location: 'Ajah, Lagos',
-        company_logo: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=500',
-        rating: 4.9
+        id: "f4",
+        company_name: "Mama Kitchen",
+        location: "Ajah, Lagos",
+        company_logo:
+            "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=500",
+        rating: 4.9,
     },
     {
-        id: 'f5',
-        company_name: 'Seafood Paradise',
-        location: 'Victoria Island, Lagos',
-        company_logo: 'https://images.unsplash.com/photo-1559847844-5315695dadae?w=500',
-        rating: 4.7
+        id: "f5",
+        company_name: "Seafood Paradise",
+        location: "Victoria Island, Lagos",
+        company_logo:
+            "https://images.unsplash.com/photo-1559847844-5315695dadae?w=500",
+        rating: 4.7,
     },
     {
-        id: 'f6',
-        company_name: 'Suya Express',
-        location: 'Ikoyi, Lagos',
-        company_logo: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=500',
-        rating: 4.4
+        id: "f6",
+        company_name: "Suya Express",
+        location: "Ikoyi, Lagos",
+        company_logo:
+            "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=500",
+        rating: 4.4,
     },
     {
-        id: 'f7',
-        company_name: 'Rice Bowl',
-        location: 'Maryland, Lagos',
-        company_logo: 'https://images.unsplash.com/photo-1603133872878-684f208fb84b?w=500',
-        rating: 4.3
+        id: "f7",
+        company_name: "Rice Bowl",
+        location: "Maryland, Lagos",
+        company_logo:
+            "https://images.unsplash.com/photo-1603133872878-684f208fb84b?w=500",
+        rating: 4.3,
     },
     {
-        id: 'f8',
-        company_name: 'Pasta Paradise',
-        location: 'Yaba, Lagos',
-        company_logo: 'https://images.unsplash.com/photo-1473093295043-cdd812d0e601?w=500',
-        rating: 4.6
+        id: "f8",
+        company_name: "Pasta Paradise",
+        location: "Yaba, Lagos",
+        company_logo:
+            "https://images.unsplash.com/photo-1473093295043-cdd812d0e601?w=500",
+        rating: 4.6,
     },
     {
-        id: 'f9',
-        company_name: 'Sweet Sensation',
-        location: 'Surulere, Lagos',
-        company_logo: 'https://images.unsplash.com/photo-1621274403997-37aace184f49?w=500',
-        rating: 4.5
+        id: "f9",
+        company_name: "Sweet Sensation",
+        location: "Surulere, Lagos",
+        company_logo:
+            "https://images.unsplash.com/photo-1621274403997-37aace184f49?w=500",
+        rating: 4.5,
     },
     {
-        id: 'f10',
-        company_name: 'Local Dishes',
-        location: 'Ikeja, Lagos',
-        company_logo: 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?w=500',
-        rating: 4.8
-    }
+        id: "f10",
+        company_name: "Local Dishes",
+        location: "Ikeja, Lagos",
+        company_logo:
+            "https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?w=500",
+        rating: 4.8,
+    },
 ];
 
 const Page = () => {
-    const theme = useTheme()
+    const theme = useTheme();
+    const { user } = useAuth();
+    const [userLocation, setUserLocation] = useState<{
+        latitude: number;
+        longitude: number;
+    } | null>(null);
+    const [filteredlaundryVendors, setFilteredLaundryVendors] = useState<
+        (CompanyProfile & { distance: number })[]
+    >([]);
+    const [filteredFeatured, setFilteredFeatured] = useState<
+        LaundryWithDistance[]
+    >([]);
 
-    const { data, isPending } = useQuery({
-        queryKey: ['restaurants'],
-        queryFn: fetchRestaurants
-    })
+    const [hasItem, setHasItem] = useState(false);
+
+    const { data, isFetching, error, refetch } = useQuery({
+        queryKey: ["restaurants"],
+        queryFn: fetchLaundryVendors,
+    });
 
 
-    if (isPending) {
-        return <LoadingIndicator />
-    }
+
+    // Get user's location
+    useEffect(() => {
+        const getUserLocation = async () => {
+            const { status } = await Location.requestForegroundPermissionsAsync();
+            if (status !== "granted") return;
+
+            const location = await Location.getCurrentPositionAsync({});
+            console.log(
+                "LOCATION",
+                location.coords.latitude,
+                location.coords.longitude
+            );
+            setUserLocation({
+                latitude: location.coords.latitude,
+                longitude: location.coords.longitude,
+            });
+        };
+
+        getUserLocation();
+    }, []);
+
+    useEffect(() => {
+        const filterLaundryVendors = async () => {
+            if (!data || !userLocation) return;
+
+            const laundrysWithDistance = await Promise.all(
+                data.map(async (laundry) => {
+                    const coordinates = await getCoordinatesFromAddress(
+                        laundry.location
+                    );
+                    if (!coordinates) return null;
+
+                    const distance = await getTravelDistance(
+                        userLocation.latitude,
+                        userLocation.longitude,
+                        coordinates.lat,
+                        coordinates.lng
+                    );
+
+                    if (!distance || distance > 100) return null;
+
+                    return {
+                        ...laundry,
+                        distance,
+                    } as LaundryWithDistance;
+                })
+            );
+
+            // Filter out null values first
+            const validLaundry = laundrysWithDistance.filter(
+                (item): item is LaundryWithDistance => item !== null
+            );
+
+            let currentVendorLaundry = null;
+            let otherLaundryVendors = validLaundry;
+
+            if (user?.user_type === "vendor") {
+                // Find the current vendor's restaurant
+                currentVendorLaundry = validLaundry.find(
+                    (restaurant) => restaurant.id === user.sub
+                );
+
+                if (currentVendorLaundry) { setHasItem(true) }
+
+                // Remove current vendor's restaurant from others list
+                otherLaundryVendors = validLaundry.filter(
+                    (laundry) => laundry.id !== user.sub
+                );
+            }
+
+            // Sort other restaurants by distance
+            otherLaundryVendors.sort((a, b) => a.distance - b.distance);
+
+            // Combine results - current vendor first, then others
+            const finalResults = currentVendorLaundry
+                ? [currentVendorLaundry, ...otherLaundryVendors]
+                : otherLaundryVendors;
+
+            setFilteredLaundryVendors(
+                finalResults as (CompanyProfile & { distance: number })[]
+            );
+        };
+
+        filterLaundryVendors();
+    }, [data, userLocation, user?.sub, user?.user_type]);
+    console.log(data, 'FROM LAUNDEY UI')
+    if (isFetching) return <LoadingIndicator />;
+    if (error)
+        return (
+            <RefreshButton label="Error loading laundry vendours" onPress={refetch} />
+        );
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: theme.background.val }}>
-
-            <AppHeader component={<AppTextInput height='$3.5' borderRadius={50} placeholder='Search...' />} />
+            <AppHeader
+                component={
+                    <AppTextInput
+                        height="$3.5"
+                        borderRadius={50}
+                        placeholder="Search laundry vedours.."
+                    />
+                }
+            />
             <Separator />
 
-            {/* <Category categories={categories} /> */}
+            {filteredlaundryVendors.length > 0 && (
+                <FlatList
+                    // data={data}
+                    data={filteredlaundryVendors}
+                    ListHeaderComponent={() => (
+                        <>
 
-            <FlatList
-                data={data}
-                ListHeaderComponent={() => (
-                    <>
-                        <FeaturedRestaurants />
-                        {/* <FeaturedRestaurants restaurants={data || []} /> */}
-                    </>
-                )}
-                stickyHeaderIndices={[1]}
-                showsVerticalScrollIndicator={false}
-                keyExtractor={item => item.id}
-                renderItem={({ item }: { item: CompanyProfile }) => <StoreCard item={item} distance={2} screenType='LAUNDRY' />}
-                contentContainerStyle={{
-                    paddingBottom: 10
-                }}
-            />
+                            <FeaturedLaundryVendors />
+                            {/* <FeaturedRestaurants restaurants={data || []} /> */}
+                        </>
+                    )}
+                    stickyHeaderIndices={[1]}
+                    showsVerticalScrollIndicator={false}
+                    keyExtractor={(item) => item.id}
+                    renderItem={({
+                        item,
+                    }: {
+                        item: CompanyProfile & { distance: number };
+                    }) => (
+                        <StoreCard
+                            item={item}
+                            distance={item.distance}
+                            screenType="LAUNDRY"
+                        />
+                    )}
+                    contentContainerStyle={{
+                        paddingBottom: 10,
+                    }}
+                />
+            )}
 
+            {user?.user_type === "vendor" && !hasItem && (
 
-
+                <FAB
+                    icon={<Plus size={25} color={theme.text.val} />}
+                    onPress={() => router.push({ pathname: "/store-detail/addLaundryItem" })}
+                />
+            )}
         </SafeAreaView>
-    )
-}
+    );
+};
 
-
-export default Page
+export default Page;
 
 interface FeaturedRestaurantsProps {
-    restaurants: CompanyProfile[]
+    restaurants: CompanyProfile[];
 }
 
-export const FeaturedRestaurants = () => {
-    const theme = useTheme()
+export const FeaturedLaundryVendors = () => {
+    const theme = useTheme();
 
     return (
         <YStack height={220}>
@@ -150,7 +304,9 @@ export const FeaturedRestaurants = () => {
                 justifyContent="space-between"
                 alignItems="center"
             >
-                <Heading color="$text" fontSize={16}>Featured Restaurants</Heading>
+                <Heading color="$text" fontSize={16}>
+                    Featured Restaurants
+                </Heading>
                 {/* <Text color="$btnPrimaryColor" fontSize={12}>See All</Text> */}
             </XStack>
 
@@ -165,12 +321,8 @@ export const FeaturedRestaurants = () => {
                 removeClippedSubviews={false}
                 containerStyle={{ paddingHorizontal: 10 }}
             >
-                {featuredRestaurants?.map((restaurant) => (
-                    <YStack
-                        key={restaurant.id}
-                        width="90%"
-                        marginHorizontal="$2"
-                    >
+                {featuredLaundryVendors?.map((laundry) => (
+                    <YStack key={laundry.id} width="90%" marginHorizontal="$2">
                         <Card
                             width="100%"
                             height={160}
@@ -183,26 +335,21 @@ export const FeaturedRestaurants = () => {
                             shadowRadius={3.84}
                         >
                             <Image
-                                source={{ uri: restaurant.company_logo }}
+                                source={{ uri: laundry.company_logo }}
                                 style={styles.image}
                             />
-                            {/* Gradient overlay for better text visibility */}
+
                             <LinearGradient
-                                colors={['transparent', 'rgba(0,0,0,0.7)']}
+                                colors={["transparent", "rgba(0,0,0,0.7)"]}
                                 style={{
-                                    position: 'absolute',
+                                    position: "absolute",
                                     bottom: 0,
                                     left: 0,
                                     right: 0,
                                     height: 80,
                                 }}
                             />
-                            <YStack
-                                position="absolute"
-                                bottom={0}
-                                padding="$3"
-                                width="100%"
-                            >
+                            <YStack position="absolute" bottom={0} padding="$3" width="100%">
                                 <Heading
                                     fontSize={14}
                                     color="white"
@@ -212,7 +359,7 @@ export const FeaturedRestaurants = () => {
                                     shadowOpacity={0.5}
                                     shadowRadius={2}
                                 >
-                                    {restaurant.company_name}
+                                    {laundry.company_name}
                                 </Heading>
                                 <Paragraph
                                     fontSize={12}
@@ -225,7 +372,7 @@ export const FeaturedRestaurants = () => {
                                     shadowOpacity={0.5}
                                     shadowRadius={2}
                                 >
-                                    {restaurant.location}
+                                    {laundry.location}
                                 </Paragraph>
                             </YStack>
                         </Card>
@@ -233,13 +380,13 @@ export const FeaturedRestaurants = () => {
                 ))}
             </Swiper>
         </YStack>
-    )
-}
+    );
+};
 
 const styles = StyleSheet.create({
     image: {
-        width: '100%',
-        height: '100%',
-        resizeMode: 'cover'
-    }
-})
+        width: "100%",
+        height: "100%",
+        resizeMode: "cover",
+    },
+});

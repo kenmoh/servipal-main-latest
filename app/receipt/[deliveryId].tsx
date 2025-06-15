@@ -80,6 +80,7 @@ const ReceiptPage = () => {
                             justify-content: space-between; 
                             margin-bottom: 12px;
                             padding: 8px 0;
+                            gap: 5px
                             border-bottom: 1px solid #eee;
                         }
                         
@@ -155,10 +156,18 @@ const ReceiptPage = () => {
                                 <span>Date</span>
                                 <span>${format(new Date(data.delivery?.created_at || ""), "PPP")}</span>
                             </div>
-                            <div class="row">
-                                <span>Delivery Fee</span>
-                                <span class="amount">₦${Number(data.delivery?.delivery_fee).toFixed(2)}</span>
-                            </div>
+                            ${data.order?.order_items && data.order.order_items.length > 0 ? `
+                                <div class="row">
+                                    <span>Items Total</span>
+                                    <span class="amount">₦${Number(data.order?.total_price || 0 - Number(data.delivery?.delivery_fee || 0)).toFixed(2)}</span>
+                                </div>
+                            ` : ''}
+                            ${data.delivery?.delivery_fee ? `
+                                <div class="row">
+                                    <span>Delivery Fee</span>
+                                    <span class="amount">₦${Number(data.delivery?.delivery_fee).toFixed(2)}</span>
+                                </div>
+                            ` : ''}
                             <div class="row total">
                                 <span>Total Amount</span>
                                 <span class="amount">₦${Number(data.order?.total_price).toFixed(2)}</span>
@@ -170,6 +179,18 @@ const ReceiptPage = () => {
                                 </span>
                             </div>
                         </div>
+
+                        ${data.order?.order_items && data?.order?.order_type !== 'package' && data.order.order_items.length > 0 ? `
+                            <div class="section">
+                                <h2>Order Items</h2>
+                                ${data.order.order_items.map((item: any) => `
+                                    <div class="row">
+                                        <span>${item.quantity}X  ${item.name}</span>
+                                        <span class="amount">₦${Number(item.price * item.quantity).toFixed(2)}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        ` : ''}
 
                         <div class="section">
                             <h2>Delivery Details</h2>
@@ -188,7 +209,7 @@ const ReceiptPage = () => {
                         </div>
                         
                         <div class="footer">
-                            <p>Thank you for using Servipal</p>
+                            <p>Thank you for using ServiPal</p>
                             <p>This is a computer-generated receipt and does not require a signature.</p>
                         </div>
                     </div>
@@ -276,10 +297,19 @@ const ReceiptPage = () => {
                             <Text>{format(new Date(data?.delivery?.created_at || ""), "PPP")}</Text>
                         </XStack>
 
-                        <XStack justifyContent="space-between">
-                            <Text>Delivery Fee</Text>
-                            <Text>₦{Number(data?.delivery?.delivery_fee).toFixed(2)}</Text>
-                        </XStack>
+                        {data?.order?.order_items && data.order.order_items.length > 0 && (
+                            <XStack justifyContent="space-between">
+                                <Text>Items Total</Text>
+                                <Text>₦{Number(data.order?.total_price || 0 - Number(data.delivery?.delivery_fee || 0)).toFixed(2)}</Text>
+                            </XStack>
+                        )}
+
+                        {data?.delivery?.delivery_fee && (
+                            <XStack justifyContent="space-between">
+                                <Text>Delivery Fee</Text>
+                                <Text>₦{Number(data.delivery.delivery_fee).toFixed(2)}</Text>
+                            </XStack>
+                        )}
 
                         <XStack justifyContent="space-between">
                             <Text>Total Amount</Text>
@@ -294,6 +324,20 @@ const ReceiptPage = () => {
                         </XStack>
                     </YStack>
                 </Card>
+
+                {data?.order?.order_items && data?.order?.order_type !== 'package' && data.order.order_items.length > 0 && (
+                    <Card padding="$4" backgroundColor={"$cardBackground"}>
+                        <YStack gap="$3">
+                            <Text fontWeight="bold">Order Items</Text>
+                            {data.order.order_items.map((item: any) => (
+                                <XStack key={item.id} justifyContent="space-between">
+                                    <Text>{item.quantity}X {item.name}</Text>
+                                    <Text>₦{Number(item.price * item.quantity).toFixed(2)}</Text>
+                                </XStack>
+                            ))}
+                        </YStack>
+                    </Card>
+                )}
 
                 <Card padding="$4" backgroundColor={"$cardBackground"}>
                     <YStack gap="$3">

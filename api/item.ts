@@ -104,10 +104,12 @@ export const createItem = async (
 
   data.append("name", itemData.name);
   data.append("price", itemData.price.toString());
-  data.append("description", itemData.description);
   data.append("item_type", itemData.itemType);
   if (itemData.category_id) {
     data.append("category_id", itemData.category_id);
+  }
+  if (itemData.description) {
+    data.append("description", itemData.description);
   }
 
   // Handle images
@@ -156,10 +158,12 @@ export const updateItem = async (
   const data = new FormData();
   data.append("name", itemData.name);
   data.append("price", itemData.price.toString());
-  data.append("description", itemData.description);
   data.append("item_type", itemData.itemType);
   if (itemData.category_id !== undefined) {
     data.append("category_id", itemData.category_id);
+  }
+  if (itemData.description) {
+    data.append("description", itemData.description);
   }
   // Handle multiple images
   if (itemData.images && itemData.images.length > 0) {

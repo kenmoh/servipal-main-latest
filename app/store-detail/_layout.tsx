@@ -35,6 +35,16 @@ const StoreDetailLayout = () => {
                 }}
             />
 
+              <Stack.Screen
+                name="addLaundryItem"
+
+                options={{
+                    title: 'Add Item',
+                    animation: 'slide_from_bottom'
+
+                }}
+            />
+
 
         </Stack>
     );

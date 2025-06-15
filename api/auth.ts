@@ -73,6 +73,25 @@ export const loginApi = async (
   return response.data;
 };
 
+export const logOutUser = async (): Promise<void> => {
+  const response: ApiResponse<void | LoginErrorResponse> = await apiClient.post(
+    "/auth/logout",
+    {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+
+  if (!response.ok || !response.data || "detail" in response.data) {
+    const errorMessage =
+      response.data && "detail" in response.data
+        ? response.data.detail.split(":")[1]
+        : "Something went wrong. Please try again.";
+    throw new Error(errorMessage);
+  }
+};
+
 // User registration
 export const registerApi = async (
   userData: Register

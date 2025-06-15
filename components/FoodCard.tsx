@@ -65,7 +65,7 @@ const FoodCard = ({ item, onPress, screenType }: {
                     right={10}
                     bottom={10}
                     hitSlop={25}
-                    size={'$6'}
+                    size={'$5'}
                     disabled={user?.user_type === 'vendor'}
                     onPressIn={user?.sub !== item?.user_id ? () => onPress(item.id) : () => Notifier.showNotification({
                         title: "Not Allowed",

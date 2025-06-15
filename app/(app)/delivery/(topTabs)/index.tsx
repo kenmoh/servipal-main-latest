@@ -20,10 +20,11 @@ import { distanceCache } from "@/utils/distance-cache";
 import { useLocationTracking } from "@/hooks/useLocationTracking";
 import FAB from "@/components/FAB";
 import RefreshButton from "@/components/RefreshButton";
+import { UserDetails } from "@/types/user-types";
 
 const DeliveryScreen = () => {
   const theme = useTheme();
-  const { user, setProfile } = useAuth();
+  const { user, setProfile, profile } = useAuth();
   const [selectedType, setSelectedType] = useState<DeliveryType | "all">("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [locationPermission, setLocationPermission] = useState<boolean | null>(
@@ -34,20 +35,11 @@ const DeliveryScreen = () => {
     longitude: number;
   } | null>(null);
 
-  const getUserProfile = useCallback(async () => {
-    if (!user?.sub) return;
-    try {
-      // const profile = await getCurrentUser(user?.sub);
-      const profile = await getCurrentUserProfile()
+  const storeUserProfile = async (profile: UserDetails) => {
+    await authStorage.removeProfile()
+    await authStorage.storeProfile(profile)
+  }
 
-      if (profile) {
-        authStorage.storeProfile(profile);
-        setProfile(profile);
-      }
-    } catch (error) {
-      throw Error(`Failed to get user profile: ${error}`);
-    }
-  }, [user?.sub, setProfile]);
 
   const checkLocationPermission = useCallback(async () => {
     const { status } = await Location.getForegroundPermissionsAsync();
@@ -78,9 +70,34 @@ const DeliveryScreen = () => {
     checkLocationPermission();
   }, [checkLocationPermission]);
 
-  useEffect(() => {
-    getUserProfile();
-  }, [getUserProfile]);
+
+  // const { data: userProfile, isSuccess } = useQuery({
+  //   queryKey: ["profile", user?.sub],
+  //   queryFn: () => getCurrentUserProfile(user?.sub as string),
+  //   refetchOnWindowFocus: true,
+  //   enabled: !!user?.sub,
+
+  // });
+
+  const { data: userProfile, isSuccess, isLoading: profileIsLoading } = useQuery({
+  queryKey: ["profile", user?.sub],
+  queryFn: () => getCurrentUserProfile(user?.sub as string),
+  refetchOnWindowFocus: true,
+  enabled: !!user?.sub,
+});
+
+
+
+useEffect(() => {
+  if (isSuccess && userProfile) {  
+    // Update state with fresh API data
+    setProfile(userProfile);
+    
+    // Store the fresh data for offline use
+    storeUserProfile(userProfile);
+  }
+}, [isSuccess, userProfile, user?.sub]);
+
 
   const { data, isLoading, error, refetch, isFetching } = useQuery({
     queryKey: ["deliveries"],
@@ -131,6 +148,7 @@ const DeliveryScreen = () => {
       pickupCoords[0],
       pickupCoords[1]
     );
+
 
     // Cache the result
     if (distance !== null) {

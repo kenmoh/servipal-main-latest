@@ -6,7 +6,7 @@ import {
 import { useFonts } from "expo-font";
 import "react-native-get-random-values";
 import { useColorScheme } from "react-native";
-import { Stack } from "expo-router";
+import { router, Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { StatusBar } from "expo-status-bar";
@@ -15,6 +15,12 @@ import "react-native-reanimated";
 import { TamaguiProvider, useTheme } from "tamagui";
 import { NotifierWrapper } from "react-native-notifier";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import * as Notifications from 'expo-notifications';
+import * as Device from "expo-device";
+import Constants from "expo-constants";
+import { registerForNotifications } from '@/api/user';
+import { useAuth } from '@/context/authContext';
+import { Notifier, NotifierComponents } from 'react-native-notifier';
 
 import tamaguiConfig from "@/tamagui.config";
 import AuthProvider from "@/components/AuthProvider";
@@ -48,6 +54,7 @@ export default function RootLayout() {
   const colorScheme = useColorScheme();
   const { clearCart } = useCartStore();
   const { reset } = useLocationStore();
+  const { user } = useAuth();
 
   const handleClearCart = () => {
     clearCart();
@@ -68,6 +75,82 @@ export default function RootLayout() {
       SplashScreen.hideAsync();
     }
   }, [loaded]);
+
+  // useEffect(() => {
+  //   const registerPushNotifications = async () => {
+  //     try {
+  //       const { status: existingStatus } = await Notifications.getPermissionsAsync();
+  //       let finalStatus = existingStatus;
+
+  //       if (existingStatus !== 'granted') {
+  //         const { status } = await Notifications.requestPermissionsAsync();
+  //         finalStatus = status;
+  //       }
+
+  //       if (finalStatus !== 'granted') {
+  //         Notifier.showNotification({
+  //           title: "Permission Required",
+  //           description: "Please enable notifications in your device settings",
+  //           Component: NotifierComponents.Alert,
+  //           componentProps: { alertType: "warn" },
+  //         });
+  //         return;
+  //       }
+
+  //       const token = (await Notifications.getExpoPushTokenAsync()).data;
+
+  //       if (user?.sub) {
+  //         await registerForNotifications({ notification_token: token });
+  //       }
+  //     } catch (error) {
+  //       console.error('Error registering for notifications:', error);
+  //     }
+  //   };
+
+  //   registerPushNotifications();
+  // }, [user?.sub]);
+
+  const registerForPushNotification = async () => {
+    if (Device.isDevice) {
+      try {
+        const { status: existingStatus } =
+          await Notifications.getPermissionsAsync();
+
+        let finalStatus = existingStatus;
+
+        if (existingStatus !== "granted") {
+          const { status } = await Notifications.requestPermissionsAsync();
+          finalStatus = status;
+        }
+
+        if (finalStatus !== "granted") {
+          alert("Failed to get push token for push notification!");
+          return;
+        }
+        const token = await Notifications.getExpoPushTokenAsync({
+          projectId:
+            Constants?.expoConfig?.extra?.eas?.projectId ??
+            Constants?.easConfig?.projectId,
+        });
+
+        console.log(token.data)
+
+        if (token.data) {
+          registerForNotifications({ notification_token: token.data });
+        }
+      } catch (error) {
+        throw new Error(`Error getting notification token. \n ERROR: ${error}`);
+      }
+    }
+  };
+
+  useEffect(() => {
+    registerForPushNotification();
+    Notifications.addNotificationResponseReceivedListener((notification) =>
+      router.replace("/(apps)/delivery")
+    );
+  }, [user?.sub]);
+
 
   if (!loaded) {
     return null;

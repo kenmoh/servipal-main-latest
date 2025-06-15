@@ -46,6 +46,9 @@ const Profile = () => {
     const [showClosingHour, setShowClosingHour] = useState(false);
     const { origin, destination, setOrigin, setDestination } = useLocationStore();
 
+
+    console.log(profile, 'CURRENT USER')
+
     const { data } = useQuery({
         queryKey: ['banks'],
         queryFn: getBanks,
@@ -57,7 +60,7 @@ const Profile = () => {
     const { isPending, mutate } = useMutation({
         mutationFn: updateCurrentVendorUser,
         onSuccess: async (data) => {
-            console.log(data, "FROM SERVER SUCCESS");
+
             await authStorage.removeProfile();
             await authStorage.storeProfile(data);
             setProfile(data);
@@ -94,14 +97,14 @@ const Profile = () => {
         >
             <Formik
                 initialValues={{
-                    openingHour: profile?.opening_hours || "",
-                    closingHour: profile?.closing_hours || "",
-                    companyName: profile?.business_name || "",
-                    location: profile?.business_address || "",
-                    bankName: profile?.bank_name || "",
-                    accountNumber: profile?.bank_account_number || "",
-                    companyRegNo: profile?.business_registration_number || "",
-                    phoneNumber: profile?.phone_number || "",
+                    openingHour: profile?.profile?.opening_hours || "",
+                    closingHour: profile?.profile?.closing_hours || "",
+                    companyName: profile?.profile?.business_name || "",
+                    location: profile?.profile?.business_address || "",
+                    bankName: profile?.profile?.bank_name || "",
+                    accountNumber: profile?.profile?.bank_account_number || "",
+                    companyRegNo: profile?.profile?.business_registration_number || "",
+                    phoneNumber: profile?.profile?.phone_number || "",
                 }}
                 validationSchema={ValidationSchema}
                 onSubmit={(values, { resetForm }) =>
@@ -143,7 +146,7 @@ const Profile = () => {
                                 // label='Company Registration Number'
                                 placeholder="Company Reg No."
                                 editable={
-                                    profile?.business_registration_number === null ? true : false
+                                    profile?.profile?.business_registration_number === null ? true : false
                                 }
                                 onChangeText={handleChange("companyRegNo")}
                                 value={values.companyRegNo}
@@ -169,7 +172,7 @@ const Profile = () => {
                             <AppTextInput
                                 // label='Company Name'
                                 placeholder="Company Name"
-                                editable={profile?.business_name === null ? true : false}
+                                editable={profile?.profile?.business_name === null ? true : false}
                                 onChangeText={handleChange("companyName")}
                                 autoCapitalize="words"
                                 value={values.companyName}

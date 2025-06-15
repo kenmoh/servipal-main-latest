@@ -6,6 +6,7 @@ import {
   UserProfileUpdate,
   RiderUpdate,
   RiderProfile,
+  UserDetails,
 } from "@/types/user-types";
 import { apiClient } from "@/utils/client";
 import { ApiResponse } from "apisauce";
@@ -24,18 +25,17 @@ export interface ImageUpload {
 
 const BASE_URL = "/users";
 
-
 // Get current user profile
-export const getCurrentUserProfile = async (): Promise<UserDetails> => {
+export const getCurrentUserProfile = async (
+  userId: string
+): Promise<UserDetails> => {
   try {
-    const response: ApiResponse<UserDetails | ErrorResponse> = await apiClient.get(
-      `${BASE_URL}/current-user-profile`,
-      {
+    const response: ApiResponse<UserDetails | ErrorResponse> =
+      await apiClient.get(`${BASE_URL}/${userId}/current-user-profile`, {
         headers: {
           "Content-Type": "application/json",
         },
-      }
-    );
+      });
 
     if (!response.ok || !response.data || "detail" in response.data) {
       const errorMessage =
@@ -222,7 +222,7 @@ export const fetchLaundryVendors = async (): Promise<CompanyProfile[]> => {
 // Update current user
 export const updateCurrentVendorUser = async (
   userData: UserProfileUpdate
-): Promise<Profile> => {
+): Promise<UserDetails> => {
   const data = {
     phone_number: userData.phoneNumber,
     bank_name: userData.bankName,
@@ -234,15 +234,12 @@ export const updateCurrentVendorUser = async (
     opening_hours: userData.openingHour,
   };
   try {
-    const response: ApiResponse<Profile | ErrorResponse> = await apiClient.put(
-      `${BASE_URL}/profile`,
-      data,
-      {
+    const response: ApiResponse<UserDetails | ErrorResponse> =
+      await apiClient.put(`${BASE_URL}/profile`, data, {
         headers: {
           "Content-Type": "application/json",
         },
-      }
-    );
+      });
 
     if (!response.ok || !response.data || "detail" in response.data) {
       const errorMessage =
@@ -364,6 +361,44 @@ export const uploadProfileImage = async (
     return response.data;
   } catch (error) {
     console.error("Upload error:", error);
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    }
+    throw new Error("An unexpected error occurred");
+  }
+};
+
+interface NotificationTokenResponse {
+  notification_token: string;
+}
+
+// Register for notifications
+export const registerForNotifications = async (
+  pushTokenData: NotificationTokenResponse
+): Promise<NotificationTokenResponse> => {
+  const data = {
+    notification_token: pushTokenData.notification_token,
+  };
+  try {
+    const response: ApiResponse<NotificationTokenResponse | ErrorResponse> =
+      await apiClient.put(`${BASE_URL}/notification`, data, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+    if (!response.ok || (response.data && "detail" in response.data)) {
+      const errorMessage =
+        response.data && "detail" in response.data
+          ? response.data.detail
+          : "Error registering for notifications.";
+      throw new Error(errorMessage);
+    }
+    if (!response.data) {
+      throw new Error("No data received from server");
+    }
+    return response.data;
+  } catch (error) {
     if (error instanceof Error) {
       throw new Error(error.message);
     }

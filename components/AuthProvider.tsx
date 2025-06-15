@@ -2,59 +2,86 @@ import React, { ReactNode, useEffect, useState } from "react";
 import { jwtDecode } from "jwt-decode";
 import { AuthContext, useProtectedRoute } from "@/context/authContext";
 import authStorage from '@/storage/authStorage'
-import { User, Profile, UserDetails, ImageUrl } from "@/types/user-types";
-
-
+import { User, UserDetails, ImageUrl } from "@/types/user-types";
+import { router } from "expo-router";
+import { queryClient } from "@/app/_layout";
 
 const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [user, setUser] = useState<User | null>(null);
-    const [profile, setProfile] = useState<UserDetails | null>(null)
-    const [images, setImages] = useState<ImageUrl | null>(null)
+    const [profile, setProfile] = useState<UserDetails | null>(null);
+    const [images, setImages] = useState<ImageUrl | null>(null);
 
+    // const restoreToken = async () => {
+    //     try {
+    //         const token = await authStorage.getToken();
+    //         if (!token) {
+    //             setUser(null);
+    //             setProfile(null);
+    //             setImages(null);
+    //             return;
+    //         }
 
+    //         // Set user from token
+    //         setUser(jwtDecode(token));
+
+    //         // Load profile and images
+    //         const [storedProfile, storedImages] = await Promise.all([
+    //             authStorage.getProfile(),
+    //             authStorage.getImageUrl()
+    //         ]);
+
+    //         if (storedProfile) {
+    //             setProfile(storedProfile);
+    //         }
+    //         if (storedImages) {
+    //             setImages(storedImages);
+    //         }
+    //     } catch (error) {
+    //         console.error('Error restoring session:', error);
+    //         setUser(null);
+    //         setProfile(null);
+    //         setImages(null);
+    //     }
+    // };
 
     const restoreToken = async () => {
-
-        try {
-
-            const token = await authStorage.getToken()
-            if (!token) return
-
-            // Set user from token
-            setUser(jwtDecode(token))
-
-            // First try to get profile from storage for instant display
-            const storedProfile = await authStorage.getProfile()
-            if (storedProfile) {
-                setProfile(storedProfile)
-            }
-
-        } catch (error) {
-            console.error('Error restoring session:', error)
+      try {
+        const token = await authStorage.getToken();
+        if (!token) {
+          setUser(null);
+          setProfile(null);
+          setImages(null);
+          return;
         }
-    }
+        
+        // Set user from token
+        const decodedUser = jwtDecode(token);
+        setUser(decodedUser);
+        
+        // Only load cached data initially, API query will override with fresh data
+        const [storedProfile, storedImages] = await Promise.all([
+          authStorage.getProfile(),
+          authStorage.getImageUrl()
+        ]);
+        
+        // Set cached data as fallback (will be overridden by API query)
+        if (storedProfile) {
+          setProfile(storedProfile);
+        }
+        if (storedImages) {
+          setImages(storedImages);
+        }
+      } catch (error) {
+        console.error('Error restoring session:', error);
+        setUser(null);
+        setProfile(null);
+        setImages(null);
+      }
+};
 
     useEffect(() => {
-        restoreToken()
-    }, [])
-
-    useEffect(() => {
-        const loadImages = async () => {
-            const storedImages = await authStorage.getImageUrl();
-            if (storedImages) setImages(storedImages);
-        };
-        loadImages();
+        restoreToken();
     }, []);
-
-    useEffect(() => {
-        const loadUserData = async () => {
-            const storedProfile = await authStorage.getProfile()
-            if (storedProfile) {
-                setProfile(storedProfile)
-            }
-        }
-        loadUserData()
-    }, [])
 
 
     useEffect(() => {
@@ -70,23 +97,22 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
         return () => clearInterval(interval);
     }, []);
 
-
-
-
-
     const signOut = async () => {
         try {
-
-            setUser(null);
-            setProfile(null);
             await Promise.all([
                 authStorage.removeToken(),
                 authStorage.removeProfile(),
                 authStorage.removeImage()
+            ]);
+            setUser(null);
+            setProfile(null);
+            setImages(null);
+            queryClient.invalidateQueries({ queryKey: ['profile'] })
+            queryClient.clear();
 
-            ])
+            router.replace("/(auth)/sign-in");
         } catch (error) {
-            console.error('Error signing out:', error)
+            console.error("Error signing out:", error);
         }
     };
     useProtectedRoute(user);

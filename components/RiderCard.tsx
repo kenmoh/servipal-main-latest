@@ -74,10 +74,10 @@ const RiderCard = ({ rider }: { rider: RiderResponse }) => {
             <Card.Header>
                 <XStack justifyContent="space-between">
                     <XStack gap={"$3"}>
-                        <Avatar circular size={55}>
+                        <Avatar circular size={60}>
                             <Avatar.Image
                                 accessibilityLabel="Rider"
-                                src={require("@/assets/images/profile.jpg")}
+                                src={rider?.profile_image_url || require("@/assets/images/profile.jpg")}
                             />
                             <Avatar.Fallback backgroundColor={"$blue10"} />
                         </Avatar>

@@ -81,7 +81,10 @@ const index = () => {
 
                             <YStack gap="$2">
                                 <Text style={styles.accountInfo}>
-                                    Account Number: {profile?.bank_account_number}
+                                    Account Number: {profile?.profile?.bank_account_number}
+                                </Text>
+                                <Text style={styles.accountInfo}>
+                                    Name: {profile?.profile?.full_name || profile?.profile.business_name}
                                 </Text>
                             </YStack>
                         </Card.Header>
@@ -156,5 +159,6 @@ const styles = StyleSheet.create({
         fontFamily: 'Poppins-Regular',
         fontSize: 14,
         opacity: 0.9,
+        textTransform: 'capitalize'
     }
 });

@@ -1,17 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, FlatList, ScrollView, Image } from "react-native";
+import { StyleSheet, FlatList, Image } from "react-native";
 import {
     Card,
     Heading,
     Paragraph,
     XStack,
     YStack,
-    Text,
     Separator,
 } from "tamagui";
 import StoreCard from "@/components/StoreCard";
 import * as Location from "expo-location";
-import { Button, useTheme, View } from "tamagui";
+import { useTheme, View } from "tamagui";
 import { useQuery } from "@tanstack/react-query";
 import { fetchRestaurants } from "@/api/user";
 import LoadingIndicator from "@/components/LoadingIndicator";
@@ -192,20 +191,26 @@ const Page = () => {
                 })
             );
 
+
+
             // Filter out null values first
             const validRestaurants = restaurantsWithDistance.filter(
                 (item): item is RestaurantWithDistance => item !== null
             );
 
             let currentVendorRestaurant = null;
-            let otherRestaurants = validRestaurants; // Use validRestaurants, not restaurantsWithDistance
+            let otherRestaurants = validRestaurants;
 
             if (user?.user_type === "vendor") {
                 // Find the current vendor's restaurant
                 currentVendorRestaurant = validRestaurants.find(
                     (restaurant) => restaurant.id === user.sub
                 );
-                setHasItem(true);
+
+                if (currentVendorRestaurant) {
+                    setHasItem(true);
+                }
+
 
                 // Remove current vendor's restaurant from others list
                 otherRestaurants = validRestaurants.filter(
@@ -234,7 +239,7 @@ const Page = () => {
         return (
             <RefreshButton label="Error loading restaurants" onPress={refetch} />
         );
-
+    console.log(hasItem)
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: theme.background.val }}>
             <AppHeader
@@ -279,14 +284,13 @@ const Page = () => {
                 />
             )}
 
-            {!hasItem && user?.user_type === "vendor" ? (
+
+            {user?.user_type === "vendor" && !hasItem && (
+
                 <FAB
-                    disabled={!hasItem}
                     icon={<Plus size={25} color={theme.text.val} />}
                     onPress={() => router.push({ pathname: "/store-detail/addMenu" })}
                 />
-            ) : (
-                ""
             )}
         </SafeAreaView>
     );
@@ -312,7 +316,6 @@ export const FeaturedRestaurants = () => {
                 <Heading color="$text" fontSize={16}>
                     Featured Restaurants
                 </Heading>
-                {/* <Text color="$btnPrimaryColor" fontSize={12}>See All</Text> */}
             </XStack>
 
             <Swiper
