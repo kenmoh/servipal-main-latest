@@ -5,6 +5,7 @@ import { jwtDecode } from "jwt-decode";
 const profileKey = "userProfile";
 const imageKey = "imageKey";
 const key = "authToken";
+const pushTokenKey = "pushToken";
 
 interface JWTPayload {
   exp: number;
@@ -128,6 +129,30 @@ const removeImage = async () => {
   }
 };
 
+const storePushToken = async (token: string) => {
+  try {
+    await SecureStore.setItemAsync(pushTokenKey, token);
+  } catch (error) {
+    throw new Error("Error storing push token", error!);
+  }
+};
+
+const getPushToken = async () => {
+  try {
+    return await SecureStore.getItemAsync(pushTokenKey);
+  } catch (error) {
+    throw new Error("Error getting push token", error!);
+  }
+};
+
+const removePushToken = async () => {
+  try {
+    await SecureStore.deleteItemAsync(pushTokenKey);
+  } catch (error) {
+    throw new Error("Error removing push token", error!);
+  }
+};
+
 export default {
   getToken,
   getUser,
@@ -139,4 +164,7 @@ export default {
   getImageUrl,
   removeImage,
   storeImageUrl,
+  storePushToken,
+  getPushToken,
+  removePushToken,
 };

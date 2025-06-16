@@ -6,21 +6,19 @@ import {
 import { useFonts } from "expo-font";
 import "react-native-get-random-values";
 import { useColorScheme } from "react-native";
-import { router, Stack } from "expo-router";
+import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
+import * as Notifications from 'expo-notifications'
+import * as TaskManager from 'expo-task-manager'
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 import "react-native-reanimated";
-import { TamaguiProvider, useTheme } from "tamagui";
+import { TamaguiProvider } from "tamagui";
 import { NotifierWrapper } from "react-native-notifier";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import * as Notifications from 'expo-notifications';
-import * as Device from "expo-device";
-import Constants from "expo-constants";
-import { registerForNotifications } from '@/api/user';
 import { useAuth } from '@/context/authContext';
-import { Notifier, NotifierComponents } from 'react-native-notifier';
+
 
 import tamaguiConfig from "@/tamagui.config";
 import AuthProvider from "@/components/AuthProvider";
@@ -28,6 +26,32 @@ import AddItemBtn from "@/components/AddItemBtn";
 import { useCartStore } from "@/store/cartStore";
 import { useLocationStore } from "@/store/locationStore";
 import { Trash } from "lucide-react-native";
+import { NotificationProvider } from "@/components/NotificationProvider";
+
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: true,
+  }),
+});
+
+const BACKGROUND_NOTIFICATION_TASK = "BACKGROUND-NOTIFICATION-TASK";
+
+TaskManager.defineTask(
+  BACKGROUND_NOTIFICATION_TASK,
+  ({ data, error, executionInfo }) => {
+    console.log("✅ Received a notification in the background!", {
+      data,
+      error,
+      executionInfo,
+    });
+    // Do something with the notification data
+  }
+);
+
+Notifications.registerTaskAsync(BACKGROUND_NOTIFICATION_TASK);
 
 const BACKGORUND_COLOR = "#18191c"
 
@@ -76,81 +100,6 @@ export default function RootLayout() {
     }
   }, [loaded]);
 
-  // useEffect(() => {
-  //   const registerPushNotifications = async () => {
-  //     try {
-  //       const { status: existingStatus } = await Notifications.getPermissionsAsync();
-  //       let finalStatus = existingStatus;
-
-  //       if (existingStatus !== 'granted') {
-  //         const { status } = await Notifications.requestPermissionsAsync();
-  //         finalStatus = status;
-  //       }
-
-  //       if (finalStatus !== 'granted') {
-  //         Notifier.showNotification({
-  //           title: "Permission Required",
-  //           description: "Please enable notifications in your device settings",
-  //           Component: NotifierComponents.Alert,
-  //           componentProps: { alertType: "warn" },
-  //         });
-  //         return;
-  //       }
-
-  //       const token = (await Notifications.getExpoPushTokenAsync()).data;
-
-  //       if (user?.sub) {
-  //         await registerForNotifications({ notification_token: token });
-  //       }
-  //     } catch (error) {
-  //       console.error('Error registering for notifications:', error);
-  //     }
-  //   };
-
-  //   registerPushNotifications();
-  // }, [user?.sub]);
-
-  const registerForPushNotification = async () => {
-    if (Device.isDevice) {
-      try {
-        const { status: existingStatus } =
-          await Notifications.getPermissionsAsync();
-
-        let finalStatus = existingStatus;
-
-        if (existingStatus !== "granted") {
-          const { status } = await Notifications.requestPermissionsAsync();
-          finalStatus = status;
-        }
-
-        if (finalStatus !== "granted") {
-          alert("Failed to get push token for push notification!");
-          return;
-        }
-        const token = await Notifications.getExpoPushTokenAsync({
-          projectId:
-            Constants?.expoConfig?.extra?.eas?.projectId ??
-            Constants?.easConfig?.projectId,
-        });
-
-        console.log(token.data)
-
-        if (token.data) {
-          registerForNotifications({ notification_token: token.data });
-        }
-      } catch (error) {
-        throw new Error(`Error getting notification token. \n ERROR: ${error}`);
-      }
-    }
-  };
-
-  useEffect(() => {
-    registerForPushNotification();
-    Notifications.addNotificationResponseReceivedListener((notification) =>
-      router.replace("/(apps)/delivery")
-    );
-  }, [user?.sub]);
-
 
   if (!loaded) {
     return null;
@@ -167,95 +116,98 @@ export default function RootLayout() {
 
             <NotifierWrapper>
               <AuthProvider>
-                <Stack
-                  screenOptions={{
-                    navigationBarColor: BACKGORUND_COLOR,
-                    contentStyle: {
-                      backgroundColor: BACKGORUND_COLOR,
-                    },
-                  }}
-                >
-                  <Stack.Screen name="(app)" options={{ headerShown: false }} />
-                  <Stack.Screen name="index" options={{ headerShown: false }} />
-                  <Stack.Screen
-                    name="(auth)"
-                    options={{ headerShown: false }}
-                  />
-                  {/* <Stack.Screen name='(profile)' options={{
-                    headerShown: false
+                <NotificationProvider>
 
-                  }} /> */}
-                  <Stack.Screen
-                    name="delivery-detail"
-                    options={{
-                      headerShown: false,
-                    }}
-                  />
-                  <Stack.Screen
-                    name="store-detail"
-                    options={{
-                      headerShown: false,
-                    }}
-                  />
-                  <Stack.Screen
-                    name="payment"
-                    options={{
-                      headerShown: false,
-                    }}
-                  />
-                  <Stack.Screen
-                    name="receipt/[deliveryId]"
-                    options={{
-                      title: 'Download Receipt',
-                      headerStyle: {
-                        backgroundColor: BACKGORUND_COLOR,
-                      },
-                    }}
-                  />
-                  <Stack.Screen name='report/[deliveryId]' options={{
-                    title: 'Report an Issue',
-                    headerStyle: {
-                      backgroundColor: BACKGORUND_COLOR,
-                    },
-                  }} />
-                  <Stack.Screen
-                    name="review/[deliveryId]"
-                    options={{
-                      title: 'Leave a Review',
-                      headerStyle: {
-                        backgroundColor: BACKGORUND_COLOR,
-                      },
-                    }}
-                  />
-                  <Stack.Screen
-                    name="cart/index"
-                    options={{
-                      title: "Cart",
-                      headerStyle: {
-                        backgroundColor: BACKGORUND_COLOR,
-                      },
-                      headerRight: () => (
-                        <AddItemBtn
-                          icon={<Trash size={18} color={"white"} />}
-                          label="Clear Cart"
-                          onPress={handleClearCart}
-                        />
-                      ),
-                    }}
-                  />
-
-                  <Stack.Screen
-                    name="user-details"
-                    options={{
-                      presentation: "transparentModal",
-                      animation: "slide_from_bottom",
-                      headerShown: false,
+                  <Stack
+                    screenOptions={{
+                      navigationBarColor: BACKGORUND_COLOR,
                       contentStyle: {
-                        backgroundColor: "rgba(0,0,0,0.7)",
+                        backgroundColor: BACKGORUND_COLOR,
                       },
                     }}
-                  />
-                </Stack>
+                  >
+                    <Stack.Screen name="(app)" options={{ headerShown: false }} />
+                    <Stack.Screen name="index" options={{ headerShown: false }} />
+                    <Stack.Screen
+                      name="(auth)"
+                      options={{ headerShown: false }}
+                    />
+                    {/* <Stack.Screen name='(profile)' options={{
+                    headerShown: false
+                    
+                    }} /> */}
+                    <Stack.Screen
+                      name="delivery-detail"
+                      options={{
+                        headerShown: false,
+                      }}
+                    />
+                    <Stack.Screen
+                      name="store-detail"
+                      options={{
+                        headerShown: false,
+                      }}
+                    />
+                    <Stack.Screen
+                      name="payment"
+                      options={{
+                        headerShown: false,
+                      }}
+                    />
+                    <Stack.Screen
+                      name="receipt/[deliveryId]"
+                      options={{
+                        title: 'Download Receipt',
+                        headerStyle: {
+                          backgroundColor: BACKGORUND_COLOR,
+                        },
+                      }}
+                    />
+                    <Stack.Screen name='report/[deliveryId]' options={{
+                      title: 'Report an Issue',
+                      headerStyle: {
+                        backgroundColor: BACKGORUND_COLOR,
+                      },
+                    }} />
+                    <Stack.Screen
+                      name="review/[deliveryId]"
+                      options={{
+                        title: 'Leave a Review',
+                        headerStyle: {
+                          backgroundColor: BACKGORUND_COLOR,
+                        },
+                      }}
+                    />
+                    <Stack.Screen
+                      name="cart/index"
+                      options={{
+                        title: "Cart",
+                        headerStyle: {
+                          backgroundColor: BACKGORUND_COLOR,
+                        },
+                        headerRight: () => (
+                          <AddItemBtn
+                            icon={<Trash size={18} color={"white"} />}
+                            label="Clear Cart"
+                            onPress={handleClearCart}
+                          />
+                        ),
+                      }}
+                    />
+
+                    <Stack.Screen
+                      name="user-details"
+                      options={{
+                        presentation: "transparentModal",
+                        animation: "slide_from_bottom",
+                        headerShown: false,
+                        contentStyle: {
+                          backgroundColor: "rgba(0,0,0,0.7)",
+                        },
+                      }}
+                    />
+                  </Stack>
+                </NotificationProvider>
                 <StatusBar style="auto" />
               </AuthProvider>
             </NotifierWrapper>

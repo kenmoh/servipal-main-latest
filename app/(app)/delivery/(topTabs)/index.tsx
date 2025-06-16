@@ -4,7 +4,7 @@ import HDivider from "@/components/HDivider";
 import ItemCard from "@/components/ItemCard";
 import LoadingIndicator from "@/components/LoadingIndicator";
 import { DeliveryDetail } from "@/types/order-types";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { FlatList, ListRenderItem } from "react-native";
 import { YStack, useTheme, Separator } from "tamagui";
@@ -12,10 +12,11 @@ import * as Location from "expo-location";
 
 import { router } from "expo-router";
 import { useAuth } from "@/context/authContext";
-import { getCurrentUser, getCurrentUserProfile } from "@/api/user";
+import { getCurrentUser, getCurrentUserProfile, getNotificationToken, registerForNotifications} from "@/api/user";
 import authStorage from "@/storage/authStorage";
 import AppTextInput from "@/components/AppInput";
 import LocationPermission from "@/components/Locationpermission";
+import {useNotification} from "@/components/NotificationProvider"
 import { distanceCache } from "@/utils/distance-cache";
 import { useLocationTracking } from "@/hooks/useLocationTracking";
 import FAB from "@/components/FAB";
@@ -25,6 +26,7 @@ import { UserDetails } from "@/types/user-types";
 const DeliveryScreen = () => {
   const theme = useTheme();
   const { user, setProfile, profile } = useAuth();
+  const {expoPushToken} = useNotification()
   const [selectedType, setSelectedType] = useState<DeliveryType | "all">("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [locationPermission, setLocationPermission] = useState<boolean | null>(
@@ -39,7 +41,6 @@ const DeliveryScreen = () => {
     await authStorage.removeProfile()
     await authStorage.storeProfile(profile)
   }
-
 
   const checkLocationPermission = useCallback(async () => {
     const { status } = await Location.getForegroundPermissionsAsync();
@@ -71,13 +72,9 @@ const DeliveryScreen = () => {
   }, [checkLocationPermission]);
 
 
-  // const { data: userProfile, isSuccess } = useQuery({
-  //   queryKey: ["profile", user?.sub],
-  //   queryFn: () => getCurrentUserProfile(user?.sub as string),
-  //   refetchOnWindowFocus: true,
-  //   enabled: !!user?.sub,
-
-  // });
+ const registerMutation = useMutation({
+    mutationFn: registerForNotifications,
+  });
 
   const { data: userProfile, isSuccess, isLoading: profileIsLoading } = useQuery({
   queryKey: ["profile", user?.sub],
@@ -87,6 +84,14 @@ const DeliveryScreen = () => {
 });
 
 
+useEffect(() => {
+    if (expoPushToken) {
+      // Send the token to server when it exists
+      registerMutation.mutate({
+        notification_token: expoPushToken,
+      });
+    }
+  }, [expoPushToken]);
 
 useEffect(() => {
   if (isSuccess && userProfile) {  
@@ -258,6 +263,7 @@ useEffect(() => {
   if (!locationPermission) {
     return <LocationPermission onRetry={checkLocationPermission} />;
   }
+
 
   if (isLoading) return <LoadingIndicator />;
 

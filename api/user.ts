@@ -386,12 +386,79 @@ export const registerForNotifications = async (
           "Content-Type": "application/json",
         },
       });
+    if (!response.ok || (response.data && typeof response.data === 'object' && "detail" in response.data)) {
+      const errorMessage =
+        response.data && typeof response.data === 'object' && "detail" in response.data
+          ? response.data.detail
+          : "Error registering for notifications.";
+      throw new Error(errorMessage);
+    }
+    if (!response.data) {
+      throw new Error("No data received from server");
+    }
+    return response.data;
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    }
+    throw new Error("An unexpected error occurred");
+  }
+};
+
+
+// export const registerForNotifications = async (
+//   pushTokenData: NotificationTokenResponse
+// ): Promise<NotificationTokenResponse> => {
+//   const data = {
+//     notification_token: pushTokenData.notification_token,
+//   };
+//   try {
+//     const response: ApiResponse<NotificationTokenResponse | ErrorResponse> =
+//       await apiClient.put(`${BASE_URL}/notification`, data, {
+//         headers: {
+//           "Content-Type": "application/json",
+//         },
+//       });
+
+//     if (!response.ok || (response.data && "detail" in response.data)) {
+//       const errorMessage =
+//         response.data && "detail" in response.data
+//           ? response.data.detail
+//           : "Error registering for notifications.";
+//       throw new Error(errorMessage);
+//     }
+//     if (!response.data) {
+//       throw new Error("No data received from server");
+//     }
+//     return response.data;
+//   } catch (error) {
+//     if (error instanceof Error) {
+//       throw new Error(error.message);
+//     }
+//     throw new Error("An unexpected error occurred");
+//   }
+// };
+
+
+// Get notifications
+export const getNotificationToken = async (
+): Promise<NotificationTokenResponse> => {
+  const data = {
+    notification_token: pushTokenData.notification_token,
+  };
+  try {
+    const response: ApiResponse<NotificationTokenResponse | ErrorResponse> =
+      await apiClient.get(`${BASE_URL}/notification`, data, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
     if (!response.ok || (response.data && "detail" in response.data)) {
       const errorMessage =
         response.data && "detail" in response.data
           ? response.data.detail
-          : "Error registering for notifications.";
+          : "Error retrieving notification token.";
       throw new Error(errorMessage);
     }
     if (!response.data) {
