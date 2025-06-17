@@ -267,7 +267,7 @@ const Page = () => {
                         <StoreCard
                             item={item}
                             distance={item.distance}
-                            screenType="LAUNDRY"
+                            pathName='/laundry-detail/[laundryId]'
                         />
                     )}
                     contentContainerStyle={{
@@ -280,7 +280,7 @@ const Page = () => {
 
                 <FAB
                     icon={<Plus size={25} color={theme.text.val} />}
-                    onPress={() => router.push({ pathname: "/store-detail/addLaundryItem" })}
+                    onPress={() => router.push({ pathname: "/laundry-detail/addLaundryItem" })}
                 />
             )}
         </SafeAreaView>

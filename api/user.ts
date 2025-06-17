@@ -167,20 +167,23 @@ export const getCurrentDispatchRiders = async (): Promise<RiderResponse[]> => {
 };
 
 // Fetch restaurants
-export const fetchRestaurants = async (): Promise<CompanyProfile[]> => {
+export const fetchRestaurants = async (
+  categoryId?: string
+): Promise<CompanyProfile[]> => {
   try {
     const response: ApiResponse<CompanyProfile[] | ErrorResponse> =
       await apiClient.get(`${BASE_URL}/restaurants`, {
         headers: {
           "Content-Type": "application/json",
         },
+        params: categoryId ? { category_id: categoryId } : undefined,
       });
 
     if (!response.ok || !response.data || "detail" in response.data) {
       const errorMessage =
         response.data && "detail" in response.data
           ? response.data.detail
-          : "Error loading user profile.";
+          : "Error loading restaurants.";
       throw new Error(errorMessage);
     }
 
@@ -386,9 +389,16 @@ export const registerForNotifications = async (
           "Content-Type": "application/json",
         },
       });
-    if (!response.ok || (response.data && typeof response.data === 'object' && "detail" in response.data)) {
+    if (
+      !response.ok ||
+      (response.data &&
+        typeof response.data === "object" &&
+        "detail" in response.data)
+    ) {
       const errorMessage =
-        response.data && typeof response.data === 'object' && "detail" in response.data
+        response.data &&
+        typeof response.data === "object" &&
+        "detail" in response.data
           ? response.data.detail
           : "Error registering for notifications.";
       throw new Error(errorMessage);
@@ -404,7 +414,6 @@ export const registerForNotifications = async (
     throw new Error("An unexpected error occurred");
   }
 };
-
 
 // export const registerForNotifications = async (
 //   pushTokenData: NotificationTokenResponse
@@ -439,36 +448,35 @@ export const registerForNotifications = async (
 //   }
 // };
 
-
 // Get notifications
-export const getNotificationToken = async (
-): Promise<NotificationTokenResponse> => {
-  const data = {
-    notification_token: pushTokenData.notification_token,
-  };
-  try {
-    const response: ApiResponse<NotificationTokenResponse | ErrorResponse> =
-      await apiClient.get(`${BASE_URL}/notification`, data, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+export const getNotificationToken =
+  async (): Promise<NotificationTokenResponse> => {
+    const data = {
+      notification_token: pushTokenData.notification_token,
+    };
+    try {
+      const response: ApiResponse<NotificationTokenResponse | ErrorResponse> =
+        await apiClient.get(`${BASE_URL}/notification`, data, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
 
-    if (!response.ok || (response.data && "detail" in response.data)) {
-      const errorMessage =
-        response.data && "detail" in response.data
-          ? response.data.detail
-          : "Error retrieving notification token.";
-      throw new Error(errorMessage);
+      if (!response.ok || (response.data && "detail" in response.data)) {
+        const errorMessage =
+          response.data && "detail" in response.data
+            ? response.data.detail
+            : "Error retrieving notification token.";
+        throw new Error(errorMessage);
+      }
+      if (!response.data) {
+        throw new Error("No data received from server");
+      }
+      return response.data;
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(error.message);
+      }
+      throw new Error("An unexpected error occurred");
     }
-    if (!response.data) {
-      throw new Error("No data received from server");
-    }
-    return response.data;
-  } catch (error) {
-    if (error instanceof Error) {
-      throw new Error(error.message);
-    }
-    throw new Error("An unexpected error occurred");
-  }
-};
+  };

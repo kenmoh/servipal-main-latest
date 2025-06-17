@@ -16,7 +16,7 @@ const StoreTabLayout = () => {
         >
 
             <Stack.Screen
-                name="(store-tab)"
+                name="(restaurant-tab)"
                 options={{
                     headerTransparent: true,
                     headerShown: false

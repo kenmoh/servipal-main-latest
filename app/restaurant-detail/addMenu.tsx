@@ -20,8 +20,7 @@ const itemTypeEnum = z.enum(["food", "package", "product", "laundry"]);
 const itemTypeOptions = [
     { id: "food", name: "Food" },
     { id: "laundry", name: "Laundry" },
-    // { id: "package", name: "Package" },
-    // { id: "product", name: "Product" }
+
 ];
 
 const schema = z.object({
@@ -79,7 +78,7 @@ const addMenu = () => {
     });
 
     const { data: categories } = useQuery({
-        queryKey: ["categories"],
+        queryKey: ["food-categories"],
         queryFn: fetchCategories,
         select: (categories) => categories?.filter(category => category.category_type === "food") || []
 
@@ -100,8 +99,9 @@ const addMenu = () => {
             setVisble(false);
             resetCategoryForm();
 
-            queryClient.invalidateQueries({ queryKey: ['storeItems', user?.sub] })
-            queryClient.invalidateQueries({ queryKey: ["categories"] });
+            queryClient.invalidateQueries({ queryKey: ['restaurantItems', user?.sub] })
+            queryClient.invalidateQueries({ queryKey: ["food-categories"] });
+            queryClient.invalidateQueries({ queryKey: ["product-categories"] });
             queryClient.invalidateQueries({ queryKey: ['restaurants'] })
 
             return;
@@ -146,6 +146,7 @@ const addMenu = () => {
     });
 
     const onSubmit = (data: FormData) => {
+        console.log(data)
         itemMutate({
             ...data,
             images: data.images ?? [],
@@ -229,6 +230,7 @@ const addMenu = () => {
                                 name="category_id"
                                 render={({ field: { onChange, value } }) => (
                                     <AppPicker
+
                                         label="Category"
                                         items={categories ?? []}
                                         onValueChange={onChange}

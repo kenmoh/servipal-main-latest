@@ -24,6 +24,9 @@ export interface CreateItem {
   itemType: ItemType;
   category_id?: string;
   images: ItemImage[];
+  colors?: string[]
+  sizes?: string
+  stock?. number
 }
 export interface ItemResponse extends CreateItem {
   id: string;

@@ -4,7 +4,7 @@ import { Stack } from "expo-router";
 import { useTheme } from "tamagui";
 import AddItemBtn from "@/components/AddItemBtn";
 
-const StoreDetailLayout = () => {
+const LaundryDetailLayout = () => {
     const theme = useTheme();
     return (
         <Stack
@@ -16,22 +16,13 @@ const StoreDetailLayout = () => {
             }}
         >
             <Stack.Screen
-                name="[storeId]"
+                name="[laundryId]"
                 options={{
                     headerShown: false,
                     headerStyle: {
                         backgroundColor: "transparent",
 
                     },
-                }}
-            />
-            <Stack.Screen
-                name="addMenu"
-
-                options={{
-                    title: 'Add Menu',
-                    animation: 'slide_from_bottom'
-
                 }}
             />
 
@@ -50,6 +41,5 @@ const StoreDetailLayout = () => {
     );
 };
 
-export default StoreDetailLayout;
+export default LaundryDetailLayout;
 
-const styles = StyleSheet.create({});

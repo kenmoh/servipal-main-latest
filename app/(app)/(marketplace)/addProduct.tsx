@@ -1,4 +1,4 @@
-import { StyleSheet, TouchableOpacity } from "react-native";
+import { StyleSheet, TouchableOpacity, ActivityIndicator } from "react-native";
 import React, { useState, useEffect } from "react";
 import {
     ScrollView,
@@ -8,17 +8,26 @@ import {
     Square,
     YStack,
     Circle,
+    useTheme
 } from "tamagui";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm, useFieldArray } from "react-hook-form";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import AppTextInput from "@/components/AppInput";
 import ImagePickerInput from "@/components/AppImagePicker";
 import { Trash, Plus } from "lucide-react-native";
 import AppColorPicker from "@/components/AppColorPicker";
+import AppPicker from "@/components/AppPicker";
+import { createItem, fetchCategories } from "@/api/item";
+import LoadingIndicator from "@/components/LoadingIndicator";
+
+const itemTypeEnum = z.enum(["food", "package", "product", "laundry"]);
 
 const schema = z.object({
     name: z.string().min(1, "Name is a required field"),
+    category_id: z.string({ message: "Category is a required field" }),
+    itemType: itemTypeEnum,
     price: z.coerce
         .number()
         .int()
@@ -32,13 +41,21 @@ const schema = z.object({
     description: z.string().min(1, "Description is a required field"),
     colors: z.array(z.string()).optional(),
     sizes: z.string().optional(),
-    image_urls: z.array(z.string()).nonempty("At least one image is required"),
+    images: z.array(z.string()).nonempty("At least one image is required"),
 });
+
+
+const itemTypeOptions = [
+
+    { id: "product", name: "Product" },
+
+];
 
 type FormData = z.infer<typeof schema>;
 
 const addMenu = () => {
     const [selectedColors, setSelectedColors] = useState<string[]>([]);
+    const theme = useTheme()
 
     const {
         control,
@@ -51,11 +68,13 @@ const addMenu = () => {
         defaultValues: {
             name: "",
             description: "",
-            price: 0,
-            image_urls: [],
+            // price: 0,
+            images: [],
             colors: [],
             sizes: "",
-            stock: 0,
+            // stock: 0,
+            itemType: "product",
+             category_id: "",
         },
     });
 
@@ -65,21 +84,8 @@ const addMenu = () => {
         remove: removeImage,
     } = useFieldArray<FormData>({
         control,
-        name: "image_urls",
+        name: "images",
     });
-
-    const onSubmit = (data: FormData) => {
-        console.log("Form Data:", data);
-        // Ensure all transformations are handled
-        const submitData = {
-            ...data,
-            price: Number(data.price),
-            stock: Number(data.stock),
-            colors: [...selectedColors],
-            // image_urls: selectedImages
-        };
-        console.log("Transformed Data:", submitData);
-    };
 
     // Function to remove a color by its index
     const removeColorByIndex = (index: number) => {
@@ -89,6 +95,51 @@ const addMenu = () => {
     useEffect(() => {
         setValue("colors", selectedColors);
     }, [selectedColors, setValue]);
+
+
+     const { data } = useQuery({
+        queryKey: ["product-categories"],
+        queryFn: fetchCategories,
+        select: (categories) => categories?.filter(category => category.category_type === "product") || []
+
+    });
+
+
+       const { mutate, isPending } = useMutation({
+        mutationFn: createItem,
+        onSuccess: (data) => {
+            Notifier.showNotification({
+                title: "Success",
+                description: "Item created successfully",
+                Component: NotifierComponents.Alert,
+                duration: 1000,
+                componentProps: {
+                    alertType: "success",
+                },
+            });
+            reset();
+            queryClient.invalidateQueries({ queryKey: ["items"] });
+            return;
+        },
+        onError: (error) => {
+            Notifier.showNotification({
+                title: "Error",
+                description: `${error.message}`,
+                Component: NotifierComponents.Alert,
+                componentProps: {
+                    alertType: "error",
+                },
+            });
+        },
+    });
+
+        const onSubmit = (data: FormData) => {
+            console.log(data)
+        mutate(data)
+
+      
+    };
+
 
     return (
         <ScrollView
@@ -102,6 +153,7 @@ const addMenu = () => {
                     name="name"
                     render={({ field: { onChange, onBlur, value } }) => (
                         <AppTextInput
+                            label='Name'
                             placeholder="Name"
                             onBlur={onBlur}
                             onChangeText={onChange}
@@ -116,6 +168,7 @@ const addMenu = () => {
                     name="price"
                     render={({ field: { onChange, onBlur, value } }) => (
                         <AppTextInput
+                            label="Price"
                             placeholder="Price"
                             onBlur={onBlur}
                             onChangeText={(text) => onChange(Number(text))}
@@ -130,6 +183,7 @@ const addMenu = () => {
                     name="stock"
                     render={({ field: { onChange, onBlur, value } }) => (
                         <AppTextInput
+                            label='In stock'
                             placeholder="Stock"
                             onBlur={onBlur}
                             onChangeText={(text) => onChange(Number(text))}
@@ -144,6 +198,7 @@ const addMenu = () => {
                     name="description"
                     render={({ field: { onChange, onBlur, value } }) => (
                         <AppTextInput
+                            label='Description'
                             placeholder="Description."
                             onBlur={onBlur}
                             onChangeText={onChange}
@@ -157,6 +212,7 @@ const addMenu = () => {
                     name="sizes"
                     render={({ field: { onChange, onBlur, value } }) => (
                         <AppTextInput
+                            label='Sizes'
                             placeholder="Sizes (comma separated)."
                             onBlur={onBlur}
                             onChangeText={onChange}
@@ -165,6 +221,37 @@ const addMenu = () => {
                         />
                     )}
                 />
+
+
+<View display="none">
+    
+    <Controller
+                                control={control}
+                                name="itemType"
+                                render={({ field: { onChange, value } }) => (
+                                    <AppPicker
+                                        isBank={true}
+                                        enabled={false}
+                                        label="Item Type"
+                                        onValueChange={onChange}
+                                        items={itemTypeOptions}
+                                        value={value}
+                                    />
+                                )}
+                            />
+                    </View>
+                   <Controller
+                                control={control}
+                                name="category_id"
+                                render={({ field: { onChange, value } }) => (
+                                    <AppPicker
+                                        label="Category"
+                                        items={data ?? []}
+                                        onValueChange={onChange}
+                                        value={value}
+                                    />
+                                )}
+                            />
 
                 <View width={"100%"} alignSelf={"center"}>
                     {/* Render each selected color as a circle with an optional remove button */}
@@ -206,14 +293,14 @@ const addMenu = () => {
                         <View key={field.id}>
                             <Controller
                                 control={control}
-                                name={`image_urls.${index}`}
+                                name={`images.${index}`}
                                 render={({ field: { onChange, value } }) => (
                                     <ImagePickerInput
                                         iconSize={40}
                                         value={value}
                                         //onChange={onChange}
                                         onChange={(newImageUri) => onChange(newImageUri)}
-                                        errorMessage={errors.image_urls?.message?.toString()}
+                                        errorMessage={errors.images?.message?.toString()}
                                     />
                                 )}
                             />
@@ -250,7 +337,7 @@ const addMenu = () => {
                                     marginTop={3}
                                     style={{ fontFamily: "Poppins-Thin", fontSize: 11 }}
                                 >
-                                    {errors?.image_urls?.message}
+                                    {errors?.images?.message}
                                 </Text>
                             )}
                         </YStack>
@@ -268,7 +355,7 @@ const addMenu = () => {
                     width={"90%"}
                     onPress={handleSubmit(onSubmit)}
                 >
-                    Submit
+                    {isPending ?  <ActivityIndicator size={30} color={theme.text.val} /> : 'Submit'}
                 </Button>
             </View>
         </ScrollView>

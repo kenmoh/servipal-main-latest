@@ -1,12 +1,29 @@
 import { View, StyleSheet, TouchableOpacity } from "react-native";
-import React from "react";
+import React, { useEffect } from "react";
 import { Text, YStack, XStack, useTheme, Card } from "tamagui";
 import { Check, X, Download, Home } from "lucide-react-native";
 import { router, useLocalSearchParams } from "expo-router";
 
 const PaymentComplete = () => {
     const theme = useTheme();
-    const { paymentStatus } = useLocalSearchParams();
+    const params = useLocalSearchParams();
+
+    useEffect(() => {
+        console.log('Payment Complete - Received params:', params);
+    }, [params]);
+
+    const paymentStatus = params.paymentStatus as string;
+    const txRef = params.txRef as string;
+    const transactionId = params.transactionId as string;
+
+    console.log('Payment Complete - Extracted parameters:', {
+        paymentStatus,
+        txRef,
+        transactionId
+    });
+
+    const isSuccess = paymentStatus === 'success';
+    console.log('Payment Complete - Payment status:', isSuccess ? 'Success' : 'Failed');
 
     return (
         <YStack
@@ -17,7 +34,7 @@ const PaymentComplete = () => {
         >
             {/* Status Icon */}
             <View style={styles.iconContainer}>
-                {paymentStatus === 'success' ? (
+                {isSuccess ? (
                     <Check color="white" size={40} />
                 ) : (
                     <X color="white" size={40} />
@@ -34,7 +51,7 @@ const PaymentComplete = () => {
                         fontFamily: 'Poppins-Bold'
                     }}
                 >
-                    {paymentStatus === 'success' ? "Payment Successful!" : "Payment Failed"}
+                    {isSuccess ? "Payment Successful!" : "Payment Failed"}
                 </Text>
                 <Text
                     color="$gray11"
@@ -43,7 +60,7 @@ const PaymentComplete = () => {
                     paddingHorizontal="$6"
                     lineHeight={24}
                 >
-                    {paymentStatus === 'success'
+                    {isSuccess
                         ? "Great! Your payment has been processed successfully."
                         : "Oops! There was an error processing your payment. Please try again."}
                 </Text>
@@ -51,8 +68,14 @@ const PaymentComplete = () => {
 
             {/* Action buttons */}
             <XStack gap={16} marginTop="$10" alignItems="center">
-                {paymentStatus === 'success' && (
-                    <TouchableOpacity>
+                {isSuccess && (
+                    <TouchableOpacity onPress={() => {
+                        console.log('Payment Complete - Navigating to receipt with txRef:', txRef);
+                        router.push({
+                            pathname: "/receipt/[deliveryId]",
+                            params: { deliveryId: txRef }
+                        });
+                    }}>
                         <Card
                             bordered
                             padding="$4"
@@ -82,7 +105,10 @@ const PaymentComplete = () => {
                 )}
 
                 <TouchableOpacity
-                    onPress={() => router.replace({ pathname: "/delivery" })}
+                    onPress={() => {
+                        console.log('Payment Complete - Navigating to home');
+                        router.replace({ pathname: "/delivery" });
+                    }}
                 >
                     <Card
                         bordered

@@ -1,6 +1,6 @@
-import { StyleSheet, Share, Platform, Dimensions } from "react-native";
+import { StyleSheet, Share, Platform, Dimensions, ScrollView } from "react-native";
 import React from "react";
-import { View, YStack, Text, XStack, Card, Paragraph, Button } from "tamagui";
+import { View, YStack, Text, XStack, Card, Paragraph, Button, useTheme } from "tamagui";
 import { useLocalSearchParams } from "expo-router";
 import { useQuery } from "@tanstack/react-query";
 import { fetchDelivery } from "@/api/order";
@@ -15,6 +15,7 @@ import * as Print from 'expo-print';
 const ReceiptPage = () => {
     const { deliveryId } = useLocalSearchParams();
     const screenWidth = Dimensions.get('window').width;
+    const theme = useTheme()
 
     const { data, isLoading } = useQuery({
         queryKey: ["delivery", deliveryId],
@@ -23,6 +24,13 @@ const ReceiptPage = () => {
 
     const generateReceiptHTML = () => {
         if (!data) return '';
+
+        // Function to truncate long text
+        const truncateText = (text: string, maxLength: number = 150) => {
+            if (!text) return '';
+            if (text.length <= maxLength) return text;
+            return text.substring(0, maxLength) + '...';
+        };
 
         return `
             <html>
@@ -38,12 +46,15 @@ const ReceiptPage = () => {
                             background-color: #fff;
                             margin: 0;
                             line-height: 1.6;
+                            height: 100vh;
+                            overflow-y: auto;
                         }
                         
                         .container {
                             max-width: 800px;
                             margin: 0 auto;
                             padding: 20px;
+                            min-height: 100%;
                         }
                         
                         .header { 
@@ -51,6 +62,13 @@ const ReceiptPage = () => {
                             margin-bottom: 30px;
                             padding-bottom: 20px;
                             border-bottom: 2px solid #f0f0f0;
+                        }
+
+                        .logo {
+                            width: 80px;
+                            height: 80px;
+                            margin: 0 auto 12px;
+                            display: block;
                         }
                         
                         .header h1 {
@@ -80,7 +98,7 @@ const ReceiptPage = () => {
                             justify-content: space-between; 
                             margin-bottom: 12px;
                             padding: 8px 0;
-                            gap: 5px
+                            gap: 5px;
                             border-bottom: 1px solid #eee;
                         }
                         
@@ -121,6 +139,32 @@ const ReceiptPage = () => {
                             font-family: 'Poppins', monospace;
                             font-weight: 600;
                         }
+
+                        .address-info {
+                            display: flex;
+                            flex-direction: column;
+                            gap: 4px;
+                            margin-bottom: 12px;
+                        }
+
+                        .address-label {
+                            font-weight: 600;
+                            color: #666;
+                            font-size: 13px;
+                        }
+
+                        .address-value {
+                            color: #4a4a4a;
+                            font-size: 13px;
+                            line-height: 1.4;
+                            word-wrap: break-word;
+                            overflow-wrap: break-word;
+                            max-width: 100%;
+                            padding: 8px;
+                            background-color: #fff;
+                            border-radius: 6px;
+                            border: 1px solid #eee;
+                        }
                         
                         .footer {
                             text-align: center;
@@ -144,6 +188,7 @@ const ReceiptPage = () => {
                 <body>
                     <div class="container">
                         <div class="header">
+                            // <img src="android-icon.png" class="logo" alt="ServiPal Logo" />
                             <h1>Receipt</h1>
                         </div>
                         
@@ -194,15 +239,15 @@ const ReceiptPage = () => {
 
                         <div class="section">
                             <h2>Delivery Details</h2>
-                            <div class="row">
-                                <span>From</span>
-                                <span>${data.delivery?.origin}</span>
+                            <div class="address-info">
+                                <div class="address-label">From</div>
+                                <div class="address-value">${truncateText(data.delivery?.origin || '')}</div>
                             </div>
-                            <div class="row">
-                                <span>To</span>
-                                <span>${data.delivery?.destination}</span>
+                            <div class="address-info">
+                                <div class="address-label">To</div>
+                                <div class="address-value">${truncateText(data.delivery?.destination || '')}</div>
                             </div>
-                            <div class="row">
+                            <div class="row" style="margin-top: 12px;">
                                 <span>Status</span>
                                 <span>${data.delivery?.delivery_status?.toUpperCase()}</span>
                             </div>
@@ -219,6 +264,43 @@ const ReceiptPage = () => {
     };
 
     const handleDownload = async () => {
+        try {
+            const html = generateReceiptHTML();
+            const { uri } = await Print.printToFileAsync({
+                html,
+                width: screenWidth,
+                height: screenWidth * 1.4,
+                base64: false
+            });
+
+            // Create a filename for the PDF
+            const fileName = `Receipt_${data?.order?.order_number || 'unknown'}.pdf`;
+            const destinationUri = `${FileSystem.documentDirectory}${fileName}`;
+
+            // Copy the PDF to the documents directory
+            await FileSystem.copyAsync({
+                from: uri,
+                to: destinationUri
+            });
+
+            Notifier.showNotification({
+                title: "Success",
+                description: "Receipt downloaded successfully",
+                Component: NotifierComponents.Alert,
+                componentProps: { alertType: "success" },
+            });
+        } catch (error) {
+            console.error('Download error:', error);
+            Notifier.showNotification({
+                title: "Error",
+                description: "Failed to download receipt",
+                Component: NotifierComponents.Alert,
+                componentProps: { alertType: "error" },
+            });
+        }
+    };
+
+    const handleShare = async () => {
         try {
             const html = generateReceiptHTML();
             const { uri } = await Print.printToFileAsync({
@@ -245,30 +327,6 @@ const ReceiptPage = () => {
         } catch (error) {
             Notifier.showNotification({
                 title: "Error",
-                description: "Failed to generate PDF",
-                Component: NotifierComponents.Alert,
-                componentProps: { alertType: "error" },
-            });
-        }
-    };
-
-    const handleShare = async () => {
-        try {
-            const html = generateReceiptHTML();
-            const { uri } = await Print.printToFileAsync({
-                html,
-                width: screenWidth,
-                height: screenWidth * 1.4,
-                base64: false
-            });
-
-            await Share.share({
-                url: uri,
-                title: `Receipt #${data?.order?.order_number}`,
-            });
-        } catch (error) {
-            Notifier.showNotification({
-                title: "Error",
                 description: "Failed to share receipt",
                 Component: NotifierComponents.Alert,
                 componentProps: { alertType: "error" },
@@ -281,9 +339,9 @@ const ReceiptPage = () => {
     }
 
     return (
-        <View backgroundColor={"$background"} flex={1} padding="$4">
-            <YStack gap="$4">
-                <Text fontSize={20} fontWeight="bold" textAlign="center">Receipt</Text>
+        <ScrollView style={{ flex: 1, backgroundColor: theme.background.val, alignContent: 'center' }} >
+            <YStack gap="$4" style={{ flex: 1, overflow: 'scroll' }}>
+                {/* <Text fontSize={20} fontWeight="bold" textAlign="center">Receipt</Text> */}
 
                 <Card padding="$4" backgroundColor={"$cardBackground"}>
                     <YStack gap="$3">
@@ -343,15 +401,15 @@ const ReceiptPage = () => {
                     <YStack gap="$3">
                         <Text fontWeight="bold">Delivery Details</Text>
 
-                        <XStack justifyContent="space-between">
-                            <Text>From</Text>
-                            <Text>{data?.delivery?.origin}</Text>
-                        </XStack>
+                        <YStack gap="$2">
+                            <Text color="$gray11">From</Text>
+                            <Text numberOfLines={2} ellipsizeMode="tail">{data?.delivery?.origin}</Text>
+                        </YStack>
 
-                        <XStack justifyContent="space-between">
-                            <Text>To</Text>
-                            <Text>{data?.delivery?.destination}</Text>
-                        </XStack>
+                        <YStack gap="$2">
+                            <Text color="$gray11">To</Text>
+                            <Text numberOfLines={2} ellipsizeMode="tail">{data?.delivery?.destination}</Text>
+                        </YStack>
 
                         <XStack justifyContent="space-between">
                             <Text>Status</Text>
@@ -360,7 +418,7 @@ const ReceiptPage = () => {
                     </YStack>
                 </Card>
 
-                <XStack gap="$2" justifyContent="space-between">
+                <XStack gap="$2" justifyContent="space-between" width={'90%'} alignSelf="center" marginBottom={'$3'}>
                     <Button
                         flex={1}
                         backgroundColor={"$btnPrimaryColor"}
@@ -378,8 +436,9 @@ const ReceiptPage = () => {
                         Share PDF
                     </Button>
                 </XStack>
+
             </YStack>
-        </View>
+        </ScrollView>
     );
 };
 

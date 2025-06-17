@@ -11,7 +11,6 @@ export interface Bank {
   name: string;
 }
 
-
 interface Review {
   rating: string;
   comment: string;
@@ -37,6 +36,7 @@ export interface CompanyProfile {
     number_of_ratings: number;
     reviews: Review[];
   };
+  category_id: string;
 }
 
 export type Login = {
@@ -66,8 +66,8 @@ export interface Profile {
   business_address?: string;
   closing_hours?: string;
   opening_hours?: string;
-  profile_image_url: string
-  backdrop_image_url: string
+  profile_image_url: string;
+  backdrop_image_url: string;
 }
 
 export interface UserProfileUpdate {
@@ -104,7 +104,6 @@ export interface UserDetails {
   user_type: string;
   profile: Profile;
 }
-
 
 export interface CurrentUserDetails extends UserDetails {
   wallet: Wallet;

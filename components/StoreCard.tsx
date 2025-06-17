@@ -1,6 +1,6 @@
 import { CompanyProfile } from "@/types/user-types";
 import { AntDesign } from "@expo/vector-icons";
-import { router } from "expo-router";
+import { router, type Href } from "expo-router";
 import { StyleSheet, Image, Dimensions, TouchableOpacity } from "react-native";
 import { Card, Paragraph, YStack, XStack, useTheme, View } from "tamagui";
 import { LinearGradient } from "expo-linear-gradient";
@@ -13,11 +13,11 @@ const IMAGET_HEIGHT = Dimensions.get("window").height * 0.25;
 const StoreCard = ({
     item,
     distance,
-    screenType,
+    pathName,
 }: {
     distance?: number;
     item: CompanyProfile;
-    screenType: "RESTAURANT" | "LAUNDRY";
+    pathName: Href;
 }) => {
     const theme = useTheme();
     const { user } = useAuth()
@@ -27,7 +27,7 @@ const StoreCard = ({
             activeOpacity={0.8}
             onPress={() =>
                 router.push({
-                    pathname: "/store-detail/[storeId]",
+                    pathname: pathName,
                     params: {
                         storeId: item?.id,
                         companyName: item?.company_name,
@@ -38,7 +38,7 @@ const StoreCard = ({
                         address: item?.location,
                         rating: item?.rating?.average_rating,
                         reviews: item?.rating.number_of_ratings,
-                        screenType: screenType,
+                     
                     },
                 })
             }

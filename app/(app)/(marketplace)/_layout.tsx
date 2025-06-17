@@ -23,7 +23,7 @@ const MarketplaceLayout = () => {
                     fontFamily: 'Poppins-Medium'
                 },
 
-                headerLeft: () => <AddItemBtn label='SELL' onPress={() => router.push({ pathname: '/(app)/(marketplace)/addProduct' })} />,
+                
                 headerRight: () => (<Text
                     marginRight='$2'
                     textDecorationLine='underline'

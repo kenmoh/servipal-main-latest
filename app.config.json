@@ -5,7 +5,7 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/android-icon.png",
-    "scheme": "appservipal",
+    "scheme": "servipal",
     "userInterfaceStyle": "dark",
     "newArchEnabled": true,
     "ios": {
@@ -16,7 +16,10 @@
       "bundleIdentifier": "com.kenmoh.servipal",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
-      }
+      },
+      "associatedDomains": [
+        "applinks:servipalbackend.onrender.com"
+      ]
     },
     "android": {
       "googleServicesFile": "./google-services.json",
@@ -34,6 +37,37 @@
         "android.permission.ACCESS_COARSE_LOCATION",
         "android.permission.ACCESS_FINE_LOCATION",
         "android.permission.RECORD_AUDIO"
+      ],
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "https",
+              "host": "servipalbackend.onrender.com",
+              "pathPrefix": "/api/payment/order-payment-callback"
+            }
+          ],
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
+        },
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "servipal",
+              "host": "*"
+            }
+          ],
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
+        }
       ]
     },
     "web": {
@@ -50,6 +84,15 @@
           "imageWidth": 150,
           "resizeMode": "contain",
           "backgroundColor": "#18191c"
+        }
+      ],
+       [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/notification-icon.png",
+          "color": "#ffffff",
+          "defaultChannel": "default",
+          "enableBackgroundRemoteNotifications": false
         }
       ],
       "react-native-bottom-tabs",

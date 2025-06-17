@@ -29,8 +29,11 @@ const StoreDetails = () => {
     const [checkedItems, setCheckedItems] = useState<Set<string>>(new Set());
 
     const { data, refetch, isFetching } = useQuery({
-        queryKey: ["storeItems", storeId],
+        queryKey: ["restaurantItems", storeId],
         queryFn: () => fetchVendorItems(storeId as string),
+        select: (items) =>
+            items?.filter((item) => item.item_type === "food") || [],
+
     });
 
     const handleAddToCart = useCallback(
@@ -67,7 +70,7 @@ const StoreDetails = () => {
                     renderItem={({ item }: { item: MenuItem }) => (
                         <FoodCard
                             item={item}
-                            screenType={screenType as "RESTAURANT" | "LAUNDRY"}
+                            cardType={"RESTAURANT"}
                             onPress={() => handleAddToCart(item)}
                         />
                     )}
@@ -79,7 +82,7 @@ const StoreDetails = () => {
                                 title="No Menu Items"
                                 description="Add your first menu item to start selling"
                                 buttonTitle="Add Menu Item"
-                                route="/store-detail/addMenu"
+                                route="/restaurant-detail/addMenu"
                             />
                         ) : null
                     }

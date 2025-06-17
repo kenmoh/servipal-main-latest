@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { StyleSheet, FlatList, Image } from "react-native";
 import {
     Card,
@@ -126,14 +126,12 @@ const Page = () => {
     const [filteredRestaurants, setFilteredRestaurants] = useState<
         (CompanyProfile & { distance: number })[]
     >([]);
-    const [filteredFeatured, setFilteredFeatured] = useState<
-        RestaurantWithDistance[]
-    >([]);
+    const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
     const [hasItem, setHasItem] = useState(false);
     const { data, isFetching, error, refetch } = useQuery({
-        queryKey: ["restaurants"],
-        queryFn: fetchRestaurants,
+        queryKey: ["restaurants", selectedCategory],
+        queryFn: () => fetchRestaurants(selectedCategory || undefined),
     });
 
     const { data: categories } = useQuery({
@@ -150,11 +148,6 @@ const Page = () => {
             if (status !== "granted") return;
 
             const location = await Location.getCurrentPositionAsync({});
-            console.log(
-                "LOCATION",
-                location.coords.latitude,
-                location.coords.longitude
-            );
             setUserLocation({
                 latitude: location.coords.latitude,
                 longitude: location.coords.longitude,
@@ -191,8 +184,6 @@ const Page = () => {
                 })
             );
 
-
-
             // Filter out null values first
             const validRestaurants = restaurantsWithDistance.filter(
                 (item): item is RestaurantWithDistance => item !== null
@@ -211,7 +202,6 @@ const Page = () => {
                     setHasItem(true);
                 }
 
-
                 // Remove current vendor's restaurant from others list
                 otherRestaurants = validRestaurants.filter(
                     (restaurant) => restaurant.id !== user.sub
@@ -226,9 +216,7 @@ const Page = () => {
                 ? [currentVendorRestaurant, ...otherRestaurants]
                 : otherRestaurants;
 
-            setFilteredRestaurants(
-                finalResults as (CompanyProfile & { distance: number })[]
-            );
+            setFilteredRestaurants(finalResults);
         };
 
         filterRestaurants();
@@ -239,7 +227,7 @@ const Page = () => {
         return (
             <RefreshButton label="Error loading restaurants" onPress={refetch} />
         );
-    console.log(hasItem)
+
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: theme.background.val }}>
             <AppHeader
@@ -255,13 +243,15 @@ const Page = () => {
 
             {filteredRestaurants.length > 0 && (
                 <FlatList
-                    // data={data}
                     data={filteredRestaurants}
                     ListHeaderComponent={() => (
                         <>
-                            <Category categories={categories || []} />
+                            <Category
+                                categories={categories || []}
+                                onCategorySelect={setSelectedCategory}
+                                selectedCategory={selectedCategory}
+                            />
                             <FeaturedRestaurants />
-                            {/* <FeaturedRestaurants restaurants={data || []} /> */}
                         </>
                     )}
                     stickyHeaderIndices={[1]}
@@ -275,7 +265,7 @@ const Page = () => {
                         <StoreCard
                             item={item}
                             distance={item.distance}
-                            screenType="RESTAURANT"
+                            pathName='/restaurant-detail/[restaurantId]'
                         />
                     )}
                     contentContainerStyle={{
@@ -284,12 +274,10 @@ const Page = () => {
                 />
             )}
 
-
             {user?.user_type === "vendor" && !hasItem && (
-
                 <FAB
                     icon={<Plus size={25} color={theme.text.val} />}
-                    onPress={() => router.push({ pathname: "/store-detail/addMenu" })}
+                    onPress={() => router.push({ pathname: "/restaurant-detail/addMenu" })}
                 />
             )}
         </SafeAreaView>

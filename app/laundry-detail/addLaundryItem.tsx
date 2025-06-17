@@ -72,7 +72,7 @@ const adLaundryItem = () => {
                 },
             });
             reset();
-            queryClient.invalidateQueries({ queryKey: ["items"] });
+            queryClient.invalidateQueries({ queryKey: ["laundryItems", user?.sub] });
             return;
         },
         onError: (error) => {
@@ -88,7 +88,6 @@ const adLaundryItem = () => {
     });
 
     const onSubmit = (data: FormData) => {
-        console.log(data)
         itemMutate({
             ...data,
             images: data.images ?? [],

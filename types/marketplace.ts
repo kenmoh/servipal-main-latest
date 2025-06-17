@@ -45,7 +45,7 @@ export interface CreateProductResponse extends CreateProduct {
 export interface BuyItem {
   quantity: number;
   colors?: string[];
-  sizes?: string[];
+  sizes?: string;
   additional_info: string;
 }
 

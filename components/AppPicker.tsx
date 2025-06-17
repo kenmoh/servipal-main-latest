@@ -25,7 +25,7 @@ const AppPicker = ({
     value,
     placeholder,
     onValueChange,
-    isBank,
+    isBank=false,
     enabled=true
 }: PickerProps) => {
     const theme = useTheme();
@@ -58,7 +58,8 @@ const AppPicker = ({
                 >
                     {items?.map((item) => {
                         const itemKey = isBank ? `${item.code}` : `${item.id}`;
-                        const itemValue = isBank ? itemKey : item.name
+                        const itemValue = isBank ? itemKey : item.id
+
                         return (
                             <Picker.Item
                                 key={itemKey}

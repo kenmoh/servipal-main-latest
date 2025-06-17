@@ -30,6 +30,12 @@ const PaymentStatusLayout = () => {
 
             }} />
 
+            <Stack.Screen name='deep-link-handler' options={{
+                animation: 'none',
+                headerShown: false,
+                presentation: 'transparentModal',
+            }} />
+
         </Stack>
     )
 }

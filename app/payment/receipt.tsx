@@ -1,42 +1,49 @@
 import { View } from 'react-native';
 import * as Print from 'expo-print';
 import { shareAsync } from 'expo-sharing';
+import { Asset } from 'expo-asset';
 
 interface ReceiptData {
-    orderNumber?: string;
-    orderType: 'food' | 'laundry' | 'delivery';
-    orderDate: string;
-    orderItems?: Array<{
-        name: string;
-        quantity: number;
-        price: number;
-    }>;
-    deliveryFee?: number;
-    requireDelivery?: 'delivery' | 'pickup';
-    total: number;
-    riderName?: string;
-    riderPhone?: string;
-    deliveryId?: string;
-    origin?: string;
-    destination?: string;
+  orderNumber?: string;
+  orderType: 'food' | 'laundry' | 'delivery';
+  orderDate: string;
+  orderItems?: Array<{
+    name: string;
+    quantity: number;
+    price: number;
+  }>;
+  deliveryFee?: number;
+  requireDelivery?: 'delivery' | 'pickup';
+  total: number;
+  riderName?: string;
+  riderPhone?: string;
+  deliveryId?: string;
+  origin?: string;
+  destination?: string;
 }
 
 export const createReceiptHTML = (data: ReceiptData) => {
-    const formatCurrency = (amount: number) => {
-        return `₦${amount.toLocaleString('en-NG', { minimumFractionDigits: 2 })}`;
-    };
+  const formatCurrency = (amount: number) => {
+    return `₦${amount.toLocaleString('en-NG', { minimumFractionDigits: 2 })}`;
+  };
 
-    const formatDate = (dateString: string) => {
-        return new Date(dateString).toLocaleString('en-NG', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-        });
-    };
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleString('en-NG', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  };
 
-    return `
+  // Function to truncate long text
+  const truncateText = (text: string, maxLength: number = 50) => {
+    if (text.length <= maxLength) return text;
+    return text.substring(0, maxLength) + '...';
+  };
+
+  return `
     <!DOCTYPE html>
     <html>
       <head>
@@ -53,6 +60,8 @@ export const createReceiptHTML = (data: ReceiptData) => {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             padding: 8px;
             background-color: #f7f7f7;
+            height: 100vh;
+            overflow-y: auto;
           }
           
           .receipt {
@@ -63,6 +72,7 @@ export const createReceiptHTML = (data: ReceiptData) => {
             border-radius: 12px;
             padding: 16px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            min-height: 100%;
           }
           
           .header {
@@ -70,6 +80,13 @@ export const createReceiptHTML = (data: ReceiptData) => {
             margin-bottom: 16px;
             padding-bottom: 16px;
             border-bottom: 1px dashed #e0e0e0;
+          }
+
+          .logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 12px;
+            display: block;
           }
           
           .title {
@@ -83,6 +100,31 @@ export const createReceiptHTML = (data: ReceiptData) => {
             font-size: 14px;
             color: #666;
             margin-bottom: 4px;
+          }
+          
+          .items-container {
+            max-height: 60vh;
+            overflow-y: auto;
+            margin: 16px 0;
+            padding-right: 8px;
+          }
+
+          .items-container::-webkit-scrollbar {
+            width: 4px;
+          }
+
+          .items-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+          }
+
+          .items-container::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+          }
+
+          .items-container::-webkit-scrollbar-thumb:hover {
+            background: #555;
           }
           
           .items-table {
@@ -115,6 +157,27 @@ export const createReceiptHTML = (data: ReceiptData) => {
           .delivery-info p {
             margin: 4px 0;
             color: #4a4a4a;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            max-width: 100%;
+          }
+
+          .address-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+          }
+
+          .address-label {
+            font-weight: 600;
+            color: #666;
+            font-size: 13px;
+          }
+
+          .address-value {
+            color: #4a4a4a;
+            font-size: 13px;
+            line-height: 1.4;
           }
           
           .total-section {
@@ -149,6 +212,7 @@ export const createReceiptHTML = (data: ReceiptData) => {
       <body>
         <div class="receipt">
           <div class="header">
+            <img src="file:///android_asset/images/android-icon.png" class="logo" alt="ServiPal Logo" />
             <div class="title">ServiPal</div>
             <div class="order-info">Order #${data.orderNumber}</div>
             <div class="order-info">${formatDate(data.orderDate)}</div>
@@ -163,26 +227,28 @@ export const createReceiptHTML = (data: ReceiptData) => {
             </div>
           ` : `
             ${data.orderItems ? `
-              <table class="items-table">
-                <thead>
-                  <tr>
-                    <th>Item</th>
-                    <th style="text-align: center">Qty</th>
-                    <th style="text-align: right">Price</th>
-                    <th style="text-align: right">Total</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  ${data.orderItems.map(item => `
+              <div class="items-container">
+                <table class="items-table">
+                  <thead>
                     <tr>
-                      <td>${item.name}</td>
-                      <td style="text-align: center">${item.quantity}</td>
-                      <td style="text-align: right">${formatCurrency(item.price)}</td>
-                      <td style="text-align: right">${formatCurrency(item.price * item.quantity)}</td>
+                      <th>Item</th>
+                      <th style="text-align: center">Qty</th>
+                      <th style="text-align: right">Price</th>
+                      <th style="text-align: right">Total</th>
                     </tr>
-                  `).join('')}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    ${data.orderItems.map(item => `
+                      <tr>
+                        <td>${item.name}</td>
+                        <td style="text-align: center">${item.quantity}</td>
+                        <td style="text-align: right">${formatCurrency(item.price)}</td>
+                        <td style="text-align: right">${formatCurrency(item.price * item.quantity)}</td>
+                      </tr>
+                    `).join('')}
+                  </tbody>
+                </table>
+              </div>
 
               <div class="total-section">
                 <div class="total-row">
@@ -206,8 +272,14 @@ export const createReceiptHTML = (data: ReceiptData) => {
 
           ${data.requireDelivery === 'delivery' ? `
             <div class="delivery-info">
-              <p><strong>From:</strong> ${data.origin}</p>
-              <p><strong>To:</strong> ${data.destination}</p>
+              <div class="address-info">
+                <div class="address-label">From:</div>
+                <div class="address-value">${truncateText(data.origin || '')}</div>
+              </div>
+              <div class="address-info" style="margin-top: 8px;">
+                <div class="address-label">To:</div>
+                <div class="address-value">${truncateText(data.destination || '')}</div>
+              </div>
             </div>
           ` : ''}
 
@@ -222,15 +294,15 @@ export const createReceiptHTML = (data: ReceiptData) => {
 };
 
 export const generateReceipt = async (data: ReceiptData) => {
-    try {
-        const html = createReceiptHTML(data);
-        const { uri } = await Print.printToFileAsync({
-            html,
-            base64: false
-        });
-        return uri;
-    } catch (error) {
-        console.error('Failed to generate receipt:', error);
-        throw error;
-    }
+  try {
+    const html = createReceiptHTML(data);
+    const { uri } = await Print.printToFileAsync({
+      html,
+      base64: false
+    });
+    return uri;
+  } catch (error) {
+    console.error('Failed to generate receipt:', error);
+    throw error;
+  }
 };

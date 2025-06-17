@@ -7,9 +7,9 @@ import { useCartStore } from '@/store/cartStore'
 import { useAuth } from '@/context/authContext'
 import { Notifier, NotifierComponents } from 'react-native-notifier'
 
-const FoodCard = ({ item, onPress, screenType }: {
+const FoodCard = ({ item, onPress, cardType }: {
     item: MenuItem,
-    screenType: 'RESTAURANT' | 'LAUNDRY',
+    cardType: 'RESTAURANT' | 'LAUNDRY',
     onPress: (id: string) => void
 }) => {
     const theme = useTheme()
@@ -45,7 +45,7 @@ const FoodCard = ({ item, onPress, screenType }: {
                         <Heading fontSize={12} letterSpacing={'$1'} fontWeight={'bold'}>
                             {item.name}
                         </Heading>
-                        {screenType === 'RESTAURANT' && <Paragraph
+                        {cardType === 'RESTAURANT' && <Paragraph
                             textWrap='wrap'
                             marginTop='1'
                             color={'$icon'}

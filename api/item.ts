@@ -112,6 +112,20 @@ export const createItem = async (
     data.append("description", itemData.description);
   }
 
+  if (itemData.sizes) {
+    data.append("sizes", itemData.sizes);
+  }
+
+  if (itemData.stock) {
+    data.append("stock", itemData.stock);
+  }
+
+  // Handle colord
+  const colorsArray = Array.isArray(itemData.colors) ? itemData.colors : [];
+  if (colorsArray.length > 0) {
+  colorsArray.forEach((color) => data.append("colors", color));
+}
+
   // Handle images
   const imagesArray = Array.isArray(itemData.images) ? itemData.images : [];
 

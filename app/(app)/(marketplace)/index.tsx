@@ -7,9 +7,15 @@ import {
     Text,
     Card,
     Button,
+    useTheme
 } from 'tamagui';
-import { FlatList, Dimensions } from 'react-native';
+import { FlatList, Dimensions, ScrollView } from 'react-native';
 import { router } from 'expo-router';
+import { Plus } from "lucide-react-native";
+import FAB from "@/components/FAB";
+
+
+
 interface MarketplaceItem {
     id: string;
     name: string;
@@ -51,6 +57,22 @@ const marketplaceItems: MarketplaceItem[] = [
         price: 34.99,
         rating: 4.5,
         image: 'https://images.unsplash.com/photo-1596263576925-d90d63691097?ixlib=rb-4.0.3'
+    },
+     {
+        id: '5',
+        name: 'Eco Cleaning Bundle',
+        seller: 'Green Clean Co',
+        price: 79.99,
+        rating: 4,
+        image: 'https://images.unsplash.com/photo-1585421514738-01798e348b17?ixlib=rb-4.0.3'
+    },
+    {
+        id: '6',
+        name: 'Window Cleaning Set',
+        seller: 'Crystal Clear',
+        price: 34.99,
+        rating: 4.5,
+        image: 'https://images.unsplash.com/photo-1596263576925-d90d63691097?ixlib=rb-4.0.3'
     }
 ];
 
@@ -59,6 +81,7 @@ const marketplaceItems: MarketplaceItem[] = [
 export default function Marketplace() {
     const screenWidth = Dimensions.get('window').width;
     const columnWidth = (screenWidth - 30) / 2;
+    const theme = useTheme()
 
     const renderRatingStars = (rating: number) => {
         return (
@@ -142,6 +165,8 @@ export default function Marketplace() {
     );
 
     return (
+
+       
         <YStack flex={1} alignSelf='center' backgroundColor={'$background'}>
 
 
@@ -154,6 +179,15 @@ export default function Marketplace() {
                 contentContainerStyle={{ padding: 0 }}
                 showsVerticalScrollIndicator={false}
             />
+
+        
+                <FAB
+                    icon={<Plus size={25} color={theme.text.val} />}
+                    onPress={() => router.push({ pathname: "/(marketplace)/addProduct" })}
+                />
+           
+
         </YStack>
+  
     );
 }

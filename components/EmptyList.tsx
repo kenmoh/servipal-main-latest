@@ -47,12 +47,14 @@ const EmptyList = ({
                 gap="$4"
                 padding="$4"
                 alignSelf='center'
+                marginTop={75}
+
 
 
             >
                 <Text
                     color="$text"
-                    fontSize={24}
+                    fontSize={20}
                     textAlign="center"
                     style={{ fontFamily: "Poppins-Medium" }}
                 >
@@ -60,7 +62,7 @@ const EmptyList = ({
                 </Text>
                 <Text
                     color="$icon"
-                    fontSize={16}
+                    fontSize={14}
                     textAlign="center"
                     style={{ fontFamily: "Poppins-Light" }}
                 >
@@ -70,6 +72,7 @@ const EmptyList = ({
                     backgroundColor="$btnPrimaryColor"
                     color="$background"
                     width="80%"
+                    borderRadius={50}
                     onPress={handlePress}
                     pressStyle={{ opacity: 0.8 }}
                     fontSize={16}
