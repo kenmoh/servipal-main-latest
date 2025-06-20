@@ -6,8 +6,8 @@ import CartInfoBtn from "@/components/CartInfoBtn";
 import { useAuth } from "@/context/authContext";
 import { useCallback, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { fetchVendorItems } from "@/api/item";
-import { MenuItem } from "@/types/item-types";
+import { fetchLaundryMenu } from "@/api/user";
+import { LaundryMenuItem } from "@/types/item-types";
 import { useCartStore } from "@/store/cartStore";
 import EmptyList from "@/components/EmptyList";
 
@@ -22,14 +22,14 @@ const StoreDetails = () => {
 
     const { data, refetch, isFetching } = useQuery({
         queryKey: ["laundryItems", storeId],
-        queryFn: () => fetchVendorItems(storeId as string),
+        queryFn: () => fetchLaundryMenu(storeId as string),
         select: (items) =>
             items?.filter((item) => item.item_type === "laundry") || [],
     });
 
 
     const handleAddToCart = useCallback(
-        (item: MenuItem) => {
+        (item: LaundryMenuItem) => {
             if (checkedItems.has(item.id)) {
                 removeItem(item.id);
                 setCheckedItems((prev) => {
@@ -59,7 +59,7 @@ const StoreDetails = () => {
                 <FlatList
                     data={data ?? []}
                     keyExtractor={(item) => item?.id}
-                    renderItem={({ item }: { item: MenuItem }) => (
+                    renderItem={({ item }: { item: LaundryMenuItem }) => (
                         <FoodCard
                             item={item}
                             cardType={"LAUNDRY"}
@@ -68,7 +68,7 @@ const StoreDetails = () => {
                     )}
                     removeClippedSubviews={true}
                     ListEmptyComponent={
-                        !isFetching ? (
+                        !isFetching && user?.sub === storeId ? (
                             <EmptyList
                                 title="No Menu Items"
                                 description="Add your first menu item to start selling"
@@ -91,7 +91,7 @@ const StoreDetails = () => {
                 onPress={() => router.push({ pathname: "/cart" })}
             />
 
-            {user?.user_type === "vendor" && data && data[0]?.user_id === user?.sub && (
+            {user?.user_type === "vendor" && data && data[0]?.laundry_id === user?.sub && (
                 <FAB
                     icon={<Menu color={"white"} />}
                     onPress={() =>

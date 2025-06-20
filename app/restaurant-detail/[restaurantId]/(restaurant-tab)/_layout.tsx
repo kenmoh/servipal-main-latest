@@ -19,7 +19,7 @@ const StoreHeader = () => {
         closingHour,
         address,
         rating,
-        reviews,
+        numberOfReviews,
         profileImage,
     } = useLocalSearchParams();
 
@@ -72,7 +72,7 @@ const StoreHeader = () => {
                                     fontFamily={"$body"}
                                     fontSize={"$2"}
                                 >
-                                    ({reviews} reviews)
+                                    ({numberOfReviews} reviews)
                                 </Paragraph>
                             </XStack>
                             <XStack alignItems="center" gap={"$2"} marginTop="$2">

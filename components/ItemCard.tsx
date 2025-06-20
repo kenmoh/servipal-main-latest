@@ -158,7 +158,7 @@ const ItemCard = React.memo(({ data, isHomeScreen = false }: CardProp) => {
         router.push({
             pathname: '/delivery-detail/[id]',
             params: {
-                id: data?.delivery?.id!,
+                id: data?.order?.id!,
                 orderNumber: data?.order.id
             }
         });
@@ -197,7 +197,8 @@ const ItemCard = React.memo(({ data, isHomeScreen = false }: CardProp) => {
                                 height="100%"
                                 width="100%"
                                 alt={itemName || 'Order item'}
-                                resizeMode="cover"
+
+                                objectFit="cover"
                             />
                         </Square>
 
@@ -211,7 +212,7 @@ const ItemCard = React.memo(({ data, isHomeScreen = false }: CardProp) => {
                                 <Text
                                     color="$text"
                                     fontFamily="$body"
-                                    fontSize={11}
+                                    fontSize={data?.order?.require_delivery==='delivery'?11: 16}
                                     numberOfLines={1}
                                     flex={1}
                                 >
@@ -219,56 +220,57 @@ const ItemCard = React.memo(({ data, isHomeScreen = false }: CardProp) => {
                                 </Text>
                             </XStack>
 
-                            <XStack gap={5} alignItems="flex-start">
-                                <MaterialCommunityIcons
-                                    name="circle"
-                                    color={theme.icon.val}
-                                    size={10}
-                                    style={styles.iconStyle}
-                                />
-                                <Text
-                                    flex={1}
-                                    color="$text"
-                                    fontFamily="$body"
-                                    fontSize={11}
-                                    numberOfLines={2}
-                                >
-                                    {data?.delivery? data?.delivery?.origin: ''}
-                                </Text>
-                            </XStack>
+                            {data?.order?.require_delivery === 'delivery' &&
 
-                            <XStack gap={5} alignItems="flex-start">
-                                <Feather
-                                    name="map-pin"
-                                    color={theme.icon.val}
-                                    size={10}
-                                    style={styles.iconStyle}
-                                />
-                                <Text
-                                    flex={1}
-                                    color="$text"
-                                    fontFamily="$body"
-                                    fontSize={11}
-                                    numberOfLines={2}
-                                >
-                                    {data?.delivery?data?.delivery?.destination:''}
-                                </Text>
-                            </XStack>
+                                <>
+                                    <XStack gap={5} alignItems="flex-start">
+                                        <MaterialCommunityIcons
+                                            name="circle"
+                                            color={theme.icon.val}
+                                            size={10}
+                                            style={styles.iconStyle}
+                                        />
+                                        <Text
+                                            flex={1}
+                                            color="$text"
+                                            fontFamily="$body"
+                                            fontSize={11}
+                                            numberOfLines={2}
+                                        >
+                                            {data?.delivery ? data?.delivery?.origin : ''}
+                                        </Text>
+                                    </XStack>
 
-                            <XStack gap={5} alignItems="center" flexWrap="wrap">
-                                <XStack gap={5} alignItems="center" flexShrink={0}>
-                                    <Feather name="clock" color={theme.icon.val} size={10} />
-                                    <Text color="$text" fontFamily="$body" fontSize={11}>
-                                        {data?.delivery?data?.delivery?.duration:''}
-                                    </Text>
-                                </XStack>
-                                {/* <XStack gap={2} alignItems="center" flexShrink={0}>
-                                    <MaterialCommunityIcons name="road-variant" color={theme.icon.val} size={11} />
-                                    <Text color="$text" fontFamily="$body" fontSize={11}>
-                                        {data?.delivery?.distance} km
-                                    </Text>
-                                </XStack> */}
-                            </XStack>
+                                    <XStack gap={5} alignItems="flex-start">
+                                        <Feather
+                                            name="map-pin"
+                                            color={theme.icon.val}
+                                            size={10}
+                                            style={styles.iconStyle}
+                                        />
+                                        <Text
+                                            flex={1}
+                                            color="$text"
+                                            fontFamily="$body"
+                                            fontSize={11}
+                                            numberOfLines={2}
+                                        >
+                                            {data?.delivery ? data?.delivery?.destination : ''}
+                                        </Text>
+                                    </XStack>
+                                </>
+
+                            }
+
+                          { data?.order?.require_delivery==='delivery' && <XStack gap={5} alignItems="center" flexWrap="wrap">
+                                                          <XStack gap={5} alignItems="center" flexShrink={0}>
+                                                              <Feather name="clock" color={theme.icon.val} size={10} />
+                                                              <Text color="$text" fontFamily="$body" fontSize={11}>
+                                                                  {data?.delivery ? data?.delivery?.duration : ''}
+                                                              </Text>
+                                                          </XStack>
+                                                          {/* {'DISTANCE HERE IF NEEDED'} */}
+                                                      </XStack>}
                         </YStack>
                     </XStack>
 
@@ -285,17 +287,23 @@ const ItemCard = React.memo(({ data, isHomeScreen = false }: CardProp) => {
                     paddingLeft={80}
                     paddingRight={10}
                 >
-                    {data?.delivery && <XStack gap={5} alignItems="center">
+                    <XStack gap={5} alignItems="center">
                         <AntDesign name="wallet" color={theme.icon.val} size={10} />
-                        <Text color="$text" fontFamily="$heading" fontSize={12} fontWeight="700">
+                        {data?.order?.require_delivery==='delivery'? (
+<Text color="$text" fontFamily="$heading" fontSize={12} fontWeight="700">
                             ₦ {Number(data?.delivery?.delivery_fee).toFixed(2)}
                         </Text>
-                    </XStack>}
+                            ) : (<Text color="$text" fontFamily="$heading" fontSize={12} fontWeight="700">
+                            ₦ {Number(data?.order?.total_price).toFixed(2)}
+                        </Text>)}
+                    </XStack>
 
-                    {!isHomeScreen && <XStack gap={5}>
-                        <Status status={data?.delivery?.delivery_status} />
+                    <XStack gap={5}>
+                        <Status status={data?.order?.require_delivery==='delivery' ? data?.delivery?.delivery_status: data?.order?.order_status} />
                         <PaymentStatusColor status={data?.order?.order_payment_status} />
-                    </XStack>}
+                    </XStack>
+
+                    
                 </XStack>
             </Card>
         </TouchableOpacity>

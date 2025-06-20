@@ -5,14 +5,14 @@ import { useTheme } from 'tamagui';
 import AppModal from './AppModal';
 import { ChevronDown } from 'lucide-react-native';
 
-interface Category {
+export interface CategoryType {
     id: string;
     name: string;
     category_type: string;
 }
 
-interface CategoryProps {
-    categories: Category[];
+export interface CategoryProps {
+    categories: CategoryType[];
     onCategorySelect: (categoryId: string | null) => void;
     selectedCategory: string | null;
 }
@@ -50,7 +50,7 @@ const Category = ({ categories, onCategorySelect, selectedCategory }: CategoryPr
         scrollToCategory(categoryId);
     }, [onCategorySelect, scrollToCategory]);
 
-    const CategoryItem = ({ item, isSelected }: { item: Category; isSelected: boolean }) => (
+    const CategoryItem = ({ item, isSelected }: { item: CategoryType; isSelected: boolean }) => (
         <View
             ref={ref => categoryRefs.current[item.id] = ref}
             collapsable={false}
@@ -118,7 +118,7 @@ const Category = ({ categories, onCategorySelect, selectedCategory }: CategoryPr
                 ref={scrollViewRef}
                 horizontal
                 showsHorizontalScrollIndicator={false}
-                contentContainerStyle={[styles.scrollContainer, {backgroundColor: theme.background.val}]}
+                contentContainerStyle={[styles.scrollContainer, { backgroundColor: theme.background.val }]}
             >
                 <View
                     ref={ref => categoryRefs.current['all'] = ref}

@@ -24,9 +24,9 @@ export interface CreateItem {
   itemType: ItemType;
   category_id?: string;
   images: ItemImage[];
-  colors?: string[]
-  sizes?: string
-  stock?. number
+  colors?: string[];
+  sizes?: string;
+  stock?: number;
 }
 export interface ItemResponse extends CreateItem {
   id: string;
@@ -42,13 +42,25 @@ export interface CategoryResponse extends CreateCategory {
   category_type: "food" | "product";
 }
 
-export interface MenuItem {
+interface MenuBase {
   id: string;
-  user_id: string;
   name: string;
   item_type: string;
   price: string;
-  description: string;
   images: ItemImage[];
-  reviews: Review[];
+
+}
+
+export interface MenuItem extends MenuBase {
+  
+  restaurant_id: string;
+  description: string;
+  
+}
+
+
+export interface LaundryMenuItem extends MenuBase {
+  
+  laundry_id: string;
+  
 }

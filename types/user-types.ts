@@ -33,8 +33,7 @@ export interface CompanyProfile {
   total_orders: number;
   rating: {
     average_rating: string;
-    number_of_ratings: number;
-    reviews: Review[];
+    number_of_reviews: number;
   };
   category_id: string;
 }

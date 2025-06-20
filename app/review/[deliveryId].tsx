@@ -15,17 +15,17 @@ const RATINGS = [
     { id: "5", name: "5 Stars" },
 ];
 
-const RATE_TARGETS = [
-    { id: "rider", name: "Rider" },
-    { id: "vendor", name: "Vendor" },
-];
-
 const ReviewPage = () => {
-    const { deliveryId } = useLocalSearchParams();
+    const { deliveryId, orderId, riderId } = useLocalSearchParams();
     const [rating, setRating] = useState("");
     const [rateTarget, setRateTarget] = useState("");
     const [comment, setComment] = useState("");
     const queryClient = useQueryClient();
+
+    const RATE_TARGETS = [
+    { id: riderId, name: "Rider" },
+    { id: orderId, name: "Order" },
+];
 
     const submitReviewMutation = useMutation({
         mutationFn: async () => {

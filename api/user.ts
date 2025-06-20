@@ -11,6 +11,7 @@ import {
 import { apiClient } from "@/utils/client";
 import { ApiResponse } from "apisauce";
 import { ErrorResponse } from "./auth";
+import { MenuItem } from "@/types/item-types";
 
 export interface ImageData {
   uri: string;
@@ -210,6 +211,65 @@ export const fetchLaundryVendors = async (): Promise<CompanyProfile[]> => {
         response.data && "detail" in response.data
           ? response.data.detail
           : "Error loading user profile.";
+      throw new Error(errorMessage);
+    }
+
+    return response.data;
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    }
+    throw new Error("An unexpected error occurred");
+  }
+};
+
+// Fetch Vendor Items
+export const fetchLaundryMenu = async (
+  laundryId: string
+): Promise<LaundryMenuItem[]> => {
+  try {
+    const response: ApiResponse<LaundryMenuItem[] | ErrorResponse> =
+      await apiClient.get(`${BASE_URL}/laundry/${laundryId}/menu`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+    if (!response.ok || !response.data || "detail" in response.data) {
+      const errorMessage =
+        response.data && "detail" in response.data
+          ? response.data.detail
+          : "Error fetching laundry menu.";
+      throw new Error(errorMessage);
+    }
+
+    return response.data;
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    }
+    throw new Error("An unexpected error occurred");
+  }
+};
+
+
+// Fetch Vendor Items
+export const fetchRestaurantMenu = async (
+  restuarantId: string
+): Promise<MenuItem[]> => {
+  try {
+    const response: ApiResponse<MenuItem[] | ErrorResponse> =
+      await apiClient.get(`${BASE_URL}/restaurants/${restuarantId}/menu`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+    if (!response.ok || !response.data || "detail" in response.data) {
+      const errorMessage =
+        response.data && "detail" in response.data
+          ? response.data.detail
+          : "Error fetching restaurant menu.";
       throw new Error(errorMessage);
     }
 
@@ -448,35 +508,35 @@ export const registerForNotifications = async (
 //   }
 // };
 
-// Get notifications
-export const getNotificationToken =
-  async (): Promise<NotificationTokenResponse> => {
-    const data = {
-      notification_token: pushTokenData.notification_token,
-    };
-    try {
-      const response: ApiResponse<NotificationTokenResponse | ErrorResponse> =
-        await apiClient.get(`${BASE_URL}/notification`, data, {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
+// // Get notifications
+// export const getNotificationToken =
+//   async (): Promise<NotificationTokenResponse> => {
+//     const data = {
+//       notification_token: pushTokenData.notification_token,
+//     };
+//     try {
+//       const response: ApiResponse<NotificationTokenResponse | ErrorResponse> =
+//         await apiClient.get(`${BASE_URL}/notification`, data, {
+//           headers: {
+//             "Content-Type": "application/json",
+//           },
+//         });
 
-      if (!response.ok || (response.data && "detail" in response.data)) {
-        const errorMessage =
-          response.data && "detail" in response.data
-            ? response.data.detail
-            : "Error retrieving notification token.";
-        throw new Error(errorMessage);
-      }
-      if (!response.data) {
-        throw new Error("No data received from server");
-      }
-      return response.data;
-    } catch (error) {
-      if (error instanceof Error) {
-        throw new Error(error.message);
-      }
-      throw new Error("An unexpected error occurred");
-    }
-  };
+//       if (!response.ok || (response.data && "detail" in response.data)) {
+//         const errorMessage =
+//           response.data && "detail" in response.data
+//             ? response.data.detail
+//             : "Error retrieving notification token.";
+//         throw new Error(errorMessage);
+//       }
+//       if (!response.data) {
+//         throw new Error("No data received from server");
+//       }
+//       return response.data;
+//     } catch (error) {
+//       if (error instanceof Error) {
+//         throw new Error(error.message);
+//       }
+//       throw new Error("An unexpected error occurred");
+//     }
+//   };

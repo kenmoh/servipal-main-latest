@@ -1,6 +1,6 @@
 export type Coordinates = [number | null, number | null];
-export type OrderType = "delivery" | "food" | "laundry";
-export type OrderStatus = "pending" | "in-transit" | "delivered";
+export type OrderType = "package" | "food" | "laundry" | "product";
+export type OrderStatus = "pending" | "in-transit" | "delivered" | "received";
 export type RequireDelivery = "pickup" | "delivery";
 export type PaymentStatus = "pending" | "paid" | "failed" | "cancelled";
 export type RiderDeliveryStatus = "in transit" | "delivered" | "canceled";
@@ -66,8 +66,9 @@ export interface OrderResponse {
   id: string;
   user_id: string;
   vendor_id: string;
-  order_type: string;
+  order_type: OrderType;
   order_number: string;
+  require_delivery: "pickup" | "delivery";
   total_price: string;
   order_payment_status: PaymentStatus;
   order_status: OrderStatus;

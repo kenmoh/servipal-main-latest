@@ -1,6 +1,6 @@
 import { CompanyProfile } from "@/types/user-types";
 import { AntDesign } from "@expo/vector-icons";
-import { router, type Href } from "expo-router";
+import { RelativePathString, router, type Href } from "expo-router";
 import { StyleSheet, Image, Dimensions, TouchableOpacity } from "react-native";
 import { Card, Paragraph, YStack, XStack, useTheme, View } from "tamagui";
 import { LinearGradient } from "expo-linear-gradient";
@@ -27,7 +27,7 @@ const StoreCard = ({
             activeOpacity={0.8}
             onPress={() =>
                 router.push({
-                    pathname: pathName,
+                    pathname: pathName as RelativePathString,
                     params: {
                         storeId: item?.id,
                         companyName: item?.company_name,
@@ -37,8 +37,8 @@ const StoreCard = ({
                         closingHour: item?.closing_hour,
                         address: item?.location,
                         rating: item?.rating?.average_rating,
-                        reviews: item?.rating.number_of_ratings,
-                     
+                        numberOfReviews: item?.rating.number_of_reviews,
+
                     },
                 })
             }

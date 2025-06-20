@@ -526,7 +526,7 @@ const ItemDetails = () => {
 
                     {/* Additional Action Buttons */}
                     <XStack marginTop="$4" gap="$2" width="90%" alignSelf="center" justifyContent="space-between">
-                        {data?.delivery?.delivery_status === "received" && (
+                        {data?.order?.order_type !== "package" && data?.order?.order_status === 'received' && (
                             <>
                                 <Button
                                     size={"$4"}
@@ -542,7 +542,7 @@ const ItemDetails = () => {
                                         // Handle review action
                                         router.push({
                                             pathname: "/review/[deliveryId]",
-                                            params: { deliveryId: id as string }
+                                            params: { deliveryId: id as string, riderId: data?.delivery?.rider_id, orderId: data?.order?.id }
                                         });
                                     }}
                                 >
@@ -563,7 +563,7 @@ const ItemDetails = () => {
                                         // Handle report action
                                         router.push({
                                             pathname: "/report/[deliveryId]",
-                                            params: { deliveryId: id as string }
+                                            params: { deliveryId: id as string, }
                                         });
                                     }}
                                 >

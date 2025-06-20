@@ -12,11 +12,11 @@ import * as Location from "expo-location";
 
 import { router } from "expo-router";
 import { useAuth } from "@/context/authContext";
-import { getCurrentUser, getCurrentUserProfile, getNotificationToken, registerForNotifications} from "@/api/user";
+import { getCurrentUser, getCurrentUserProfile, registerForNotifications } from "@/api/user";
 import authStorage from "@/storage/authStorage";
 import AppTextInput from "@/components/AppInput";
 import LocationPermission from "@/components/Locationpermission";
-import {useNotification} from "@/components/NotificationProvider"
+import { useNotification } from "@/components/NotificationProvider"
 import { distanceCache } from "@/utils/distance-cache";
 import { useLocationTracking } from "@/hooks/useLocationTracking";
 import FAB from "@/components/FAB";
@@ -26,7 +26,7 @@ import { UserDetails } from "@/types/user-types";
 const DeliveryScreen = () => {
   const theme = useTheme();
   const { user, setProfile, profile } = useAuth();
-  const {expoPushToken} = useNotification()
+  const { expoPushToken } = useNotification()
   const [selectedType, setSelectedType] = useState<DeliveryType | "all">("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [locationPermission, setLocationPermission] = useState<boolean | null>(
@@ -72,19 +72,19 @@ const DeliveryScreen = () => {
   }, [checkLocationPermission]);
 
 
- const registerMutation = useMutation({
+  const registerMutation = useMutation({
     mutationFn: registerForNotifications,
   });
 
   const { data: userProfile, isSuccess, isLoading: profileIsLoading } = useQuery({
-  queryKey: ["profile", user?.sub],
-  queryFn: () => getCurrentUserProfile(user?.sub as string),
-  refetchOnWindowFocus: true,
-  enabled: !!user?.sub,
-});
+    queryKey: ["profile", user?.sub],
+    queryFn: () => getCurrentUserProfile(user?.sub as string),
+    refetchOnWindowFocus: true,
+    enabled: !!user?.sub,
+  });
 
 
-useEffect(() => {
+  useEffect(() => {
     if (expoPushToken) {
       // Send the token to server when it exists
       registerMutation.mutate({
@@ -93,15 +93,15 @@ useEffect(() => {
     }
   }, [expoPushToken]);
 
-useEffect(() => {
-  if (isSuccess && userProfile) {  
-    // Update state with fresh API data
-    setProfile(userProfile);
-    
-    // Store the fresh data for offline use
-    storeUserProfile(userProfile);
-  }
-}, [isSuccess, userProfile, user?.sub]);
+  useEffect(() => {
+    if (isSuccess && userProfile) {
+      // Update state with fresh API data
+      setProfile(userProfile);
+
+      // Store the fresh data for offline use
+      storeUserProfile(userProfile);
+    }
+  }, [isSuccess, userProfile, user?.sub]);
 
 
   const { data, isLoading, error, refetch, isFetching } = useQuery({
@@ -112,14 +112,13 @@ useEffect(() => {
         data?.filter(
           (order) =>
             order.order.order_payment_status === "paid" &&
-            order.delivery?.delivery_status === "pending"
+            order.delivery?.delivery_status === "pending" && order?.order?.require_delivery === 'delivery'
         ) || []
       );
     },
 
     refetchOnWindowFocus: true,
   });
-
   // Handle location change
   const handleLocationChange = useCallback(
     (newLocation: { latitude: number; longitude: number }) => {

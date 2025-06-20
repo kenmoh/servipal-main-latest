@@ -66,36 +66,6 @@ export const createCategory = async (
   }
 };
 
-// Fetch Vendor Items
-export const fetchVendorItems = async (
-  Vendor_id: string
-): Promise<MenuItem[]> => {
-  try {
-    const response: ApiResponse<MenuItem[] | ErrorResponse> =
-      await apiClient.get(`/items/${Vendor_id}`, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-    if (!response.ok || !response.data || "detail" in response.data) {
-      const errorMessage =
-        response.data && "detail" in response.data
-          ? response.data.detail
-          : "Error fetching vendour items.";
-      throw new Error(errorMessage);
-    }
-
-    console.log(response.data, response.status, response.problem);
-    return response.data;
-  } catch (error) {
-    if (error instanceof Error) {
-      throw new Error(error.message);
-    }
-    throw new Error("An unexpected error occurred");
-  }
-};
-
 // Create Item
 export const createItem = async (
   itemData: CreateItem
@@ -117,14 +87,14 @@ export const createItem = async (
   }
 
   if (itemData.stock) {
-    data.append("stock", itemData.stock);
+    data.append("stock", itemData.stock.toString());
   }
 
   // Handle colord
   const colorsArray = Array.isArray(itemData.colors) ? itemData.colors : [];
   if (colorsArray.length > 0) {
-  colorsArray.forEach((color) => data.append("colors", color));
-}
+    colorsArray.forEach((color) => data.append("colors", color));
+  }
 
   // Handle images
   const imagesArray = Array.isArray(itemData.images) ? itemData.images : [];

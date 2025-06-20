@@ -7,13 +7,13 @@ import CartInfoBtn from "@/components/CartInfoBtn";
 import { useAuth } from "@/context/authContext";
 import { useCallback, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { fetchVendorItems } from "@/api/item";
 import { MenuItem } from "@/types/item-types";
 import { useCartStore } from "@/store/cartStore";
 import EmptyList from "@/components/EmptyList";
 
 import FAB from "@/components/FAB";
 import { Menu } from "lucide-react-native";
+import { fetchRestaurantMenu } from "@/api/user";
 
 const groups: CategoryType[] = [
     { id: "1", name: "Starters", category_type: "food" },
@@ -27,14 +27,17 @@ const StoreDetails = () => {
     const { storeId, screenType } = useLocalSearchParams();
     const { cart, addItem, totalCost, removeItem } = useCartStore();
     const [checkedItems, setCheckedItems] = useState<Set<string>>(new Set());
+    const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
     const { data, refetch, isFetching } = useQuery({
         queryKey: ["restaurantItems", storeId],
-        queryFn: () => fetchVendorItems(storeId as string),
+        queryFn: () => fetchRestaurantMenu(storeId as string),
         select: (items) =>
             items?.filter((item) => item.item_type === "food") || [],
 
     });
+
+    console.log(data, 'RESTAURANT MENU')
 
     const handleAddToCart = useCallback(
         (item: MenuItem) => {
@@ -61,6 +64,7 @@ const StoreDetails = () => {
         [addItem, removeItem, storeId, checkedItems]
     );
 
+
     return (
         <View flex={1} backgroundColor={"$background"}>
             <YStack flex={1}>
@@ -75,7 +79,11 @@ const StoreDetails = () => {
                         />
                     )}
                     removeClippedSubviews={true}
-                    ListHeaderComponent={<Category categories={groups || []} />}
+                    ListHeaderComponent={<Category
+                        categories={groups || []}
+                        onCategorySelect={setSelectedCategory}
+                        selectedCategory={selectedCategory}
+                    />}
                     ListEmptyComponent={
                         !isFetching ? (
                             <EmptyList
@@ -100,15 +108,13 @@ const StoreDetails = () => {
                 onPress={() => router.push({ pathname: "/cart" })}
             />
 
-            {user?.user_type === "vendor" && data && data[0]?.user_id === user?.sub && (
+            {user?.user_type === "vendor" && data && data?.[0]?.restaurant_id === user?.sub && (
                 <FAB
                     icon={<Menu color={"white"} />}
                     onPress={() =>
                         router.push({
-                            pathname:
-                                screenType === "RESTAURANT"
-                                    ? "/store-detail/addMenu"
-                                    : "/store-detail/addLaundryItem",
+                            pathname: "/restaurant-detail/addMenu"
+
                         })
                     }
                 />

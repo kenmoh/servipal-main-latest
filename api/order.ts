@@ -39,9 +39,7 @@ export const fetchDeliveries = async ({
   try {
     const response: ApiResponse<DeliveryDetail[] | ErrorResponse> =
       await apiClient.get(
-        `${BASE_URL}/deliveries${
-          params.toString() ? `?${params.toString()}` : ""
-        }`,
+        `${BASE_URL}${params.toString() ? `?${params.toString()}` : ""}`,
         {
           headers: {
             "Content-Type": "application/json",
