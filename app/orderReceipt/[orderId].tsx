@@ -344,7 +344,7 @@ const OrderReceiptPage = () => {
 
                         <XStack justifyContent="space-between">
                             <Text>Date</Text>
-                            <Text>{format(new Date(data?.delivery?.created_at || ""), "PPP")}</Text>
+                            <Text>{format(new Date(data?.order?.created_at || ""), "PPP")}</Text>
                         </XStack>
 
                         {data?.order?.order_items && data.order.order_items.length > 0 && (
@@ -386,9 +386,9 @@ const OrderReceiptPage = () => {
                     <YStack gap="$3">
                         <Text fontWeight="bold">Delivery Details</Text>
 
-                        <XStack ustifyContent="space-between">
+                        <XStack justifyContent="space-between">
                             <Text color="$gray11">Delivery Type</Text>
-                            <Text numberOfLines={2} ellipsizeMode="tail">{data?.order?.require_delivery}</Text>
+                            <Text numberOfLines={2} ellipsizeMode="tail">{data?.order?.require_delivery.toUpperCase}</Text>
                         </XStack>
                         <XStack justifyContent="space-between">
                             <Text>Status</Text>
