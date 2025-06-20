@@ -73,7 +73,9 @@ export interface OrderResponse {
   order_payment_status: PaymentStatus;
   order_status: OrderStatus;
   amount_due_vendor: string;
+  business_name: string
   payment_link: string;
+  created_at: string
   order_items: OrderItemResponse[];
 }
 

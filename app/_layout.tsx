@@ -155,6 +155,15 @@ export default function RootLayout() {
                         },
                       }}
                     />
+                       <Stack.Screen
+                      name="orderReceipt/[orderId]"
+                      options={{
+                        title: 'Download Receipt',
+                        headerStyle: {
+                          backgroundColor: BACKGORUND_COLOR,
+                        },
+                      }}
+                    />
                     <Stack.Screen name='report/[deliveryId]' options={{
                       title: 'Report an Issue',
                       headerStyle: {

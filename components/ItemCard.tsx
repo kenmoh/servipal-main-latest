@@ -4,7 +4,7 @@ import { Card, View, XStack, YStack, Image, useTheme, Text, Square } from 'tamag
 import { Feather, MaterialCommunityIcons, AntDesign } from '@expo/vector-icons'
 import { router } from 'expo-router'
 import { DeliveryDetail, DeliveryStatus, OrderStatus, PaymentStatus } from '@/types/order-types'
-import { Package, Shirt, Utensils } from 'lucide-react-native'
+import { Package, Landmark, Shirt, Utensils } from 'lucide-react-native'
 import { useLocationStore } from '@/store/locationStore'
 
 type CardProp = {
@@ -127,17 +127,6 @@ const ItemCard = React.memo(({ data, isHomeScreen = false }: CardProp) => {
     const theme = useTheme();
     const { setOrigin, setDestination } = useLocationStore();
 
-    // Memoize navigation handler
-    // const handlePress = React.useCallback(() => {
-    //     router.push({
-    //         pathname: '/delivery-detail/[id]',
-    //         params: {
-    //             id: data?.delivery?.id!,
-    //             orderNumber: data?.order.id
-    //         }
-    //     });
-    // }, [data?.delivery?.id, data?.order.id]);
-
     const handlePress = React.useCallback(() => {
         // Set origin and destination if available
         if (data?.delivery?.origin && data?.delivery?.pickup_coordinates) {
@@ -173,13 +162,20 @@ const ItemCard = React.memo(({ data, isHomeScreen = false }: CardProp) => {
         setDestination
     ]);
 
+    const handleGoToReceipt = (orderId: string) => {
+        router.push({
+             pathname: "/orderReceipt/[orderId]",
+            params: {orderId: orderId as string }
+        })
+    }
+
     // Memoize computed values
     const firstOrderItem = React.useMemo(() => data?.order.order_items[0], [data?.order.order_items]);
     const imageUrl = React.useMemo(() => firstOrderItem?.images[0]?.url, [firstOrderItem?.images]);
     const itemName = React.useMemo(() => firstOrderItem?.name, [firstOrderItem?.name]);
 
     return (
-        <TouchableOpacity activeOpacity={0.6} onPress={handlePress}>
+        <TouchableOpacity activeOpacity={0.6} onPress={data?.order?.require_delivery==='delivery'? handlePress: ()=>handleGoToReceipt(data?.order?.id)}>
             <Card padding={10} >
                 <XStack flex={1}>
                     {/* Left side container */}
@@ -206,7 +202,7 @@ const ItemCard = React.memo(({ data, isHomeScreen = false }: CardProp) => {
                         <YStack flex={1} gap={5}>
                             <XStack gap={5} alignItems="center">
                                 <DeliveryTypeIcon
-                                    type={data?.delivery?.delivery_type!}
+                                    type={data?.order?.require_delivery==='delivery' ? data?.delivery?.delivery_type! : data?.order?.order_type!}
                                     theme={theme}
                                 />
                                 <Text
@@ -218,7 +214,25 @@ const ItemCard = React.memo(({ data, isHomeScreen = false }: CardProp) => {
                                 >
                                     {itemName}
                                 </Text>
+
                             </XStack>
+                           
+                              {data?.order?.require_delivery==='pickup' && 
+                                <XStack gap={5}>
+                                     <Landmark  size={15} color={theme.icon.val}/>
+
+                               <Text
+                                            flex={1}
+                                            color="$text"
+                                            fontFamily="$body"
+                                            fontSize={11}
+                                            numberOfLines={2}
+                                        >
+                                            {data?.order?.business_name}
+                                        </Text>
+                                </XStack>
+
+                                    }
 
                             {data?.order?.require_delivery === 'delivery' &&
 
@@ -232,7 +246,7 @@ const ItemCard = React.memo(({ data, isHomeScreen = false }: CardProp) => {
                                         />
                                         <Text
                                             flex={1}
-                                            color="$text"
+                                            color={theme.icon.val}
                                             fontFamily="$body"
                                             fontSize={11}
                                             numberOfLines={2}
@@ -250,7 +264,7 @@ const ItemCard = React.memo(({ data, isHomeScreen = false }: CardProp) => {
                                         />
                                         <Text
                                             flex={1}
-                                            color="$text"
+                                            color={theme.icon.val}
                                             fontFamily="$body"
                                             fontSize={11}
                                             numberOfLines={2}
@@ -320,25 +334,3 @@ const styles = StyleSheet.create({
 });
 
 export default ItemCard;
-
-
-
-
-// export const Status = ({ status }: { status?: OrderStatus }) => {
-//     return (
-//         <View
-//             backgroundColor={status === 'pending' ? '$pendingTransparent' : status === 'in-transit' ? '$deliveredTransparent' : '$successTransparent'}
-//             paddingVertical={6}
-//             paddingHorizontal={10}
-//             borderRadius={20}
-//         >
-//             <Text color={status === 'pending' ? '$pending' : status === 'in-transit' ? '$delivered' : '$success'}
-//                 fontFamily={'$heading'} fontWeight={'800'}
-//                 fontSize={11}
-//                 textTransform='capitalize'
-//             >{status}
-
-//             </Text>
-//         </View>
-//     )
-// }

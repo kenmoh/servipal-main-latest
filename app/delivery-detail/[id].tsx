@@ -336,7 +336,7 @@ const ItemDetails = () => {
                                         orderId: data?.order.id ?? "",
                                         deliveryFee: data?.delivery?.delivery_fee,
                                         orderNumber: data?.order?.order_number,
-                                        deliveryType: data?.delivery?.delivery_type,
+                                        deliveryType: `${data?.order?.require_delivery==='delivery'? data?.delivery?.delivery_fee:data?.order?.order_type}`,
                                         orderItems: JSON.stringify(data?.order.order_items ?? []),
                                         paymentLink: data?.order.payment_link,
                                     },
