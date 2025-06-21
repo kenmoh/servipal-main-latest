@@ -21,7 +21,7 @@ const AppTextInput = ({ label, value, onPressIn, placeholder, onBlur, onChangeTe
     };
 
     const shouldShowToggle = showPasswordToggle && secureTextEntry;
-    const isPasswordVisible = shouldShowToggle ? showPassword : secureTextEntry;
+    const isPasswordVisible = shouldShowToggle ? showPassword : false;
 
     return (
         <YStack marginVertical={label ? 0 : '$2'} width={'90%'} justifyContent='center' alignItems='center' alignSelf='center'>
@@ -37,7 +37,7 @@ const AppTextInput = ({ label, value, onPressIn, placeholder, onBlur, onChangeTe
                     width={'100%'}
                     borderWidth={0}
                     keyboardType={keyboardType}
-                    secureTextEntry={!isPasswordVisible}
+                    secureTextEntry={shouldShowToggle ? !isPasswordVisible : false}
                     fontSize={15}
                     onBlur={onBlur}
                     onChangeText={onChangeText}

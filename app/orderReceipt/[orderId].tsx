@@ -619,7 +619,13 @@ const OrderReceiptPage = () => {
                         onPressIn={() => {
                             router.push({
                                 pathname: "/review/[deliveryId]",
-                                params: { deliveryId: data?.order?.id as string },
+
+                                params: {
+                                    deliveryId: data?.order?.id as string,
+                                    revieweeId: data?.order?.vendor_id as string,
+                                    orderType: data?.order?.order_type
+
+                                },
                             });
                         }}
                     >

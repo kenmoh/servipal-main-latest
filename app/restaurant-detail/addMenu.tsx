@@ -146,7 +146,6 @@ const addMenu = () => {
     });
 
     const onSubmit = (data: FormData) => {
-        console.log(data)
         itemMutate({
             ...data,
             images: data.images ?? [],
@@ -156,7 +155,7 @@ const addMenu = () => {
     return (
         <>
             <ScrollView backgroundColor={"$background"} flex={1} showsVerticalScrollIndicator={false}>
-                  <View marginTop={"$3"} marginBottom={"$12"}>
+                <View marginTop={"$3"} marginBottom={"$12"}>
                     <Controller
                         control={control}
                         name="name"
