@@ -147,6 +147,7 @@ const SignIn = () => {
                   onChangeText={handleChange("password")}
                   value={values.password}
                   secureTextEntry
+                  showPasswordToggle
                   errorMessage={touched.password ? errors.password : undefined}
                   editable={!isPending}
                 />

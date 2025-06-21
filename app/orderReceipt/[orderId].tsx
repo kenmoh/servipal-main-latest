@@ -1,21 +1,39 @@
-import { StyleSheet, Share, Platform, Dimensions, ScrollView } from "react-native";
+import {
+    StyleSheet,
+    Share,
+    Platform,
+    Dimensions,
+    ScrollView,
+    ActivityIndicator,
+} from "react-native";
 import React from "react";
-import { View, YStack, Text, XStack, Card, Paragraph, Button, useTheme } from "tamagui";
-import { useLocalSearchParams } from "expo-router";
-import { useQuery } from "@tanstack/react-query";
-import { fetchDelivery } from "@/api/order";
+import {
+    View,
+    YStack,
+    Text,
+    XStack,
+    Card,
+    Paragraph,
+    Button,
+    useTheme,
+} from "tamagui";
+import { router, useLocalSearchParams } from "expo-router";
+import { QueryClient, useMutation, useQuery } from "@tanstack/react-query";
+import { fetchDelivery, riderAcceptDelivery, updateOrderStatus } from "@/api/order";
 import LoadingIndicator from "@/components/LoadingIndicator";
 import { format } from "date-fns";
 import { Download, Share2 } from "lucide-react-native";
-import * as FileSystem from 'expo-file-system';
-import * as Sharing from 'expo-sharing';
+import * as FileSystem from "expo-file-system";
+import * as Sharing from "expo-sharing";
 import { Notifier, NotifierComponents } from "react-native-notifier";
-import * as Print from 'expo-print';
+import * as Print from "expo-print";
+import { useAuth } from "@/context/authContext";
 
 const OrderReceiptPage = () => {
     const { orderId } = useLocalSearchParams();
-    const screenWidth = Dimensions.get('window').width;
-    const theme = useTheme()
+    const screenWidth = Dimensions.get("window").width;
+    const theme = useTheme();
+    const { user } = useAuth()
 
     const { data, isLoading } = useQuery({
         queryKey: ["order", orderId],
@@ -23,13 +41,13 @@ const OrderReceiptPage = () => {
     });
 
     const generateReceiptHTML = () => {
-        if (!data) return '';
+        if (!data) return "";
 
         // Function to truncate long text
         const truncateText = (text: string, maxLength: number = 150) => {
-            if (!text) return '';
+            if (!text) return "";
             if (text.length <= maxLength) return text;
-            return text.substring(0, maxLength) + '...';
+            return text.substring(0, maxLength) + "...";
         };
 
         return `
@@ -199,44 +217,74 @@ const OrderReceiptPage = () => {
                             </div>
                             <div class="row">
                                 <span>Date</span>
-                                <span>${format(new Date(data.order?.created_at || ""), "PPP")}</span>
+                                <span>${format(
+            new Date(data.order?.created_at || ""),
+            "PPP"
+        )}</span>
                             </div>
-                            ${data?.order.order_items.length > 0 ? `
+                            ${data?.order.order_items.length > 0
+                ? `
                                 <div class="row">
                                     <span>Items Total</span>
-                                    <span class="amount">₦${Number(data.order?.total_price || 0 - Number(data.delivery?.delivery_fee || 0)).toFixed(2)}</span>
+                                    <span class="amount">₦${Number(
+                    data.order?.total_price ||
+                    0 -
+                    Number(
+                        data.delivery?.delivery_fee || 0
+                    )
+                ).toFixed(2)}</span>
                                 </div>
-                            ` : ''}
+                            `
+                : ""
+            }
                           
                             <div class="row total">
                                 <span>Total Amount</span>
-                                <span class="amount">₦${Number(data.order?.total_price).toFixed(2)}</span>
+                                <span class="amount">₦${Number(
+                data.order?.total_price
+            ).toFixed(2)}</span>
                             </div>
                             <div class="row">
                                 <span>Payment Status</span>
-                                <span class="status-${data.order?.order_payment_status === 'paid' ? 'paid' : 'unpaid'}">
+                                <span class="status-${data.order?.order_payment_status === "paid"
+                ? "paid"
+                : "unpaid"
+            }">
                                     ${data.order?.order_payment_status?.toUpperCase()}
                                 </span>
                             </div>
                         </div>
 
-                        ${data.order?.order_items && data.order.order_items.length > 0 ? `
+                        ${data.order?.order_items &&
+                data.order.order_items.length > 0
+                ? `
                             <div class="section">
                                 <h2>Order Items</h2>
-                                ${data.order.order_items.map((item: any) => `
+                                ${data.order.order_items
+                    .map(
+                        (item: any) => `
                                     <div class="row">
-                                        <span>${item.quantity}X  ${item.name}</span>
-                                        <span class="amount">₦${Number(item.price * item.quantity).toFixed(2)}</span>
+                                        <span>${item.quantity}X  ${item.name
+                            }</span>
+                                        <span class="amount">₦${Number(
+                                item.price * item.quantity
+                            ).toFixed(2)}</span>
                                     </div>
-                                `).join('')}
+                                `
+                    )
+                    .join("")}
                             </div>
-                        ` : ''}
+                        `
+                : ""
+            }
 
                         <div class="section">
                             <h2>Delivery Details</h2>
                             <div class="address-info">
                                 <div class="address-label">Delivery Type</div>
-                                <div class="address-value">${truncateText(data.order?.require_delivery || '')}</div>
+                                <div class="address-value">${truncateText(
+                data.order?.require_delivery || ""
+            )}</div>
                             </div>
                            
                             <div class="row" style="margin-top: 12px;">
@@ -255,6 +303,66 @@ const OrderReceiptPage = () => {
         `;
     };
 
+    const queryClient = new QueryClient()
+    const vendorDeliveryMutation = useMutation({
+        mutationFn: () => updateOrderStatus(data?.order?.id as string),
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: ["order", orderId],
+            });
+            queryClient.invalidateQueries({
+                queryKey: ["deliveries"],
+            });
+            queryClient.invalidateQueries({
+                queryKey: ["deliveries", user?.sub],
+            });
+
+            Notifier.showNotification({
+                title: "Success",
+                description: "This order has been assigned to you. Drive carefully!",
+                Component: NotifierComponents.Alert,
+                componentProps: { alertType: "success" },
+            });
+        },
+        onError: (error: Error) => {
+            Notifier.showNotification({
+                title: "Error",
+                description: `${error.message}`,
+                Component: NotifierComponents.Alert,
+                componentProps: { alertType: "error" },
+            });
+        },
+    });
+    const customerreceivedMutation = useMutation({
+        mutationFn: () => updateOrderStatus(data?.order?.id as string),
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: ["order", orderId],
+            });
+            queryClient.invalidateQueries({
+                queryKey: ["deliveries"],
+            });
+            queryClient.invalidateQueries({
+                queryKey: ["deliveries", user?.sub],
+            });
+
+            Notifier.showNotification({
+                title: "Success",
+                description: "This order has been assigned to you. Drive carefully!",
+                Component: NotifierComponents.Alert,
+                componentProps: { alertType: "success" },
+            });
+        },
+        onError: (error: Error) => {
+            Notifier.showNotification({
+                title: "Error",
+                description: `${error.message}`,
+                Component: NotifierComponents.Alert,
+                componentProps: { alertType: "error" },
+            });
+        },
+    });
+
     const handleDownload = async () => {
         try {
             const html = generateReceiptHTML();
@@ -262,17 +370,17 @@ const OrderReceiptPage = () => {
                 html,
                 width: screenWidth,
                 height: screenWidth * 1.4,
-                base64: false
+                base64: false,
             });
 
             // Create a filename for the PDF
-            const fileName = `Receipt_${data?.order?.order_number || 'unknown'}.pdf`;
+            const fileName = `Receipt_${data?.order?.order_number || "unknown"}.pdf`;
             const destinationUri = `${FileSystem.documentDirectory}${fileName}`;
 
             // Copy the PDF to the documents directory
             await FileSystem.copyAsync({
                 from: uri,
-                to: destinationUri
+                to: destinationUri,
             });
 
             Notifier.showNotification({
@@ -282,7 +390,7 @@ const OrderReceiptPage = () => {
                 componentProps: { alertType: "success" },
             });
         } catch (error) {
-            console.error('Download error:', error);
+            console.error("Download error:", error);
             Notifier.showNotification({
                 title: "Error",
                 description: "Failed to download receipt",
@@ -292,6 +400,9 @@ const OrderReceiptPage = () => {
         }
     };
 
+
+
+
     const handleShare = async () => {
         try {
             const html = generateReceiptHTML();
@@ -299,14 +410,14 @@ const OrderReceiptPage = () => {
                 html,
                 width: screenWidth,
                 height: screenWidth * 1.4,
-                base64: false
+                base64: false,
             });
 
             if (await Sharing.isAvailableAsync()) {
                 await Sharing.shareAsync(uri, {
-                    mimeType: 'application/pdf',
+                    mimeType: "application/pdf",
                     dialogTitle: `Receipt #${data?.order?.order_number}`,
-                    UTI: 'com.adobe.pdf'
+                    UTI: "com.adobe.pdf",
                 });
             } else {
                 Notifier.showNotification({
@@ -326,13 +437,54 @@ const OrderReceiptPage = () => {
         }
     };
 
+
+
+    const getActionButton = () => {
+        if (!data || !user) return null;
+
+        // Vendor can mark order as delivered
+        if (
+            data?.order?.order_status === "pending" &&
+            user?.sub === data?.order?.vendor_id
+        ) {
+            return {
+                label: "Delivered",
+                onPress: () => vendorDeliveryMutation.mutate(),
+                loading: vendorDeliveryMutation.isPending,
+            };
+        }
+        // Customer mark order received
+        if (
+            (data?.order?.order_status === "delivered" &&
+                user?.sub === data?.order?.owner_id) ||
+            data?.delivery?.dispatch_id
+        ) {
+            return {
+                label: "Confirm Received",
+                onPress: () => customerreceivedMutation.mutate(),
+                loading: customerreceivedMutation.isPending,
+            };
+        }
+
+
+        return null;
+    };
+
+    const actionButton = getActionButton();
+
     if (isLoading) {
         return <LoadingIndicator />;
     }
 
     return (
-        <ScrollView style={{ flex: 1, backgroundColor: theme.background.val, alignContent: 'center' }} >
-            <YStack gap="$4" style={{ flex: 1, overflow: 'scroll' }}>
+        <ScrollView
+            style={{
+                flex: 1,
+                backgroundColor: theme.background.val,
+                alignContent: "center",
+            }}
+        >
+            <YStack gap="$4" style={{ flex: 1, overflow: "scroll" }}>
                 {/* <Text fontSize={20} fontWeight="bold" textAlign="center">Receipt</Text> */}
 
                 <Card padding="$4" backgroundColor={"$cardBackground"}>
@@ -344,37 +496,40 @@ const OrderReceiptPage = () => {
 
                         <XStack justifyContent="space-between">
                             <Text>Date</Text>
-                            <Text>{format(new Date(data?.order?.created_at || ""), "PPP")}</Text>
+                            <Text>
+                                {format(new Date(data?.order?.created_at || ""), "PPP")}
+                            </Text>
                         </XStack>
-
-                        {data?.order?.order_items && data.order.order_items.length > 0 && (
-                            <XStack justifyContent="space-between">
-                                <Text>Items Total</Text>
-                                <Text>₦{Number(data.order?.total_price || 0 - Number(data.delivery?.delivery_fee || 0)).toFixed(2)}</Text>
-                            </XStack>
-                        )}
 
                         <XStack justifyContent="space-between">
                             <Text>Total Amount</Text>
-                            <Text fontWeight="bold">₦{Number(data?.order?.total_price).toFixed(2)}</Text>
+                            <Text fontWeight="bold">
+                                ₦{Number(data?.order?.total_price).toFixed(2)}
+                            </Text>
                         </XStack>
 
                         <XStack justifyContent="space-between">
                             <Text>Payment Status</Text>
-                            <Text color={data?.order?.order_payment_status === "paid" ? "green" : "red"}>
+                            <Text
+                                color={
+                                    data?.order?.order_payment_status === "paid" ? "green" : "red"
+                                }
+                            >
                                 {data?.order?.order_payment_status?.toUpperCase()}
                             </Text>
                         </XStack>
                     </YStack>
                 </Card>
 
-                {data?.order?.order_items  && data.order.order_items.length > 0 && (
+                {data?.order?.order_items && data.order.order_items.length > 0 && (
                     <Card padding="$4" backgroundColor={"$cardBackground"}>
                         <YStack gap="$3">
                             <Text fontWeight="bold">Order Items</Text>
                             {data.order.order_items.map((item: any) => (
                                 <XStack key={item.id} justifyContent="space-between">
-                                    <Text>{item.quantity}X {item.name}</Text>
+                                    <Text>
+                                        {item.quantity}X {item.name}
+                                    </Text>
                                     <Text>₦{Number(item.price * item.quantity).toFixed(2)}</Text>
                                 </XStack>
                             ))}
@@ -388,7 +543,9 @@ const OrderReceiptPage = () => {
 
                         <XStack justifyContent="space-between">
                             <Text color="$gray11">Delivery Type</Text>
-                            <Text numberOfLines={2} ellipsizeMode="tail">{data?.order?.require_delivery.toUpperCase}</Text>
+                            <Text numberOfLines={2} ellipsizeMode="tail">
+                                {data?.order?.require_delivery?.toUpperCase()}
+                            </Text>
                         </XStack>
                         <XStack justifyContent="space-between">
                             <Text>Status</Text>
@@ -397,10 +554,34 @@ const OrderReceiptPage = () => {
                     </YStack>
                 </Card>
 
-                <XStack gap="$2" justifyContent="space-between" width={'90%'} alignSelf="center" marginBottom={'$3'}>
+                {actionButton && <Button
+                    size={"$4"}
+                    backgroundColor={actionButton.loading ? "$cardDark" : "$btnPrimaryColor"}
+                    width="90%"
+                    alignSelf="center"
+                    textAlign="center"
+                    fontSize={16}
+                    fontFamily={"$body"}
+                    color={"$text"}
+                    fontWeight={"500"}
+                    disabled={actionButton.loading}
+                    pressStyle={{ backgroundColor: "$cardDarkHover" }}
+                    onPressIn={actionButton.onPress}
+                >
+                    {actionButton.loading ? <ActivityIndicator size={'small'} color={theme.text.val} /> : actionButton.label}
+
+                </Button>}
+
+                <XStack
+                    gap="$2"
+                    justifyContent="space-between"
+                    width={"90%"}
+                    alignSelf="center"
+                    marginBottom={"$3"}
+                >
                     <Button
                         flex={1}
-                        backgroundColor={"$btnPrimaryColor"}
+                        backgroundColor={"$transparentBtnPrimaryColor"}
                         icon={<Download color="white" />}
                         onPress={handleDownload}
                     >
@@ -417,8 +598,57 @@ const OrderReceiptPage = () => {
                 </XStack>
 
             </YStack>
+            <XStack
+                marginTop="$4"
+                gap="$2"
+                width="90%"
+                alignSelf="center"
+                justifyContent="space-between"
+            >
+                <>
+                    <Button
+                        size={"$4"}
+                        backgroundColor={"$cardDark"}
+                        width="42.5%"
+                        textAlign="center"
+                        fontSize={12}
+                        fontFamily={"$body"}
+                        color={"$text"}
+                        fontWeight={"500"}
+                        pressStyle={{ backgroundColor: "$cardDarkHover" }}
+                        onPressIn={() => {
+                            router.push({
+                                pathname: "/review/[deliveryId]",
+                                params: { deliveryId: data?.order?.id as string },
+                            });
+                        }}
+                    >
+                        Review
+                    </Button>
+
+                    <Button
+                        size={"$4"}
+                        backgroundColor={"$cardDark"}
+                        width="42.5%"
+                        textAlign="center"
+                        fontSize={12}
+                        fontFamily={"$body"}
+                        color={"$text"}
+                        fontWeight={"500"}
+                        pressStyle={{ backgroundColor: "$cardDarkHover" }}
+                        onPressIn={() => {
+                            router.push({
+                                pathname: "/report/[deliveryId]",
+                                params: { deliveryId: data?.order?.id as string },
+                            });
+                        }}
+                    >
+                        Report
+                    </Button>
+                </>
+            </XStack>
         </ScrollView>
     );
 };
 
-export default OrderReceiptPage; 
+export default OrderReceiptPage;

@@ -30,6 +30,7 @@ import { useAuth } from "@/context/authContext";
 import { Plus } from "lucide-react-native";
 import { fetchCategories } from "@/api/item";
 import RefreshButton from "@/components/RefreshButton";
+import { StoreListSkeleton } from "@/components/LoadingSkeleton";
 
 export interface LaundryWithDistance extends CompanyProfile {
     distance: number;
@@ -226,7 +227,24 @@ const Page = () => {
         filterLaundryVendors();
     }, [data, userLocation, user?.sub, user?.user_type]);
     console.log(data, 'FROM LAUNDEY UI')
-    if (isFetching) return <LoadingIndicator />;
+    if (isFetching) {
+        return (
+            <SafeAreaView style={{ flex: 1, backgroundColor: theme.background.val }}>
+                <AppHeader
+                    component={
+                        <AppTextInput
+                            height="$3.5"
+                            borderRadius={50}
+                            placeholder="Search laundry vedours.."
+                        />
+                    }
+                />
+                <Separator />
+                <StoreListSkeleton />
+            </SafeAreaView>
+        );
+    }
+
     if (error)
         return (
             <RefreshButton label="Error loading laundry vendours" onPress={refetch} />

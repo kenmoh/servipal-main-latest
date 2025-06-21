@@ -148,6 +148,7 @@ const SignUp = () => {
                                     value={values.password}
                                     onChangeText={handleChange('password')}
                                     secureTextEntry
+                                    showPasswordToggle
                                     placeholder='Password'
                                     errorMessage={touched.password ? errors.password : undefined}
                                     editable={!isPending}
@@ -158,6 +159,7 @@ const SignUp = () => {
                                     value={values.confirmPassword}
                                     onChangeText={handleChange('confirmPassword')}
                                     secureTextEntry
+                                    showPasswordToggle
                                     placeholder='Confirm Password'
                                     errorMessage={touched.confirmPassword ? errors.confirmPassword : undefined}
                                     editable={!isPending}

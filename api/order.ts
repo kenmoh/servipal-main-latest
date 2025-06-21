@@ -189,20 +189,43 @@ export const createOrder = async (
 };
 
 // Confirm Item Received by sender
+export const updateOrderStatus = async (
+  orderId: string
+): Promise<DeliveryDetail> => {
+  try {
+    const response: ApiResponse<DeliveryDetail | ErrorResponse> =
+      await apiClient.put(`${BASE_URL}/${orderId}/update-status`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+    if (!response.ok || !response.data || "detail" in response.data) {
+      const errorMessage =
+        response.data && "detail" in response.data
+          ? response.data.detail
+          : "Error updating order status.";
+      throw new Error(errorMessage);
+    }
+    return response.data;
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    }
+    throw new Error("An unexpected error occurred");
+  }
+};
+// Confirm Item Received by sender
 export const senderConfirmDeliveryReceived = async (
   deliveryId: string
 ): Promise<DeliveryDetail> => {
   try {
     const response: ApiResponse<DeliveryDetail | ErrorResponse> =
-      await apiClient.put(
-        `${BASE_URL}/${deliveryId}/confirm-delivery`,
-        {},
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      await apiClient.put(`${BASE_URL}/${deliveryId}/confirm-delivery`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
     if (!response.ok || !response.data || "detail" in response.data) {
       const errorMessage =

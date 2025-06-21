@@ -12,7 +12,7 @@ import * as Location from "expo-location";
 
 import { router } from "expo-router";
 import { useAuth } from "@/context/authContext";
-import { getCurrentUser, getCurrentUserProfile, registerForNotifications } from "@/api/user";
+import { getCurrentUserProfile, registerForNotifications } from "@/api/user";
 import authStorage from "@/storage/authStorage";
 import AppTextInput from "@/components/AppInput";
 import LocationPermission from "@/components/Locationpermission";
@@ -22,6 +22,7 @@ import { useLocationTracking } from "@/hooks/useLocationTracking";
 import FAB from "@/components/FAB";
 import RefreshButton from "@/components/RefreshButton";
 import { UserDetails } from "@/types/user-types";
+import { DeliveryListSkeleton, SearchBarSkeleton } from "@/components/LoadingSkeleton";
 
 const DeliveryScreen = () => {
   const theme = useTheme();
@@ -104,7 +105,7 @@ const DeliveryScreen = () => {
   }, [isSuccess, userProfile, user?.sub]);
 
 
-  const { data, isLoading, error, refetch, isFetching } = useQuery({
+  const { data, isLoading, error, refetch, isFetching, isPending, isFetched } = useQuery({
     queryKey: ["deliveries"],
     queryFn: () => fetchDeliveries(),
     select: (data) => {
@@ -263,8 +264,15 @@ const DeliveryScreen = () => {
     return <LocationPermission onRetry={checkLocationPermission} />;
   }
 
-
-  if (isLoading) return <LoadingIndicator />;
+  if (isLoading || isFetching || isPending || !isFetched || !data) {
+    return (
+      <YStack backgroundColor={theme.background} flex={1} padding="$2">
+        <SearchBarSkeleton />
+        <Separator />
+        <DeliveryListSkeleton />
+      </YStack>
+    );
+  }
 
   if (error) return <RefreshButton onPress={refetch} label="Error loading deliveries" />
 

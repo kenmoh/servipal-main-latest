@@ -65,6 +65,7 @@ export interface OrderItemResponse {
 export interface OrderResponse {
   id: string;
   user_id: string;
+  owner_id: string;
   vendor_id: string;
   order_type: OrderType;
   order_number: string;
@@ -73,9 +74,9 @@ export interface OrderResponse {
   order_payment_status: PaymentStatus;
   order_status: OrderStatus;
   amount_due_vendor: string;
-  business_name: string
+  business_name: string;
   payment_link: string;
-  created_at: string
+  created_at: string;
   order_items: OrderItemResponse[];
 }
 

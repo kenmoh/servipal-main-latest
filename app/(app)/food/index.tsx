@@ -29,6 +29,7 @@ import { useAuth } from "@/context/authContext";
 import { Plus } from "lucide-react-native";
 import { fetchCategories } from "@/api/item";
 import RefreshButton from "@/components/RefreshButton";
+import { StoreListSkeleton } from "@/components/LoadingSkeleton";
 
 export interface RestaurantWithDistance extends CompanyProfile {
     distance: number;
@@ -222,7 +223,24 @@ const Page = () => {
         filterRestaurants();
     }, [data, userLocation, user?.sub, user?.user_type]);
 
-    if (isFetching) return <LoadingIndicator />;
+    if (isFetching) {
+        return (
+            <SafeAreaView style={{ flex: 1, backgroundColor: theme.background.val }}>
+                <AppHeader
+                    component={
+                        <AppTextInput
+                            height="$3.5"
+                            borderRadius={50}
+                            placeholder="Search Restaurants.."
+                        />
+                    }
+                />
+                <Separator />
+                <StoreListSkeleton />
+            </SafeAreaView>
+        );
+    }
+
     if (error)
         return (
             <RefreshButton label="Error loading restaurants" onPress={refetch} />

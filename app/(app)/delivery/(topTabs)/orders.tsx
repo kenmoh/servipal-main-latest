@@ -20,12 +20,13 @@ import {
 import { useMemo, useState } from "react";
 import { FlatList, ScrollView } from "react-native";
 import { YStack, Text, useTheme, Card, View, Button } from "tamagui";
+import { StatsSkeleton, DeliveryListSkeleton } from "@/components/LoadingSkeleton";
 
 const UserOrders = () => {
     const theme = useTheme();
     const { user } = useAuth();
 
-    const { data, isLoading, error, refetch, isFetching } = useQuery({
+    const { data, isLoading, error, refetch, isFetching, isPending, isFetched } = useQuery({
         queryKey: ["deliveries", user?.sub],
         queryFn: () => fetchDeliveries(),
         select: (data) => {
@@ -77,7 +78,26 @@ const UserOrders = () => {
         [data]
     );
 
-    if (isLoading) return <LoadingIndicator />;
+    if (isLoading || isFetching || isPending || !isFetched || !data) {
+        return (
+            <YStack backgroundColor={theme.background} flex={1} paddingHorizontal="$2">
+                <View
+                    marginVertical={2}
+                    backgroundColor={"$background"}
+                    alignItems="center"
+                    justifyContent="center"
+                    height={110}
+                >
+                    <StatsSkeleton />
+                </View>
+                <HDivider width="100%" />
+                <YStack backgroundColor={"$background"} flex={1}>
+                    <DeliveryListSkeleton />
+                </YStack>
+            </YStack>
+        );
+    }
+
     if (error) return <RefreshButton onPress={refetch} label="Error loading orders" />
 
     return (
