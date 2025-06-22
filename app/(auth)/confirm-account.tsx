@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import { SafeAreaView, } from 'react-native-safe-area-context'
 import { View, Text, useTheme, YStack, Button, ScrollView, XStack } from 'tamagui'
@@ -12,26 +11,27 @@ import { useMutation } from '@tanstack/react-query';
 import { resendVerification, verifyContact } from '@/api/auth';
 import { ActivityIndicator } from 'react-native';
 import { X } from 'lucide-react-native';
+import authStorage from "@/storage/authStorage";
 
 const schema = z.object({
-  emailCode: z
-    .string()
-    .min(6, { message: "Email code must be 6 digits" })
-    .max(6, { message: "Email code must be 6 digits" })
-    .regex(/^\d+$/, { message: "Email code must contain only digits" }),
-  phoneCode: z
-    .union([
-      z.string(),
-      z.number().transform((val) => val.toString()),
-    ])
-    .transform((val) => val.toString())
-    .pipe(
-      z
+    emailCode: z
         .string()
-        .min(6, { message: "Phone code must be 6 digits" })
-        .max(6, { message: "Phone code must be 6 digits" })
-        .regex(/^\d+$/, { message: "Phone code must contain only digits" })
-    ),
+        .min(6, { message: "Email code must be 6 digits" })
+        .max(6, { message: "Email code must be 6 digits" })
+        .regex(/^\d+$/, { message: "Email code must contain only digits" }),
+    phoneCode: z
+        .union([
+            z.string(),
+            z.number().transform((val) => val.toString()),
+        ])
+        .transform((val) => val.toString())
+        .pipe(
+            z
+                .string()
+                .min(6, { message: "Phone code must be 6 digits" })
+                .max(6, { message: "Phone code must be 6 digits" })
+                .regex(/^\d+$/, { message: "Phone code must contain only digits" })
+        ),
 });
 
 
@@ -42,6 +42,10 @@ const ConfirmAccount = () => {
     const theme = useTheme()
     const [countdown, setCountdown] = useState(60);
     const [canResend, setCanResend] = useState(false);
+    const [email, setEmail] = useState("");
+
+    console.log(email);
+
 
     const { control, handleSubmit, formState: { errors } } = useForm<FormData>({
         resolver: zodResolver(schema),
@@ -52,6 +56,7 @@ const ConfirmAccount = () => {
     const { mutate, isPending } = useMutation({
         mutationFn: verifyContact,
         onSuccess: (data) => {
+            authStorage.removeEmail();
             Notifier.showNotification({
                 title: 'Success',
                 description: 'Account creation successful',
@@ -60,8 +65,6 @@ const ConfirmAccount = () => {
                 componentProps: {
                     alertType: 'success'
                 }
-
-
             })
             router.replace('/(auth)/sign-in');
         },
@@ -78,7 +81,7 @@ const ConfirmAccount = () => {
     })
 
     const { mutate: resend, isPending: isResending } = useMutation({
-        mutationFn: resendVerification,
+        mutationFn: (email: string) => resendVerification(email),
         onSuccess: () => {
             Notifier.showNotification({
                 title: 'Success',
@@ -116,6 +119,14 @@ const ConfirmAccount = () => {
 
         return () => clearInterval(timer);
     }, [countdown, canResend]);
+
+    useEffect(() => {
+        authStorage.getEmail().then(e => {
+            if (e) setEmail(e);
+        });
+    }, []);
+
+
 
     const onSubmit = (data: FormData) => {
         mutate(data)
@@ -158,8 +169,8 @@ const ConfirmAccount = () => {
                                 label={'Phone Code'}
                                 placeholder='234534'
                                 onBlur={onBlur}
-                                onChangeText={(text) => onChange(text)} 
-                                value={Number(value?.toString().trim())}
+                                onChangeText={(text) => onChange(text)}
+                                value={value?.toString().trim() || ""}
                                 keyboardType='numeric'
                                 errorMessage={errors.phoneCode?.message}
                                 editable={!isPending}
@@ -176,7 +187,7 @@ const ConfirmAccount = () => {
                                 placeholder='123466'
                                 onBlur={onBlur}
                                 onChangeText={(text) => onChange(text)}
-                                value={value?.toString().trim()}
+                                value={value?.toString().trim() || ""}
                                 keyboardType='numeric'
                                 errorMessage={errors.emailCode?.message}
                                 editable={!isPending}
@@ -211,7 +222,7 @@ const ConfirmAccount = () => {
                             fontFamily={'$heading'}
                             textAlign='center'
                             disabled={!canResend || isResending}
-                            onPress={() => resend()}
+                            onPress={() => resend(email)}
                         >
                             {isResending ?
                                 <ActivityIndicator size={'small'} color={theme.btnPrimaryColor.val} /> :

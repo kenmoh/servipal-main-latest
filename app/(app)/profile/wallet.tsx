@@ -80,12 +80,14 @@ const index = () => {
                             </XStack>
 
                             <YStack gap="$2">
-                                <Text style={styles.accountInfo}>
-                                    Account Number: {profile?.profile?.bank_account_number}
-                                </Text>
-                                <Text style={styles.accountInfo}>
-                                    Name: {profile?.profile?.full_name || profile?.profile.business_name}
-                                </Text>
+                                {profile?.profile?.bank_account_number &&
+                                    <Text style={styles.accountInfo}>
+                                        Account Number: {profile?.profile?.bank_account_number}
+                                    </Text>}
+                                {profile?.profile?.bank_name || profile?.profile?.business_name &&
+                                    <Text style={styles.accountInfo}>
+                                        Name: {profile?.profile?.full_name || profile?.profile.business_name}
+                                    </Text>}
                             </YStack>
                         </Card.Header>
                     </LinearGradient>
@@ -116,12 +118,6 @@ const index = () => {
 }
 
 export default index
-
-// const styles = StyleSheet.create({
-//     background: {
-//         height: 125,
-//     },
-// })
 
 const styles = StyleSheet.create({
     background: {

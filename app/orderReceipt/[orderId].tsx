@@ -323,6 +323,7 @@ const OrderReceiptPage = () => {
                 Component: NotifierComponents.Alert,
                 componentProps: { alertType: "success" },
             });
+            router.back()
         },
         onError: (error: Error) => {
             Notifier.showNotification({
@@ -341,6 +342,9 @@ const OrderReceiptPage = () => {
             });
             queryClient.invalidateQueries({
                 queryKey: ["deliveries"],
+            });
+            queryClient.invalidateQueries({
+                queryKey: ["orders", data?.order?.id],
             });
             queryClient.invalidateQueries({
                 queryKey: ["deliveries", user?.sub],
@@ -456,8 +460,7 @@ const OrderReceiptPage = () => {
         // Customer mark order received
         if (
             (data?.order?.order_status === "delivered" &&
-                user?.sub === data?.order?.owner_id) ||
-            data?.delivery?.dispatch_id
+                user?.sub === data?.order?.user_id)
         ) {
             return {
                 label: "Confirm Received",
@@ -623,7 +626,8 @@ const OrderReceiptPage = () => {
                                 params: {
                                     deliveryId: data?.order?.id as string,
                                     revieweeId: data?.order?.vendor_id as string,
-                                    orderType: data?.order?.order_type
+                                    orderType: 'order',
+                                    orderId: data?.order?.id as string,
 
                                 },
                             });

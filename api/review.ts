@@ -181,7 +181,7 @@ export const createReview = async (
   };
   try {
     const response: ApiResponse<ReviewCreateResponse | ErrorResponse> =
-      await apiClient.post(`${REPORT_BASE_URL}`, data, {
+      await apiClient.post(`${REVIEW_BASE_URL}`, data, {
         headers: {
           "Content-Type": "application/json",
         },
@@ -191,7 +191,7 @@ export const createReview = async (
       const errorMessage =
         response.data && "detail" in response.data
           ? response.data.detail
-          : "Error creating report.";
+          : "Error creating review.";
       throw new Error(errorMessage);
     }
     return response.data;

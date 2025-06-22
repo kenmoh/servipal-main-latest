@@ -6,6 +6,7 @@ const profileKey = "userProfile";
 const imageKey = "imageKey";
 const key = "authToken";
 const pushTokenKey = "pushToken";
+const emailKey = "userEmail";
 
 interface JWTPayload {
   exp: number;
@@ -153,6 +154,30 @@ const removePushToken = async () => {
   }
 };
 
+const storeEmail = async (email: string) => {
+  try {
+    await SecureStore.setItemAsync(emailKey, email);
+  } catch (error) {
+    throw new Error("Error storing user email", error!);
+  }
+};
+
+const getEmail = async (): Promise<string | null> => {
+  try {
+    return await SecureStore.getItemAsync(emailKey);
+  } catch (error) {
+    throw new Error("Error getting user email", error!);
+  }
+};
+
+const removeEmail = async () => {
+  try {
+    await SecureStore.deleteItemAsync(emailKey);
+  } catch (error) {
+    throw new Error("Error removing user email", error!);
+  }
+};
+
 export default {
   getToken,
   getUser,
@@ -167,4 +192,7 @@ export default {
   storePushToken,
   getPushToken,
   removePushToken,
+  storeEmail,
+  getEmail,
+  removeEmail,
 };

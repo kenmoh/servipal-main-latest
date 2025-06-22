@@ -12,12 +12,13 @@ import AppPicker from '@/components/AppPicker'
 import { useMutation } from '@tanstack/react-query'
 import { registerApi } from '@/api/auth'
 import { phoneRegEx } from '@/types/user-types'
+import authStorage from "@/storage/authStorage"
 
 
 const roleData = [
-    { id: 1, name: 'customer' },
-    { id: 2, name: 'vendor' },
-    { id: 4, name: 'dispatch' },
+    { id: 'customer', name: 'Customer' },
+    { id: 'vendor', name: 'Vendor' },
+    { id: 'dispatch', name: 'Dispatch' },
 ]
 
 
@@ -54,6 +55,7 @@ const SignUp = () => {
     const { mutate, isPending } = useMutation({
         mutationFn: registerApi,
         onSuccess: (data) => {
+            authStorage.storeEmail(data.email);
             Notifier.showNotification({
                 title: 'Pending Confirmation',
                 description: 'Please confirm your account with the code sent to your email and phone.',
@@ -79,6 +81,8 @@ const SignUp = () => {
             })
         }
     })
+
+
 
     return (
         <SafeAreaView

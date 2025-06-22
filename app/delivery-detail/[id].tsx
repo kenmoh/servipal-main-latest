@@ -274,10 +274,13 @@ const ItemDetails = () => {
     };
 
     const actionButton = getActionButton();
+    const showFullBtnSize = data?.delivery?.delivery_status === "pending" && user?.sub === data?.delivery?.sender_id;
     const showCancel =
         (user?.sub === data?.delivery?.sender_id ||
             user?.sub === data?.delivery?.rider_id) &&
-        ["accepted"].includes(data?.delivery?.delivery_status as string);
+        ["accepted", 'pending'].includes(data?.delivery?.delivery_status as string);
+
+
     if (isLoading) {
         return <LoadingIndicator />;
     }
@@ -336,7 +339,7 @@ const ItemDetails = () => {
                                         orderId: data?.order.id ?? "",
                                         deliveryFee: data?.delivery?.delivery_fee,
                                         orderNumber: data?.order?.order_number,
-                                        deliveryType: `${data?.order?.require_delivery==='delivery'? data?.delivery?.delivery_fee:data?.order?.order_type}`,
+                                        deliveryType: `${data?.order?.require_delivery === 'delivery' ? data?.delivery?.delivery_fee : data?.order?.order_type}`,
                                         orderItems: JSON.stringify(data?.order.order_items ?? []),
                                         paymentLink: data?.order.payment_link,
                                     },
@@ -501,10 +504,10 @@ const ItemDetails = () => {
                         {showCancel && (
                             <>
                                 <Button
-                                    size={"$4"}
+                                    size={"$3.5"}
                                     borderColor={"$red10"}
                                     borderWidth={1}
-                                    width={"40%"}
+                                    width={showFullBtnSize ? "90%" : "40%"}
                                     textAlign="center"
                                     fontSize={14}
                                     fontFamily={"$body"}
@@ -542,7 +545,7 @@ const ItemDetails = () => {
                                         // Handle review action
                                         router.push({
                                             pathname: "/review/[deliveryId]",
-                                            params: { deliveryId: id as string, riderId: data?.delivery?.rider_id, orderId: data?.order?.id }
+                                            params: { deliveryId: data?.order?.id }
                                         });
                                     }}
                                 >

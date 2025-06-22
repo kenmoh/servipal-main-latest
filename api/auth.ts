@@ -18,8 +18,8 @@ export interface LoginSuccessResponse {
 }
 
 export interface Contact {
-  emailCode: number;
-  phoneCode: number;
+  emailCode: string;
+  phoneCode: string;
 }
 
 export interface Register {
@@ -298,13 +298,16 @@ export const changePassword = async (
   }
 };
 // Resend verification code after 1 minute
-export const resendVerification = async () => {
+export const resendVerification = async (email: string) => {
   try {
-    await apiClient.post("/auth/reset-password", {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    await apiClient.put(
+      `/auth/resend-verification?email=${encodeURIComponent(email)}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
   } catch (error) {
     if (error instanceof Error) {
       throw new Error(error.message);

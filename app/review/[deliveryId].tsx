@@ -1,6 +1,6 @@
-import { StyleSheet } from "react-native";
+import { ScrollView, StyleSheet } from "react-native";
 import React from "react";
-import { View, YStack, Text, Button, TextArea, XStack } from "tamagui";
+import { View, YStack, Text, Button, TextArea, XStack, useTheme } from "tamagui";
 import { useLocalSearchParams } from "expo-router";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Notifier, NotifierComponents } from "react-native-notifier";
@@ -26,7 +26,7 @@ const reviewSchema = z.object({
     revieweeId: z.string().min(1, "Reviewee ID is required"),
     reviewType: z.string().min(1, "Please select review type"),
     rating: z.number().min(1, "Please select a rating").max(5, "Rating must be between 1 and 5"),
-    comment: z.string().min(10, "Review must be at least 10 characters").max(500, "Review must be less than 500 characters"),
+    description: z.string().min(10, "Review must be at least 10 characters").max(500, "Review must be less than 500 characters"),
 });
 
 type ReviewFormData = z.infer<typeof reviewSchema>;
@@ -40,24 +40,30 @@ const RATINGS = [
 ];
 
 const ReviewPage = () => {
-    const { revieweeId, deliveryId, orderType } = useLocalSearchParams();
+    const { revieweeId, deliveryId, orderId, itemId, orderType } = useLocalSearchParams();
     const queryClient = useQueryClient();
+    const theme = useTheme()
+
+
+    console.log(orderType)
+
 
     const {
         control,
         handleSubmit,
         formState: { errors, isValid },
-        watch,
+
     } = useForm<ReviewFormData>({
         resolver: zodResolver(reviewSchema),
         mode: "onChange",
         defaultValues: {
-            orderId: orderType === 'product' ? deliveryId as string : "",
-            itemId: orderType === 'order' ? deliveryId as string : "",
+
             revieweeId: revieweeId as string,
-            reviewType: "",
-            rating: 0,
-            comment: "",
+            orderId: orderId as string,
+            itemId: itemId as string,
+            reviewType: orderType as string,
+            rating: 1,
+            description: "",
         },
     });
 
@@ -93,82 +99,68 @@ const ReviewPage = () => {
             item_id: data.itemId,
             reviewee_id: data.revieweeId,
             rating: data.rating,
-            comment: data.comment,
+            comment: data.description,
             review_type: data.reviewType as ReviewerType,
         });
+        console.log(data);
     };
 
     return (
-        <View backgroundColor={"$background"} flex={1} padding="$4">
+        <ScrollView style={{ backgroundColor: theme.background.val, flex: 1, padding: 20 }}>
             <YStack gap="$4">
-                <Text fontSize={20} fontWeight="bold">Write a Review</Text>
+
 
                 <YStack display="none">
-                    <XStack gap="$2" width="100%">
-                        <View flex={1}>
-                            <Controller
-                                control={control}
-                                name="orderId"
-                                render={({ field: { onChange, value } }) => (
-                                    <AppTextInput
-                                        label="Order ID"
-                                        value={value || ""}
-                                        onChangeText={onChange}
-                                        editable={true}
-                                    />
-                                )}
-                            />
-                        </View>
 
-                        <View flex={1}>
-                            <Controller
-                                control={control}
-                                name="itemId"
-                                render={({ field: { onChange, value } }) => (
-                                    <AppTextInput
-                                        label="Item ID"
-                                        placeholder="Enter Item ID (optional)"
-                                        value={value || ""}
-                                        onChangeText={onChange}
-                                        editable={true}
-                                    />
-                                )}
-                            />
-                        </View>
-                    </XStack>
+                    <View flex={1}>
+                        <Controller
+                            control={control}
+                            name="orderId"
+                            render={({ field: { onChange, value } }) => (
+                                <AppTextInput
+                                    autoCapitalize="none"
+                                    value={`${orderId}` || ""}
+                                    editable={false}
+                                    label="Order ID"
+                                />
+                            )}
+                        />
+                    </View>
+
+                    <View flex={1}>
+                        <Controller
+                            control={control}
+                            name="itemId"
+                            render={({ field: { onChange, value } }) => (
+                                <AppTextInput
+                                    autoCapitalize="none"
+                                    value={`${itemId}` || ""}
+                                    editable={false}
+                                    label="Item ID"
+                                />
+                            )}
+                        />
+                    </View>
+
 
                     <View>
-                        <AppTextInput
-                            autoCapitalize="none"
-                            value={`${revieweeId}`}
-                            editable={false}
-                            label="Reviewee ID"
+
+                        <Controller
+                            control={control}
+                            name="revieweeId"
+                            render={({ field: { onChange, value } }) => (
+                                <AppTextInput
+                                    autoCapitalize="none"
+                                    value={`${revieweeId}`}
+                                    editable={false}
+                                    label="Reviewee ID"
+                                />
+                            )}
                         />
                     </View>
                 </YStack>
 
                 <XStack alignSelf="center" gap="$2" width="100%">
-                    <View width={'50%'}>
-                        <Controller
-                            control={control}
-                            name="reviewType"
-                            render={({ field: { onChange, value } }) => (
-                                <AppPicker
-                                    label="Who are you rating?"
-                                    items={REVIEW_TYPE}
-                                    placeholder="Select who to rate"
-                                    value={value}
-                                    onValueChange={onChange}
-                                />
-                            )}
-                        />
-                        {errors.reviewType && (
-                            <Text fontSize={12} color="$red10" marginTop="$1">
-                                {errors.reviewType.message}
-                            </Text>
-                        )}
-                    </View>
-
                     <View width={'45%'}>
                         <Controller
                             control={control}
@@ -189,16 +181,37 @@ const ReviewPage = () => {
                             </Text>
                         )}
                     </View>
+                    <View width={'50%'} display="none">
+                        <Controller
+                            control={control}
+                            name="reviewType"
+                            render={({ field: { onChange, value } }) => (
+                                <AppTextInput
+                                    label="Review Type"
+                                    value={`${orderType}`}
+                                    onChangeText={onChange}
+                                    editable={false}
+                                />
+                            )}
+                        />
+                        {errors.reviewType && (
+                            <Text fontSize={12} color="$red10" marginTop="$1">
+                                {errors.reviewType.message}
+                            </Text>
+                        )}
+                    </View>
+
+
                 </XStack>
 
                 <View width={'100%'}>
                     <Controller
                         control={control}
-                        name="comment"
+                        name="description"
                         render={({ field: { onChange, value } }) => (
                             <YStack gap="$2">
                                 <Text fontSize={14} fontWeight="600" color="$text">
-                                    Review Comment
+                                    Comment
                                 </Text>
                                 <TextArea
                                     placeholder="Write your review..."
@@ -206,12 +219,12 @@ const ReviewPage = () => {
                                     onChangeText={onChange}
                                     minHeight={100}
                                     backgroundColor="$cardBackground"
-                                    borderColor={errors.comment ? "$red10" : "$borderColor"}
+                                    // borderColor={errors.comment ? "$red10" : "$btnPrimaryColor"}
                                     borderWidth={1}
                                 />
-                                {errors.comment && (
+                                {errors.description && (
                                     <Text fontSize={12} color="$red10">
-                                        {errors.comment.message}
+                                        {errors.description.message}
                                     </Text>
                                 )}
                                 <Text fontSize={11} color="$gray11" alignSelf="flex-end">
@@ -232,7 +245,7 @@ const ReviewPage = () => {
                     {isPending ? "Submitting..." : "Submit Review"}
                 </Button>
             </YStack>
-        </View>
+        </ScrollView>
     );
 };
 
