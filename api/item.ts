@@ -3,8 +3,10 @@ import { ApiResponse } from "apisauce";
 import { ErrorResponse } from "./auth";
 import {
   CategoryResponse,
+  CombinedResponse,
   CreateCategory,
   CreateItem,
+  CreateMenuItmItem,
   ItemResponse,
   MenuItem,
 } from "@/types/item-types";
@@ -67,9 +69,9 @@ export const createCategory = async (
 };
 
 // Create Item
-export const createItem = async (
-  itemData: CreateItem
-): Promise<ItemResponse> => {
+export const createMenuItem = async (
+  itemData: CreateMenuItmItem
+): Promise<CombinedResponse> => {
   const data = new FormData();
 
   data.append("name", itemData.name);
@@ -78,22 +80,14 @@ export const createItem = async (
   if (itemData.category_id) {
     data.append("category_id", itemData.category_id);
   }
+  if (itemData.food_group) {
+    data.append("food_group", itemData.food_group);
+  }
+  if (itemData.side) {
+    data.append("side", itemData.side);
+  }
   if (itemData.description) {
     data.append("description", itemData.description);
-  }
-
-  if (itemData.sizes) {
-    data.append("sizes", itemData.sizes);
-  }
-
-  if (itemData.stock) {
-    data.append("stock", itemData.stock.toString());
-  }
-
-  // Handle colord
-  const colorsArray = Array.isArray(itemData.colors) ? itemData.colors : [];
-  if (colorsArray.length > 0) {
-    colorsArray.forEach((color) => data.append("colors", color));
   }
 
   // Handle images
@@ -110,8 +104,8 @@ export const createItem = async (
     });
   }
   try {
-    const response: ApiResponse<ItemResponse | ErrorResponse> =
-      await apiClient.post("/items", data, {
+    const response: ApiResponse<CombinedResponse | ErrorResponse> =
+      await apiClient.post("/menu-item-create", data, {
         headers: {
           "Content-Type": "multipart/form-data",
         },

@@ -38,6 +38,10 @@ const ProfileLayout = () => {
                 title: 'Update Profile',
 
             }} />
+            <Stack.Screen name='customerProfile' options={{
+                title: 'Update Profile',
+
+            }} />
 
             <Stack.Screen name='wallet' options={{
                 title: 'Wallet'

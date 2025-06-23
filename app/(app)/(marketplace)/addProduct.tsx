@@ -20,7 +20,7 @@ import ImagePickerInput from "@/components/AppImagePicker";
 import { Trash, Plus } from "lucide-react-native";
 import AppColorPicker from "@/components/AppColorPicker";
 import AppPicker from "@/components/AppPicker";
-import { createItem, fetchCategories } from "@/api/item";
+import { createMenuItem, fetchCategories } from "@/api/item";
 import LoadingIndicator from "@/components/LoadingIndicator";
 
 const itemTypeEnum = z.enum(["food", "package", "product", "laundry"]);
@@ -57,11 +57,13 @@ type FormData = z.infer<typeof schema>;
 const addMenu = () => {
     const [selectedColors, setSelectedColors] = useState<string[]>([]);
     const theme = useTheme()
+    const queryClient = useQueryClient();
 
     const {
         control,
         handleSubmit,
         setValue,
+        reset,
         formState: { errors },
     } = useForm<FormData>({
         resolver: zodResolver(schema),
@@ -75,7 +77,7 @@ const addMenu = () => {
             sizes: "",
             // stock: 0,
             itemType: "product",
-             category_id: "",
+            category_id: "",
         },
     });
 
@@ -98,7 +100,7 @@ const addMenu = () => {
     }, [selectedColors, setValue]);
 
 
-     const { data } = useQuery({
+    const { data } = useQuery({
         queryKey: ["product-categories"],
         queryFn: fetchCategories,
         select: (categories) => categories?.filter(category => category.category_type === "product") || []
@@ -106,8 +108,8 @@ const addMenu = () => {
     });
 
 
-       const { mutate, isPending } = useMutation({
-        mutationFn: createItem,
+    const { mutate, isPending } = useMutation({
+        mutationFn: createMenuItem,
         onSuccess: (data) => {
             Notifier.showNotification({
                 title: "Success",
@@ -134,11 +136,11 @@ const addMenu = () => {
         },
     });
 
-        const onSubmit = (data: FormData) => {
-            console.log(data)
+    const onSubmit = (data: FormData) => {
+        console.log(data)
         mutate(data)
 
-      
+
     };
 
 
@@ -224,35 +226,35 @@ const addMenu = () => {
                 />
 
 
-<View display="none">
-    
-    <Controller
-                                control={control}
-                                name="itemType"
-                                render={({ field: { onChange, value } }) => (
-                                    <AppPicker
-                                        isBank={true}
-                                        enabled={false}
-                                        label="Item Type"
-                                        onValueChange={onChange}
-                                        items={itemTypeOptions}
-                                        value={value}
-                                    />
-                                )}
+                <View display="none">
+
+                    <Controller
+                        control={control}
+                        name="itemType"
+                        render={({ field: { onChange, value } }) => (
+                            <AppPicker
+                                isBank={true}
+                                enabled={false}
+                                label="Item Type"
+                                onValueChange={onChange}
+                                items={itemTypeOptions}
+                                value={value}
                             />
-                    </View>
-                   <Controller
-                                control={control}
-                                name="category_id"
-                                render={({ field: { onChange, value } }) => (
-                                    <AppPicker
-                                        label="Category"
-                                        items={data ?? []}
-                                        onValueChange={onChange}
-                                        value={value}
-                                    />
-                                )}
-                            />
+                        )}
+                    />
+                </View>
+                <Controller
+                    control={control}
+                    name="category_id"
+                    render={({ field: { onChange, value } }) => (
+                        <AppPicker
+                            label="Category"
+                            items={data ?? []}
+                            onValueChange={onChange}
+                            value={value}
+                        />
+                    )}
+                />
 
                 <View width={"100%"} alignSelf={"center"}>
                     {/* Render each selected color as a circle with an optional remove button */}
@@ -356,7 +358,7 @@ const addMenu = () => {
                     width={"90%"}
                     onPress={handleSubmit(onSubmit)}
                 >
-                    {isPending ?  <ActivityIndicator size={30} color={theme.text.val} /> : 'Submit'}
+                    {isPending ? <ActivityIndicator size={30} color={theme.text.val} /> : 'Submit'}
                 </Button>
             </View>
         </ScrollView>

@@ -44,10 +44,7 @@ const Profile = () => {
     const { user, profile, setProfile } = useAuth();
     const [showOpeningHour, setShowOpeningHour] = useState(false);
     const [showClosingHour, setShowClosingHour] = useState(false);
-    const { origin, destination, setOrigin, setDestination } = useLocationStore();
-
-
-    console.log(profile, 'CURRENT USER')
+    const { setOrigin } = useLocationStore();
 
     const { data } = useQuery({
         queryKey: ['banks'],
@@ -142,7 +139,7 @@ const Profile = () => {
                                 }
                             />
 
-                            <AppTextInput
+                            {user?.user_type === 'vendor' && <AppTextInput
                                 // label='Company Registration Number'
                                 placeholder="Company Reg No."
                                 editable={
@@ -156,7 +153,7 @@ const Profile = () => {
                                 autoCapitalize="characters"
                                 autoCorrect={false}
                                 autoComplete="off"
-                            />
+                            />}
 
                             <AppTextInput
                                 // label='Location'
@@ -169,7 +166,7 @@ const Profile = () => {
 
                             <CurrentLocationButton onLocationSet={handleLocationSet} />
 
-                            <AppTextInput
+                            {user?.user_type === 'vendor' && <AppTextInput
                                 // label='Company Name'
                                 placeholder="Company Name"
                                 editable={profile?.profile?.business_name === null ? true : false}
@@ -179,32 +176,33 @@ const Profile = () => {
                                 errorMessage={
                                     touched.companyName ? errors.companyName : undefined
                                 }
-                            />
+                            />}
+                            {
+                                user?.user_type === 'vendor' &&
+                                <XStack width={"95%"} alignItems="center">
+                                    <View flex={1}>
+                                        <AppTextInput
+                                            editable={false}
+                                            placeholder="Opening Hour"
+                                            value={values.openingHour}
+                                            onChangeText={handleChange("openingHour")}
+                                            errorMessage={
+                                                touched.openingHour ? errors.openingHour : undefined
+                                            }
+                                        />
+                                    </View>
 
-                            <XStack width={"95%"} alignItems="center">
-                                <View flex={1}>
-                                    <AppTextInput
-                                        editable={false}
-                                        placeholder="Opening Hour"
-                                        value={values.openingHour}
-                                        onChangeText={handleChange("openingHour")}
-                                        errorMessage={
-                                            touched.openingHour ? errors.openingHour : undefined
-                                        }
-                                    />
-                                </View>
-
-                                <Button
-                                    width={"15%"}
-                                    height={"$5"}
-                                    onPress={() => setShowOpeningHour(true)}
-                                    backgroundColor="$cardDark"
-                                    marginBottom={errors.openingHour ? 14 : 0}
-                                >
-                                    <Clock color={theme.icon.val} />
-                                </Button>
-                            </XStack>
-                            <XStack width={"95%"} alignItems="center">
+                                    <Button
+                                        width={"15%"}
+                                        height={"$5"}
+                                        onPress={() => setShowOpeningHour(true)}
+                                        backgroundColor="$cardDark"
+                                        marginBottom={errors.openingHour ? 14 : 0}
+                                    >
+                                        <Clock color={theme.icon.val} />
+                                    </Button>
+                                </XStack>}
+                            {user?.user_type === 'vendor' && <XStack width={"95%"} alignItems="center">
                                 <View flex={1}>
                                     <AppTextInput
                                         editable={false}
@@ -226,8 +224,18 @@ const Profile = () => {
                                 >
                                     <Clock color={theme.icon.val} />
                                 </Button>
-                            </XStack>
+                            </XStack>}
 
+                            <AppTextInput
+                                // label='Account Number'
+                                placeholder="Full Name"
+                                onChangeText={handleChange("accountNumber")}
+                                value={values.accountNumber}
+                                keyboardType={"number-pad"}
+                                errorMessage={
+                                    touched.accountNumber ? errors.accountNumber : undefined
+                                }
+                            />
                             <AppTextInput
                                 // label='Account Number'
                                 placeholder="Account Number"

@@ -32,7 +32,8 @@ const CurrentLocationButton = ({ onLocationSet }: CurrentLocationButtonProps) =>
                 alignItems="center"
                 gap="$2"
                 maxWidth={'50%'}
-                alignSelf='center'
+                marginLeft='$3'
+            // alignSelf='center'
             >
                 <MapPin size={16} color={theme.btnPrimaryColor.val} />
                 {loading ? (

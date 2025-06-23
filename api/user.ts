@@ -11,7 +11,7 @@ import {
 import { apiClient } from "@/utils/client";
 import { ApiResponse } from "apisauce";
 import { ErrorResponse } from "./auth";
-import { MenuItem } from "@/types/item-types";
+import { LaundryMenuItem, MenuItem } from "@/types/item-types";
 
 export interface ImageData {
   uri: string;
@@ -251,7 +251,6 @@ export const fetchLaundryMenu = async (
     throw new Error("An unexpected error occurred");
   }
 };
-
 
 // Fetch Vendor Items
 export const fetchRestaurantMenu = async (

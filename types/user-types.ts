@@ -56,6 +56,7 @@ export interface RiderProfile {
 export interface Profile {
   user_id: string;
   full_name?: string;
+  store_name?: string;
   phone_number: string;
   bank_name?: string;
   bank_account_number?: string;
@@ -71,13 +72,15 @@ export interface Profile {
 
 export interface UserProfileUpdate {
   phoneNumber: string;
-  companyRegNo: string;
+  companyRegNo?: string;
   location: string;
-  companyName: string;
-  openingHour: string;
-  closingHour: string;
+  companyName?: string;
+  openingHour?: string;
+  closingHour?: string;
   accountNumber: string;
   bankName: string;
+  fullName?: string;
+  storeName?: string;
 }
 
 type TransactionType = "credit" | "debit";

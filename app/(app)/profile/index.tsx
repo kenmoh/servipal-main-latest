@@ -23,7 +23,7 @@ const BACKDROP_IMAGE_WIDTH = Dimensions.get("window").width;
 const profile = () => {
     const [backdropUri, setBackdropUri] = useState<ImageType | ImageUpload | null | string>(null);
     const [profileUri, setProfileUri] = useState<ImageUrl | null | string>(null);
-    const { user, images, profile, setImages, setProfile } = useAuth();
+    const { user, profile, setImages } = useAuth();
 
     // Load stored images on component mount
     useEffect(() => {
@@ -45,6 +45,14 @@ const profile = () => {
             console.log('Log out')
         }
     })
+
+    const handleProfileScreen = () => {
+        if (user?.user_type === 'dispatch' || user?.user_type === 'vendor') {
+            router.push({ pathname: '/profile/vendorProfile' })
+        } else {
+            router.push({ pathname: '/profile/customerProfile' })
+        }
+    }
 
     // Single mutation for uploading images
     const uploadMutation = useMutation({
@@ -160,9 +168,10 @@ const profile = () => {
                             <Animated.View entering={FadeInDown.duration(300).delay(100)}>
                                 <ProfileCard
                                     name={"Profile"}
-                                    onPress={() =>
-                                        router.push({ pathname: "/profile/vendorProfile" })
-                                    }
+                                    // onPress={() =>
+                                    //     router.push({ pathname: "/profile/vendorProfile" })
+                                    // }
+                                    onPress={handleProfileScreen}
                                     bgColor={"rgba(0,128, 128, 0.3)"}
                                     icon={<UserRound color={"white"} />}
                                 />

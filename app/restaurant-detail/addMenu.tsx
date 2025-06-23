@@ -8,7 +8,7 @@ import AppTextInput from "@/components/AppInput";
 import ImagePickerInput from "@/components/AppImagePicker";
 import AppPicker from "@/components/AppPicker";
 import AppModal from "@/components/AppModal";
-import { createCategory, createItem, fetchCategories } from "@/api/item";
+import { createCategory, createMenuItem, fetchCategories } from "@/api/item";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Notifier, NotifierComponents } from "react-native-notifier";
 import LoadingIndicator from "@/components/LoadingIndicator";
@@ -16,10 +16,18 @@ import { queryClient } from "../_layout";
 import { useAuth } from '@/context/authContext'
 
 const itemTypeEnum = z.enum(["food", "package", "product", "laundry"]);
+const foodTypeEnum = z.enum(["appetizer", "main_course", "dessert", "others"]);
 
 const itemTypeOptions = [
     { id: "food", name: "Food" },
-    { id: "laundry", name: "Laundry" },
+
+
+];
+const foodGroupOption = [
+    { id: "appetizer", name: "Appetizer" },
+    { id: "main_course", name: "Main Course" },
+    { id: "dessert", name: "Dessert" },
+    { id: "others", name: "Others" },
 
 ];
 
@@ -29,6 +37,7 @@ const schema = z.object({
     description: z.string().min(1, "Ingredients is a required field"),
     category_id: z.string({ message: "Category is a required field" }),
     itemType: itemTypeEnum,
+    foodGroup: foodTypeEnum,
     side: z.string().optional(),
     images: z.array(z.any()).nonempty({
         message: "Image is required",
@@ -118,7 +127,7 @@ const addMenu = () => {
         },
     });
     const { mutate: itemMutate, isPending: isCreating } = useMutation({
-        mutationFn: createItem,
+        mutationFn: createMenuItem,
         onSuccess: (data) => {
             Notifier.showNotification({
                 title: "Success",
@@ -213,6 +222,20 @@ const addMenu = () => {
                                         }}
                                         value={value}
                                         placeholder="Select Item Type"
+                                    />
+                                )}
+                            />
+                            <Controller
+                                control={control}
+                                name="foodGroup"
+                                render={({ field: { onChange, value } }) => (
+                                    <AppPicker
+                                        isBank={true}
+                                        enabled={false}
+                                        label="Menu Group"
+                                        onValueChange={onChange}
+                                        items={foodGroupOption}
+                                        value={value}
                                     />
                                 )}
                             />

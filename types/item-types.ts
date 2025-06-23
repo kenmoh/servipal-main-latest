@@ -1,4 +1,5 @@
 type ItemType = "food" | "package" | "product" | "laundry";
+export type FoodGroup = "appetizer" | "main_course" | "dessert" | "others";
 
 export interface Review {
   item_id: string;
@@ -17,13 +18,15 @@ export interface ItemImage {
   url: string;
 }
 
-export interface CreateItem {
+interface ItemCreateBase {
   name: string;
   description?: string;
   price: number;
   itemType: ItemType;
   category_id?: string;
   images: ItemImage[];
+}
+export interface CreateItem extends ItemCreateBase {
   colors?: string[];
   sizes?: string;
   stock?: number;
@@ -31,8 +34,27 @@ export interface CreateItem {
 export interface ItemResponse extends CreateItem {
   id: string;
   user_id: string;
-  reviews: Review[];
 }
+
+export interface ItemResponse extends CreateItem {
+  id: string;
+  user_id: string;
+}
+export interface CreateMenuItmItem extends ItemCreateBase {
+  side?: string;
+  food_group?: FoodGroup;
+}
+export interface RestaurantMenuResponse extends ItemCreateBase {
+  id: string;
+  vendor_id: string;
+  food_group: FoodGroup;
+}
+export interface LaundryMenuResponse extends ItemCreateBase {
+  id: string;
+  vendor_id: string;
+}
+
+export type CombinedResponse = RestaurantMenuResponse | LaundryMenuResponse;
 
 export interface CreateCategory {
   name: string;
@@ -48,19 +70,13 @@ interface MenuBase {
   item_type: string;
   price: string;
   images: ItemImage[];
-
 }
 
 export interface MenuItem extends MenuBase {
-  
   restaurant_id: string;
   description: string;
-  
 }
 
-
 export interface LaundryMenuItem extends MenuBase {
-  
   laundry_id: string;
-  
 }

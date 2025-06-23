@@ -118,6 +118,7 @@ const ItemInfo = () => {
         pathname: '/payment/[orderId]',
         params: {
           orderId: data?.order.id ?? "",
+          deliveryId: data?.delivery?.id,
           deliveryFee: data?.delivery?.delivery_fee,
           orderNumber: data?.order?.order_number,
           deliveryType: data?.delivery?.delivery_type,

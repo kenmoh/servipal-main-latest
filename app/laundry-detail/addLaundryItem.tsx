@@ -8,7 +8,7 @@ import AppTextInput from "@/components/AppInput";
 import ImagePickerInput from "@/components/AppImagePicker";
 import AppPicker from "@/components/AppPicker";
 import AppModal from "@/components/AppModal";
-import { createCategory, createItem, fetchCategories } from "@/api/item";
+import { createCategory, createMenuItem, fetchCategories } from "@/api/item";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Notifier, NotifierComponents } from "react-native-notifier";
 import LoadingIndicator from "@/components/LoadingIndicator";
@@ -27,7 +27,6 @@ const schema = z.object({
     name: z.string().min(1, "Name is a required field"),
     price: z.number().int().gt(0, "Price MUST be greater than 0").lte(999999),
     itemType: itemTypeEnum,
-
     images: z.array(z.any()).nonempty({
         message: "Image is required",
     }),
@@ -60,7 +59,7 @@ const adLaundryItem = () => {
 
 
     const { mutate: itemMutate, isPending: isCreating } = useMutation({
-        mutationFn: createItem,
+        mutationFn: createMenuItem,
         onSuccess: (data) => {
             Notifier.showNotification({
                 title: "Success",

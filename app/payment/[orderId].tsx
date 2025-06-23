@@ -9,7 +9,7 @@ import { queryClient } from '../_layout';
 
 
 const Payment = () => {
-    const { orderNumber, deliveryType, paymentLink, deliveryFee, orderType, orderItems
+    const { orderNumber, deliveryType, orderId, deliveryId, paymentLink, deliveryFee, orderType, orderItems
     } = useLocalSearchParams()
     const theme = useTheme()
     const [showWebView, setShowWebView] = useState(false);
@@ -50,7 +50,11 @@ const Payment = () => {
                 params: { paymentStatus: 'success' }
             });
 
-            queryClient.invalidateQueries({ queryKey: ["deliveryies", 'all', 'food', 'laundry', 'package'] });
+            queryClient.invalidateQueries({ queryKey: ["deliveryies"] });
+            queryClient.invalidateQueries({ queryKey: ["orders"] });
+            queryClient.invalidateQueries({ queryKey: ["delivery", deliveryId] });
+            queryClient.invalidateQueries({ queryKey: ["orders", orderId] });
+
 
         }
         if (status[0] === "status=failed" || status[0] === "status=cancelled") {

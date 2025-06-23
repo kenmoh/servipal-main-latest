@@ -25,8 +25,8 @@ const AppPicker = ({
     value,
     placeholder,
     onValueChange,
-    isBank=false,
-    enabled=true
+    isBank = false,
+    enabled = true
 }: PickerProps) => {
     const theme = useTheme();
     return (

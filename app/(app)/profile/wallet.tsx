@@ -1,4 +1,4 @@
-import { StyleSheet, Text, FlatList } from 'react-native'
+import { StyleSheet, Text, FlatList, TouchableOpacity } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient';
 import { Button, Card, Heading, View, XStack, YStack } from 'tamagui'
 import { ArrowDown, ArrowUp, Eye, EyeOff } from 'lucide-react-native';
@@ -49,14 +49,14 @@ const index = () => {
                                 <YStack>
                                     <XStack alignItems='center' gap="$2">
                                         <Text style={styles.label}>Main Balance</Text>
-                                        <Button
-                                            unstyled
+                                        <TouchableOpacity
+                                            hitSlop={35}
                                             onPress={() => setIsBalanceHidden(!isBalanceHidden)}
-                                            icon={isBalanceHidden ?
-                                                <Eye color="white" size={16} /> :
-                                                <EyeOff color="white" size={16} />
-                                            }
-                                        />
+
+                                        >{isBalanceHidden ?
+                                            <Eye color="white" size={16} /> :
+                                            <EyeOff color="white" size={16} />
+                                            }</TouchableOpacity>
                                     </XStack>
                                     <XStack alignItems='baseline' gap={'$1'} marginTop="$2">
                                         <Text style={styles.currency}>₦</Text>
@@ -84,10 +84,11 @@ const index = () => {
                                     <Text style={styles.accountInfo}>
                                         Account Number: {profile?.profile?.bank_account_number}
                                     </Text>}
-                                {profile?.profile?.bank_name || profile?.profile?.business_name &&
+                                {(profile?.profile?.bank_name || profile?.profile?.business_name) && (
                                     <Text style={styles.accountInfo}>
                                         Name: {profile?.profile?.full_name || profile?.profile.business_name}
-                                    </Text>}
+                                    </Text>
+                                )}
                             </YStack>
                         </Card.Header>
                     </LinearGradient>
