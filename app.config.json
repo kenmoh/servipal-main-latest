@@ -6,7 +6,7 @@
     "orientation": "portrait",
     "icon": "./assets/images/android-icon.png",
     "scheme": "servipal",
-    "userInterfaceStyle": "dark",
+    "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "ios": {
       "config": {
@@ -17,9 +17,7 @@
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       },
-      "associatedDomains": [
-        "applinks:servipalbackend.onrender.com"
-      ]
+      "associatedDomains": ["applinks:servipalbackend.onrender.com"]
     },
     "android": {
       "googleServicesFile": "./google-services.json",
@@ -50,10 +48,7 @@
               "pathPrefix": "/api/payment/order-payment-callback"
             }
           ],
-          "category": [
-            "BROWSABLE",
-            "DEFAULT"
-          ]
+          "category": ["BROWSABLE", "DEFAULT"]
         },
         {
           "action": "VIEW",
@@ -64,10 +59,7 @@
               "host": "*"
             }
           ],
-          "category": [
-            "BROWSABLE",
-            "DEFAULT"
-          ]
+          "category": ["BROWSABLE", "DEFAULT"]
         }
       ]
     },
@@ -87,7 +79,7 @@
           "backgroundColor": "#18191c"
         }
       ],
-       [
+      [
         "expo-notifications",
         {
           "icon": "./assets/images/notification-icon.png",

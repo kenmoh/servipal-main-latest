@@ -1,4 +1,4 @@
-type ItemType = "food" | "package" | "product" | "laundry";
+export type ItemType = "food" | "package" | "product" | "laundry";
 export type FoodGroup = "appetizer" | "main_course" | "dessert" | "others";
 
 export interface Review {

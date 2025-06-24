@@ -14,16 +14,10 @@ import { Notifier, NotifierComponents } from "react-native-notifier";
 import LoadingIndicator from "@/components/LoadingIndicator";
 import { queryClient } from "../_layout";
 import { useAuth } from '@/context/authContext'
+import type { ItemType, FoodGroup } from "@/types/item-types";
 
-const itemTypeEnum = z.enum(["food", "package", "product", "laundry"]);
-const foodTypeEnum = z.enum(["appetizer", "main_course", "dessert", "others"]);
-
-const itemTypeOptions = [
-    { id: "food", name: "Food" },
-
-
-];
 const foodGroupOption = [
+
     { id: "appetizer", name: "Appetizer" },
     { id: "main_course", name: "Main Course" },
     { id: "dessert", name: "Dessert" },
@@ -36,8 +30,8 @@ const schema = z.object({
     price: z.number().int().gt(0, "Price MUST be greater than 0").lte(999999),
     description: z.string().min(1, "Ingredients is a required field"),
     category_id: z.string({ message: "Category is a required field" }),
-    itemType: itemTypeEnum,
-    foodGroup: foodTypeEnum,
+    itemType: z.string({ message: "Item type is a required field" }),
+    foodGroup: z.string({ message: "Food Group is a required field" }),
     side: z.string().optional(),
     images: z.array(z.any()).nonempty({
         message: "Image is required",
@@ -68,11 +62,12 @@ const addMenu = () => {
         defaultValues: {
             name: "",
             description: "",
-            price: 0,
+            // price: 0,
             images: [],
             category_id: "",
             side: "",
             itemType: "food",
+            foodGroup: 'main_course'
         },
     });
 
@@ -155,9 +150,12 @@ const addMenu = () => {
     });
 
     const onSubmit = (data: FormData) => {
+        console.log(data)
         itemMutate({
             ...data,
             images: data.images ?? [],
+            itemType: data.itemType as ItemType,
+            food_group: data.foodGroup as FoodGroup,
         });
     };
 
@@ -179,119 +177,104 @@ const addMenu = () => {
                             />
                         )}
                     />
-                    <XStack alignSelf="center" gap={5} justifyContent="center" alignItems="center">
 
-                        <View width={'47.5%'}>
-                            <Controller
-                                control={control}
-                                name="price"
-                                render={({ field: { onChange, onBlur, value } }) => (
-                                    <AppTextInput
-                                        placeholder="Price"
-                                        label="Price"
-                                        onBlur={onBlur}
-                                        onChangeText={(text) => onChange(Number(text))}
-                                        value={value?.toString()}
-                                        keyboardType="numeric"
-                                        errorMessage={errors.price?.message}
-                                    />
-                                )}
+                    <Controller
+                        control={control}
+                        name="price"
+                        render={({ field: { onChange, onBlur, value } }) => (
+                            <AppTextInput
+                                placeholder="Price"
+                                label="Price"
+                                width={'50%'}
+                                onBlur={onBlur}
+                                onChangeText={(text) => onChange(Number(text))}
+                                value={value?.toString()}
+                                keyboardType="numeric"
+                                errorMessage={errors.price?.message}
                             />
-                        </View>
-                        <View width={'47.5%'}>
-                            <Controller
-                                control={control}
-                                name="itemType"
-                                render={({ field: { onChange, value } }) => (
-                                    <AppPicker
-                                        isBank={true}
-                                        label="Item Type"
-                                        items={itemTypeOptions}
-                                        enabled={false}
-                                        onValueChange={(val) => {
-                                            onChange(val);
-                                            setSelectedItemType(val);
-                                            // Reset category and side if not food
-                                            if (val !== "food") {
-                                                reset({
-                                                    ...control._formValues,
-                                                    category_id: "",
-                                                    side: "",
-                                                });
-                                            }
-                                        }}
-                                        value={value}
-                                        placeholder="Select Item Type"
-                                    />
-                                )}
-                            />
-                            <Controller
-                                control={control}
-                                name="foodGroup"
-                                render={({ field: { onChange, value } }) => (
-                                    <AppPicker
-                                        isBank={true}
-                                        enabled={false}
-                                        label="Menu Group"
-                                        onValueChange={onChange}
-                                        items={foodGroupOption}
-                                        value={value}
-                                    />
-                                )}
-                            />
-
-                        </View>
+                        )}
+                    />
 
 
-                    </XStack>
-
-                    {selectedItemType !== "laundry" && (
-                        <>
-                            <Controller
-                                control={control}
-                                name="category_id"
-                                render={({ field: { onChange, value } }) => (
-                                    <AppPicker
-
-                                        label="Category"
-                                        items={categories ?? []}
-                                        onValueChange={onChange}
-                                        value={value}
-                                    />
-                                )}
-                            />
-                            <Controller
-                                control={control}
-                                name="description"
-                                render={({ field: { onChange, onBlur, value } }) => (
-                                    <AppTextInput
-                                        label="Ingredients"
-                                        placeholder="Ingredients"
-                                        onBlur={onBlur}
-                                        onChangeText={onChange}
-                                        value={value}
-                                        errorMessage={errors.description?.message}
-                                    />
-                                )}
-                            />
-                        </>
-                    )}
-                    {selectedItemType === "food" && (
+                    <View display="none">
                         <Controller
                             control={control}
-                            name="side"
+                            name="itemType"
                             render={({ field: { onChange, onBlur, value } }) => (
                                 <AppTextInput
-                                    label="Side"
-                                    placeholder="Side"
+                                    label="Item Type"
                                     onBlur={onBlur}
                                     onChangeText={onChange}
                                     value={value}
-                                    errorMessage={errors.side?.message}
+                                    errorMessage={errors.itemType?.message}
                                 />
                             )}
                         />
-                    )}
+                    </View>
+
+                    <View>
+                        <Controller
+                            control={control}
+                            name="foodGroup"
+                            render={({ field: { onChange, value } }) => (
+                                <AppPicker
+
+                                    label="Group"
+                                    items={foodGroupOption ?? []}
+                                    onValueChange={onChange}
+                                    value={value}
+                                />
+                            )}
+                        />
+                    </View>
+
+
+                    <>
+                        <Controller
+                            control={control}
+                            name="category_id"
+                            render={({ field: { onChange, value } }) => (
+                                <AppPicker
+
+                                    label="Category"
+                                    items={categories ?? []}
+                                    onValueChange={onChange}
+                                    value={value}
+                                />
+                            )}
+                        />
+                        <Controller
+                            control={control}
+                            name="description"
+                            render={({ field: { onChange, onBlur, value } }) => (
+                                <AppTextInput
+                                    label="Ingredients"
+                                    placeholder="Ingredients"
+                                    onBlur={onBlur}
+                                    onChangeText={onChange}
+                                    value={value}
+                                    errorMessage={errors.description?.message}
+                                />
+                            )}
+                        />
+                    </>
+
+
+                    <Controller
+                        control={control}
+                        name="side"
+                        render={({ field: { onChange, onBlur, value } }) => (
+                            <AppTextInput
+                                label="Side"
+                                placeholder="Side"
+                                onBlur={onBlur}
+                                onChangeText={onChange}
+                                value={value}
+                                errorMessage={errors.side?.message}
+                            />
+                        )}
+                    />
+
 
                     <Controller
                         control={control}

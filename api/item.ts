@@ -11,11 +11,13 @@ import {
   MenuItem,
 } from "@/types/item-types";
 
+const BASE_URL = "/items";
+
 // Fetch categories
 export const fetchCategories = async (): Promise<CategoryResponse[]> => {
   try {
     const response: ApiResponse<CategoryResponse[] | ErrorResponse> =
-      await apiClient.get("/items/categories", {
+      await apiClient.get(`/${BASE_URL}/categories`, {
         headers: {
           "Content-Type": "application/json",
         },
@@ -46,7 +48,7 @@ export const createCategory = async (
   };
   try {
     const response: ApiResponse<CategoryResponse | ErrorResponse> =
-      await apiClient.post("/items/categories", data, {
+      await apiClient.post(`${BASE_URL}/categories`, data, {
         headers: {
           "Content-Type": "application/json",
         },
@@ -105,7 +107,7 @@ export const createMenuItem = async (
   }
   try {
     const response: ApiResponse<CombinedResponse | ErrorResponse> =
-      await apiClient.post("/menu-item-create", data, {
+      await apiClient.post(`${BASE_URL}/menu-item-create`, data, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -118,7 +120,6 @@ export const createMenuItem = async (
           : "Error creating item. Please try again later.";
       throw new Error(errorMessage);
     }
-    console.log(response.status, response.problem, response.originalError);
     return response.data;
   } catch (error) {
     if (error instanceof Error) {

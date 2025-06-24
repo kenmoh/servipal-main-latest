@@ -138,24 +138,7 @@ const Payment = () => {
                         marginTop="$4"
                         width={'100%'}
                     >
-                        {parsedOrderItems.map((item) => (
-                            <YStack
-                                flex={1}
-                                key={item.id}
-                                justifyContent="space-between"
-                                marginBottom="$3"
-                            >
-                                <XStack width={'100%'} alignItems='center' justifyContent='space-between'>
-                                    <XStack gap={4} alignItems="center">
-                                        <Text fontSize={12} color="$text">{item.quantity} X </Text>
-                                        <Text fontSize={12} color="$text">{item.name}</Text>
-                                    </XStack>
-                                    <Text fontSize={12} fontWeight="500" color="$text">
-                                        ₦{(Number(item.price) * Number(item.quantity)).toFixed(2)}
-                                    </Text>
-                                </XStack>
-                            </YStack>
-                        ))}
+
                         <View
                             backgroundColor="$gray8"
                             height={1}

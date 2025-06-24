@@ -7,12 +7,13 @@ interface InputProp extends TextInputProps {
     label?: string,
     height?: string
     value?: string
+    width?: number | string
     errorMessage?: string
     borderRadius?: number
     onPressIn?: () => void;
     showPasswordToggle?: boolean;
 }
-const AppTextInput = ({ label, value, onPressIn, placeholder, onBlur, onChangeText, errorMessage, borderRadius = 10, height = '$5', keyboardType = 'default', editable = true, secureTextEntry = false, showPasswordToggle = false }: InputProp) => {
+const AppTextInput = ({ label, value, onPressIn, placeholder, onBlur, onChangeText, errorMessage, width = '100%', borderRadius = 10, height = '$5', keyboardType = 'default', editable = true, secureTextEntry = false, showPasswordToggle = false }: InputProp) => {
     const [showPassword, setShowPassword] = useState(false);
     const theme = useTheme();
 
@@ -34,7 +35,7 @@ const AppTextInput = ({ label, value, onPressIn, placeholder, onBlur, onChangeTe
                     height={height}
                     backgroundColor={'$cardDark'}
                     borderRadius={borderRadius}
-                    width={'100%'}
+                    width={width}
                     borderWidth={0}
                     keyboardType={keyboardType}
                     secureTextEntry={shouldShowToggle ? !isPasswordVisible : false}
