@@ -24,19 +24,19 @@ const groups: CategoryType[] = [
 
 const StoreDetails = () => {
     const { user } = useAuth();
-    const { storeId, screenType } = useLocalSearchParams();
+    const { storeId, screenType, restaurantId } = useLocalSearchParams();
     const { cart, addItem, totalCost, removeItem } = useCartStore();
     const [checkedItems, setCheckedItems] = useState<Set<string>>(new Set());
     const [selectedFoodGroup, setSelectedFoodGroup] = useState<string | undefined>('main_course');
-
+    const restId = storeId || restaurantId
     const { data, refetch, isFetching } = useQuery({
         queryKey: ["restaurantItems", storeId, selectedFoodGroup],
-        queryFn: () => fetchRestaurantMenu(selectedFoodGroup as FoodGroup, storeId as string),
+        queryFn: () => fetchRestaurantMenu(selectedFoodGroup as FoodGroup, restId as string),
         select: (items) =>
             items?.filter((item) => item.item_type === "food") || [],
     });
 
-    console.log(data, 'RESTAURANT MENU')
+
 
     const handleAddToCart = useCallback(
         (item: MenuItem) => {

@@ -28,7 +28,6 @@ import FAB from "@/components/FAB";
 import { router } from "expo-router";
 import { useAuth } from "@/context/authContext";
 import { Plus } from "lucide-react-native";
-import { fetchCategories } from "@/api/item";
 import RefreshButton from "@/components/RefreshButton";
 import { StoreListSkeleton } from "@/components/LoadingSkeleton";
 
@@ -197,10 +196,10 @@ const Page = () => {
             let currentVendorLaundry = null;
             let otherLaundryVendors = validLaundry;
 
-            if (user?.user_type === "vendor") {
+            if (user?.user_type === "laundry_vendor") {
                 // Find the current vendor's restaurant
                 currentVendorLaundry = validLaundry.find(
-                    (restaurant) => restaurant.id === user.sub
+                    (laundry) => laundry.id === user.sub
                 );
 
                 if (currentVendorLaundry) { setHasItem(true) }
@@ -294,13 +293,13 @@ const Page = () => {
                 />
             )}
 
-            {user?.user_type === "vendor" && !hasItem && (
+            {/* {user?.user_type === "laundry_vendor" && !hasItem && (
 
                 <FAB
                     icon={<Plus size={25} color={theme.text.val} />}
                     onPress={() => router.push({ pathname: "/laundry-detail/addLaundryItem" })}
                 />
-            )}
+            )} */}
         </SafeAreaView>
     );
 };

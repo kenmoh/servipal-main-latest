@@ -88,7 +88,7 @@ const StoreCard = ({
                     width="100%"
                     gap="$1"
                 >
-                    {user?.user_type === 'vendor' && user?.sub === item?.id ? <View
+                    {['restaurant_vendor', 'laundry_vendor', 'dispatch'].includes(user?.user_type || "") && user?.sub === item?.id ? <View
                         backgroundColor='rgba(0, 0, 255, 0.5)'
                         alignSelf={'flex-start'}
                         paddingHorizontal={'$2'}

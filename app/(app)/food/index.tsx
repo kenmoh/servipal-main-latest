@@ -132,7 +132,7 @@ const Page = () => {
     const [hasItem, setHasItem] = useState(false);
     const { data, isFetching, error, refetch } = useQuery({
         queryKey: ["restaurants", selectedCategory],
-        queryFn: () => fetchRestaurants(selectedCategory || undefined),
+        queryFn: () => fetchRestaurants(selectedCategory ?? undefined),
     });
 
     const { data: categories } = useQuery({
@@ -193,7 +193,7 @@ const Page = () => {
             let currentVendorRestaurant = null;
             let otherRestaurants = validRestaurants;
 
-            if (user?.user_type === "vendor") {
+            if (user?.user_type === "restaurant_vendor") {
                 // Find the current vendor's restaurant
                 currentVendorRestaurant = validRestaurants.find(
                     (restaurant) => restaurant.id === user.sub
@@ -291,13 +291,13 @@ const Page = () => {
                     }}
                 />
             )}
-
-            {user?.user_type === "vendor" && !hasItem && (
+            {/* 
+            {user?.user_type === "restaurant_vendor" && !hasItem && (
                 <FAB
                     icon={<Plus size={25} color={theme.text.val} />}
                     onPress={() => router.push({ pathname: "/restaurant-detail/addMenu" })}
                 />
-            )}
+            )} */}
         </SafeAreaView>
     );
 };

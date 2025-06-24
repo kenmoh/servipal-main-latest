@@ -91,12 +91,12 @@ const StoreDetails = () => {
                 onPress={() => router.push({ pathname: "/cart" })}
             />
 
-            {user?.user_type === "vendor" && data && data[0]?.laundry_id === user?.sub && (
+            {user?.user_type === "laundry_vendor" && data && data[0]?.laundry_id === user?.sub && (
                 <FAB
                     icon={<Menu color={"white"} />}
                     onPress={() =>
                         router.push({
-                            pathname:"/laundry-detail/addLaundryItem"
+                            pathname: "/laundry-detail/addLaundryItem"
                         })
                     }
                 />
