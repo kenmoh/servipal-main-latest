@@ -88,6 +88,8 @@ const addMenu = () => {
 
     });
 
+    console.log(categories)
+
     const { mutate, isPending } = useMutation({
         mutationFn: createCategory,
         onSuccess: (data) => {

@@ -17,7 +17,7 @@ const BASE_URL = "/items";
 export const fetchCategories = async (): Promise<CategoryResponse[]> => {
   try {
     const response: ApiResponse<CategoryResponse[] | ErrorResponse> =
-      await apiClient.get(`/${BASE_URL}/categories`, {
+      await apiClient.get(`${BASE_URL}/categories`, {
         headers: {
           "Content-Type": "application/json",
         },

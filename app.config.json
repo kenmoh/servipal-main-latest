@@ -6,7 +6,7 @@
     "orientation": "portrait",
     "icon": "./assets/images/android-icon.png",
     "scheme": "servipal",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "dark",
     "newArchEnabled": true,
     "ios": {
       "config": {
