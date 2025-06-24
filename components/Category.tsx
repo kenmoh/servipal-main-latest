@@ -120,31 +120,33 @@ const Category = ({ categories, onCategorySelect, selectedCategory }: CategoryPr
                 showsHorizontalScrollIndicator={false}
                 contentContainerStyle={[styles.scrollContainer, { backgroundColor: theme.background.val }]}
             >
-                <View
-                    ref={ref => categoryRefs.current['all'] = ref}
-                    collapsable={false}
-                >
-                    <TouchableOpacity
-                        onPress={() => handleCategoryPress(null)}
-                        style={[
-                            styles.categoryItem,
-                            {
-                                backgroundColor: selectedCategory === null ? theme.btnPrimaryColor?.val : theme.background.val,
-                                borderColor: selectedCategory === null ? theme.btnPrimaryColor?.val : theme.borderColor.val,
-                            },
-                        ]}
+                {categories.length > 4 && (
+                    <View
+                        ref={ref => categoryRefs.current['all'] = ref}
+                        collapsable={false}
                     >
-                        <Text
-                            color={selectedCategory === null ? 'white' : theme.text.val}
-                            fontSize={14}
-                            fontWeight={selectedCategory === null ? '600' : '400'}
+                        <TouchableOpacity
+                            onPress={() => handleCategoryPress(null)}
+                            style={[
+                                styles.categoryItem,
+                                {
+                                    backgroundColor: selectedCategory === null ? theme.btnPrimaryColor?.val : theme.background.val,
+                                    borderColor: selectedCategory === null ? theme.btnPrimaryColor?.val : theme.borderColor.val,
+                                },
+                            ]}
                         >
-                            All
-                        </Text>
-                    </TouchableOpacity>
-                </View>
+                            <Text
+                                color={selectedCategory === null ? 'white' : theme.text.val}
+                                fontSize={14}
+                                fontWeight={selectedCategory === null ? '600' : '400'}
+                            >
+                                All
+                            </Text>
+                        </TouchableOpacity>
+                    </View>
+                )}
 
-                {displayedCategories.map((category) => (
+                {(categories.length > 4 ? categories.slice(0, 2) : categories).map((category) => (
                     <CategoryItem
                         key={category.id}
                         item={category}
@@ -152,28 +154,30 @@ const Category = ({ categories, onCategorySelect, selectedCategory }: CategoryPr
                     />
                 ))}
 
-                <View
-                    ref={ref => categoryRefs.current['more'] = ref}
-                    collapsable={false}
-                >
-                    <TouchableOpacity
-                        onPress={() => handleCategoryPress('more')}
-                        style={[
-                            styles.categoryItem,
-                            {
-                                backgroundColor: theme.background.val,
-                                borderColor: theme.borderColor.val,
-                            },
-                        ]}
+                {categories.length > 4 && (
+                    <View
+                        ref={ref => categoryRefs.current['more'] = ref}
+                        collapsable={false}
                     >
-                        <XStack gap="$1" alignItems="center">
-                            <Text color={theme.text.val} fontSize={14}>
-                                More
-                            </Text>
-                            <ChevronDown size={16} color={theme.text.val} />
-                        </XStack>
-                    </TouchableOpacity>
-                </View>
+                        <TouchableOpacity
+                            onPress={() => handleCategoryPress('more')}
+                            style={[
+                                styles.categoryItem,
+                                {
+                                    backgroundColor: theme.background.val,
+                                    borderColor: theme.borderColor.val,
+                                },
+                            ]}
+                        >
+                            <XStack gap="$1" alignItems="center">
+                                <Text color={theme.text.val} fontSize={14}>
+                                    More
+                                </Text>
+                                <ChevronDown size={16} color={theme.text.val} />
+                            </XStack>
+                        </TouchableOpacity>
+                    </View>
+                )}
             </ScrollView>
 
             <AppModal

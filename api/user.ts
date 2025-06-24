@@ -11,7 +11,7 @@ import {
 import { apiClient } from "@/utils/client";
 import { ApiResponse } from "apisauce";
 import { ErrorResponse } from "./auth";
-import { LaundryMenuItem, MenuItem } from "@/types/item-types";
+import { LaundryMenuItem, MenuItem, FoodGroup } from "@/types/item-types";
 
 export interface ImageData {
   uri: string;
@@ -171,13 +171,16 @@ export const getCurrentDispatchRiders = async (): Promise<RiderResponse[]> => {
 export const fetchRestaurants = async (
   categoryId?: string
 ): Promise<CompanyProfile[]> => {
+  const param = new URLSearchParams({
+    category_id: categoryId || "",
+  });
   try {
     const response: ApiResponse<CompanyProfile[] | ErrorResponse> =
       await apiClient.get(`${BASE_URL}/restaurants`, {
         headers: {
           "Content-Type": "application/json",
         },
-        params: categoryId ? { category_id: categoryId } : undefined,
+        params: param,
       });
 
     if (!response.ok || !response.data || "detail" in response.data) {
@@ -254,15 +257,19 @@ export const fetchLaundryMenu = async (
 
 // Fetch Vendor Items
 export const fetchRestaurantMenu = async (
+  foodGroup: FoodGroup,
   restuarantId: string
 ): Promise<MenuItem[]> => {
   try {
     const response: ApiResponse<MenuItem[] | ErrorResponse> =
-      await apiClient.get(`${BASE_URL}/restaurants/${restuarantId}/menu`, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      await apiClient.get(
+        `${BASE_URL}/restaurants/${restuarantId}/menu?food_group=${foodGroup}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
     if (!response.ok || !response.data || "detail" in response.data) {
       const errorMessage =

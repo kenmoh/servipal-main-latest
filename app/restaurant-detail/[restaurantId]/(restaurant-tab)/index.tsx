@@ -7,7 +7,7 @@ import CartInfoBtn from "@/components/CartInfoBtn";
 import { useAuth } from "@/context/authContext";
 import { useCallback, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { MenuItem } from "@/types/item-types";
+import { FoodGroup, MenuItem } from "@/types/item-types";
 import { useCartStore } from "@/store/cartStore";
 import EmptyList from "@/components/EmptyList";
 
@@ -16,10 +16,10 @@ import { Menu } from "lucide-react-native";
 import { fetchRestaurantMenu } from "@/api/user";
 
 const groups: CategoryType[] = [
-    { id: "1", name: "Starters", category_type: "food" },
-    { id: "2", name: "Main Course", category_type: "food" },
-    { id: "3", name: "Desserts", category_type: "food" },
-    { id: "4", name: "Others", category_type: "food" },
+    { id: "appetizer", name: "Appetizers", category_type: "food" },
+    { id: "main_course", name: "Main Course", category_type: "food" },
+    { id: "dessert", name: "Desserts", category_type: "food" },
+    { id: "others", name: "Others", category_type: "food" },
 ];
 
 const StoreDetails = () => {
@@ -27,14 +27,13 @@ const StoreDetails = () => {
     const { storeId, screenType } = useLocalSearchParams();
     const { cart, addItem, totalCost, removeItem } = useCartStore();
     const [checkedItems, setCheckedItems] = useState<Set<string>>(new Set());
-    const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+    const [selectedFoodGroup, setSelectedFoodGroup] = useState<string | undefined>('main_course');
 
     const { data, refetch, isFetching } = useQuery({
-        queryKey: ["restaurantItems", storeId],
-        queryFn: () => fetchRestaurantMenu(storeId as string),
+        queryKey: ["restaurantItems", storeId, selectedFoodGroup],
+        queryFn: () => fetchRestaurantMenu(selectedFoodGroup as FoodGroup, storeId as string),
         select: (items) =>
             items?.filter((item) => item.item_type === "food") || [],
-
     });
 
     console.log(data, 'RESTAURANT MENU')
@@ -64,6 +63,9 @@ const StoreDetails = () => {
         [addItem, removeItem, storeId, checkedItems]
     );
 
+    console.log(selectedFoodGroup, 'SELECTED FOOD GROUP')
+    console.log(storeId, 'STORE ID', data)
+
 
     return (
         <View flex={1} backgroundColor={"$background"}>
@@ -81,8 +83,8 @@ const StoreDetails = () => {
                     removeClippedSubviews={true}
                     ListHeaderComponent={<Category
                         categories={groups || []}
-                        onCategorySelect={setSelectedCategory}
-                        selectedCategory={selectedCategory}
+                        onCategorySelect={val => setSelectedFoodGroup(val ?? undefined)}
+                        selectedCategory={selectedFoodGroup ?? null}
                     />}
                     ListEmptyComponent={
                         !isFetching ? (
@@ -108,7 +110,7 @@ const StoreDetails = () => {
                 onPress={() => router.push({ pathname: "/cart" })}
             />
 
-            {user?.user_type === "vendor" && data && data?.[0]?.restaurant_id === user?.sub && (
+            {user?.user_type === "restaurant_vendor" && data && data?.[0]?.restaurant_id === user?.sub && (
                 <FAB
                     icon={<Menu color={"white"} />}
                     onPress={() =>
