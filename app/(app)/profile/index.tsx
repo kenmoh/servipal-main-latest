@@ -177,9 +177,6 @@ const profile = () => {
                             <Animated.View entering={FadeInDown.duration(300).delay(100)}>
                                 <ProfileCard
                                     name={"Profile"}
-                                    // onPress={() =>
-                                    //     router.push({ pathname: "/profile/vendorProfile" })
-                                    // }
                                     onPress={handleProfileScreen}
                                     bgColor={"rgba(0,128, 128, 0.3)"}
                                     icon={<UserRound color={"white"} />}
@@ -188,9 +185,6 @@ const profile = () => {
                        { user?.user_type==='restaurant_vendor' || user?.user_type==='laundry_vendor' &&<Animated.View entering={FadeInDown.duration(300).delay(100)}>
                                                    <ProfileCard
                                                        name={"Store"}
-                                                       // onPress={() =>
-                                                       //     router.push({ pathname: "/profile/vendorProfile" })
-                                                       // }
                                                        onPress={handleAddItem}
                                                        bgColor={"rgba(9, 3, 94, 0.3)"}
                                                        icon={<Store color={"white"} />}

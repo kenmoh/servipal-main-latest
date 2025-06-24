@@ -84,6 +84,7 @@ const DeliveryScreen = () => {
     enabled: !!user?.sub,
   });
 
+console.log('USER TYPE: ', userProfile, '==============')
 
   useEffect(() => {
     if (expoPushToken) {
