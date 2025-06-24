@@ -46,12 +46,12 @@ export interface CreateMenuItmItem extends ItemCreateBase {
 }
 export interface RestaurantMenuResponse extends ItemCreateBase {
   id: string;
-  vendor_id: string;
+  user_id: string;
   food_group: FoodGroup;
 }
 export interface LaundryMenuResponse extends ItemCreateBase {
   id: string;
-  vendor_id: string;
+  user_id: string;
 }
 
 export type CombinedResponse = RestaurantMenuResponse | LaundryMenuResponse;

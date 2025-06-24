@@ -17,8 +17,9 @@ import authStorage from "@/storage/authStorage"
 
 const roleData = [
     { id: 'customer', name: 'Customer' },
-    { id: 'vendor', name: 'Vendor' },
-    { id: 'dispatch', name: 'Dispatch' },
+    { id: 'restaurant_vendor', name: 'Restaurant Service' },
+    { id: 'laundry_vendor', name: 'Laundry Service' },
+    { id: 'dispatch', name: 'Dispatch Service' },
 ]
 
 

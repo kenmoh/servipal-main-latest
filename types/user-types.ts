@@ -1,7 +1,12 @@
 export const phoneRegEx =
   /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
 
-type Role = "dispatch" | "rider" | "customer" | "vendor";
+type Role =
+  | "dispatch"
+  | "rider"
+  | "customer"
+  | "restaurant_vendor"
+  | "laundry_vendor";
 
 type AccountStatus = "pending" | "confirmed";
 

@@ -2,7 +2,7 @@ import { StyleSheet, Dimensions } from "react-native";
 import React, { useState, useEffect } from "react";
 import ProfileCard from "@/components/ProfileCard";
 import Animated, { FadeInDown } from "react-native-reanimated";
-import { UserRound, UsersRound, LogOutIcon, Wallet, KeyRound } from "lucide-react-native";
+import { UserRound, UsersRound, LogOutIcon, Wallet, KeyRound, Store } from "lucide-react-native";
 
 import { Heading, Text, useTheme, View, YStack } from "tamagui";
 import { router } from "expo-router";
@@ -47,12 +47,21 @@ const profile = () => {
     })
 
     const handleProfileScreen = () => {
-        if (user?.user_type === 'dispatch' || user?.user_type === 'vendor') {
+        if (user?.user_type === 'laundry_vendor' || user?.user_type === 'dispatch'||user?.user_type === 'restaurant_vendor') {
             router.push({ pathname: '/profile/vendorProfile' })
         } else {
             router.push({ pathname: '/profile/customerProfile' })
         }
     }
+
+     const handleAddItem = () => {
+        if (user?.user_type === 'laundry_vendor') {
+            router.push({ pathname: "/laundry-detail/addLaundryItem" })
+        } else if(user?.user_type === 'restaurant_vendor') {
+            router.push({ pathname: "/restaurant-detail/addMenu" })
+        }
+    }
+
 
     // Single mutation for uploading images
     const uploadMutation = useMutation({
@@ -176,6 +185,17 @@ const profile = () => {
                                     icon={<UserRound color={"white"} />}
                                 />
                             </Animated.View>}
+                       { user?.user_type==='restaurant_vendor' || user?.user_type==='laundry_vendor' &&<Animated.View entering={FadeInDown.duration(300).delay(100)}>
+                                                   <ProfileCard
+                                                       name={"Store"}
+                                                       // onPress={() =>
+                                                       //     router.push({ pathname: "/profile/vendorProfile" })
+                                                       // }
+                                                       onPress={handleAddItem}
+                                                       bgColor={"rgba(9, 3, 94, 0.3)"}
+                                                       icon={<Store color={"white"} />}
+                                                   />
+                                               </Animated.View>}
                         {user?.user_type !== "rider" && (
                             <Animated.View entering={FadeInDown.duration(300).delay(100)}>
                                 <ProfileCard
@@ -191,7 +211,7 @@ const profile = () => {
                                 <ProfileCard
                                     name={"Riders"}
                                     onPress={() => router.push({ pathname: "/profile/riders" })}
-                                    bgColor={"rgba(0, 0, 255, 0.3)"}
+                                    bgColor={"rgba(5, 90, 247, 0.3)"}
                                     icon={<UsersRound color={"white"} />}
                                 />
                             </Animated.View>
@@ -217,7 +237,7 @@ const profile = () => {
                         </Animated.View>
                     </YStack>
                 </YStack>
-            </View>
+            </View >
         </>
     );
 };
