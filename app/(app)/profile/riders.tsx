@@ -8,6 +8,9 @@ import { RiderResponse } from '@/types/user-types'
 import { getCurrentDispatchRiders } from '@/api/user'
 import { useAuth } from '@/context/authContext'
 import LoadingIndicator from '@/components/LoadingIndicator'
+import FAB from '@/components/FAB'
+import { router } from 'expo-router'
+import { UserPlus2 } from 'lucide-react-native'
 
 
 const riders = () => {
@@ -44,6 +47,7 @@ const riders = () => {
                 onRefresh={refetch}
 
             />
+            {data && data?.length > 0 && <FAB icon={<UserPlus2 color={'white'} />} onPress={() => router.push({ pathname: "/profile/addRider" })} />}
 
         </View>
     )

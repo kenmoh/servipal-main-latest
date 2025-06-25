@@ -134,7 +134,7 @@ const Page = () => {
     const [hasItem, setHasItem] = useState(false);
 
     const { data, isFetching, error, refetch } = useQuery({
-        queryKey: ["restaurants"],
+        queryKey: ["laundryVendors"],
         queryFn: fetchLaundryVendors,
     });
 

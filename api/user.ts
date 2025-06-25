@@ -45,7 +45,7 @@ export const getCurrentUserProfile = async (
           : "Error loading user profile.";
       throw new Error(errorMessage);
     }
-
+    console.log(response.data);
     return response.data;
   } catch (error) {
     if (error instanceof Error) {
@@ -171,16 +171,10 @@ export const getCurrentDispatchRiders = async (): Promise<RiderResponse[]> => {
 export const fetchRestaurants = async (
   categoryId?: string
 ): Promise<CompanyProfile[]> => {
-  const param = new URLSearchParams({
-    category_id: categoryId || "",
-  });
   try {
     const response: ApiResponse<CompanyProfile[] | ErrorResponse> =
       await apiClient.get(`${BASE_URL}/restaurants`, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        params: param,
+        params: categoryId ? { category_id: categoryId } : {},
       });
 
     if (!response.ok || !response.data || "detail" in response.data) {
@@ -199,6 +193,40 @@ export const fetchRestaurants = async (
     throw new Error("An unexpected error occurred");
   }
 };
+
+// // Fetch restaurants
+// export const fetchRestaurants = async (
+//   categoryId?: string
+// ): Promise<CompanyProfile[]> => {
+//   const param = new URLSearchParams({
+//     category_id: categoryId || "",
+//   });
+//   try {
+//     const response: ApiResponse<CompanyProfile[] | ErrorResponse> =
+//       await apiClient.get(`${BASE_URL}/restaurants`, {
+//         params: param,
+//         headers: {
+//           "Content-Type": "application/json",
+//         },
+
+//       });
+
+//     if (!response.ok || !response.data || "detail" in response.data) {
+//       const errorMessage =
+//         response.data && "detail" in response.data
+//           ? response.data.detail
+//           : "Error loading restaurants.";
+//       throw new Error(errorMessage);
+//     }
+
+//     return response.data;
+//   } catch (error) {
+//     if (error instanceof Error) {
+//       throw new Error(error.message);
+//     }
+//     throw new Error("An unexpected error occurred");
+//   }
+// };
 // Fetch laundry users
 export const fetchLaundryVendors = async (): Promise<CompanyProfile[]> => {
   try {

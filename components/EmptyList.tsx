@@ -71,7 +71,7 @@ const EmptyList = ({
                 <Button
                     backgroundColor="$btnPrimaryColor"
                     color="$background"
-                    width="80%"
+                    width="50%"
                     borderRadius={50}
                     onPress={handlePress}
                     pressStyle={{ opacity: 0.8 }}

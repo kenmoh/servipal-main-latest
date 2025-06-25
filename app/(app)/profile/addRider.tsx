@@ -134,7 +134,7 @@ const AddRider = () => {
         } else {
             createMutation.mutate(data as CreateFormData);
         }
-      
+
     };
 
     return (
@@ -213,6 +213,7 @@ const AddRider = () => {
                                     onBlur={onBlur}
                                     onChangeText={onChange}
                                     secureTextEntry
+                                    showPasswordToggle
                                     value={value}
                                     errorMessage={errors?.root?.password?.message}
                                 />
@@ -227,6 +228,7 @@ const AddRider = () => {
                                     onBlur={onBlur}
                                     onChangeText={onChange}
                                     secureTextEntry
+                                    showPasswordToggle
                                     value={value}
                                     errorMessage={errors?.root?.confirmPassword?.message}
                                 />

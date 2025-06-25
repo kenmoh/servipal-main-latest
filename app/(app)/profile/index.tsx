@@ -151,7 +151,7 @@ const profile = () => {
             });
         },
     });
-    console.log(user?.user_type)
+
     const handleProfileImageSelect = (imageData: ImageData) => {
         setProfileUri(imageData.uri);
         uploadMutation.mutate({
