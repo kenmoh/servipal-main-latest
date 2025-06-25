@@ -67,7 +67,7 @@ const FoodCard = ({ item, onPress, cardType }: {
                     hitSlop={25}
                     size={'$5'}
                     disabled={user?.user_type === 'vendor'}
-                    onPressIn={user?.sub !== item?.restaurant_id ? () => onPress(item.id) : () => Notifier.showNotification({
+                    onPressIn={user?.sub !== item?.user_id ? () => onPress(item.id) : () => Notifier.showNotification({
                         title: "Not Allowed",
                         description: "You cannot order from your restaurant",
                         Component: NotifierComponents.Alert,

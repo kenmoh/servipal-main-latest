@@ -61,7 +61,8 @@ const DeliveryLayout = () => {
             <Stack.Screen
                 name="(topTabs)"
                 options={{
-                    title: "",
+                    title: "ServiPal",
+                    headerTitleStyle: {color: theme.text.val, fontFamily: 'Poppins-Bold', fontSize: 22,},
                     headerStyle: { backgroundColor: theme.background.val },
                     headerLeft: () => <HeaderLeft />,
                     headerRight: () => (
