@@ -134,7 +134,7 @@ export default function RootLayout() {
                       }}
                     />
 
-                     <Stack.Screen
+                    <Stack.Screen
                       name="laundry-detail"
                       options={{
                         headerShown: false,
@@ -155,10 +155,19 @@ export default function RootLayout() {
                         },
                       }}
                     />
-                       <Stack.Screen
+                    <Stack.Screen
                       name="orderReceipt/[orderId]"
                       options={{
                         title: 'Download Receipt',
+                        headerStyle: {
+                          backgroundColor: BACKGORUND_COLOR,
+                        },
+                      }}
+                    />
+                    <Stack.Screen
+                      name="notification-detail/[notificationId]"
+                      options={{
+                        title: 'Notification Details',
                         headerStyle: {
                           backgroundColor: BACKGORUND_COLOR,
                         },

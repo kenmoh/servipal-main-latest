@@ -27,7 +27,7 @@ const UserOrders = () => {
     const { user } = useAuth();
 
     const { data, isLoading, error, refetch, isFetching, isPending, isFetched } = useQuery({
-        queryKey: ["deliveries", user?.sub],
+        queryKey: ["deliveries", user?.sub ],
         queryFn: () => fetchDeliveries(),
         select: (data) => {
             if (!user?.sub || !data) return [];

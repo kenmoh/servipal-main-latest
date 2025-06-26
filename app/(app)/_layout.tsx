@@ -115,7 +115,7 @@ const TabBarLayout = () => {
             <Tabs.Screen name='delivery' options={{
 
                 // headerShown: false,
-                title:'',
+                title: '',
                 tabBarIcon: () => require('@/assets/images/bike.svg')
                 // tabBarIcon: ({ focused }) => (
                 //     <CustomTabBarIcon focused={focused}>
@@ -162,7 +162,7 @@ const TabBarLayout = () => {
                 //     </CustomTabBarIcon>
                 // ),
             }} />
-          {/*  <Tabs.Screen name='wallet' options={{
+            {/*  <Tabs.Screen name='wallet' options={{
                 title: '',
                 // tabBarLabel: 'Wallet',
                 tabBarIcon: () => require('@/assets/images/wallet.svg')
@@ -189,6 +189,7 @@ const TabBarLayout = () => {
                 //     </CustomTabBarIcon>
                 // ),
             }} />
+
 
         </Tabs>
     )

@@ -72,6 +72,7 @@ const ItemDetails = () => {
 
             queryClient.invalidateQueries({
                 queryKey: ["deliveries", user?.sub],
+                
             });
 
             refetch()

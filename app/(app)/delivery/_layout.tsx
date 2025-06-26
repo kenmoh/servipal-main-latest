@@ -62,7 +62,7 @@ const DeliveryLayout = () => {
                 name="(topTabs)"
                 options={{
                     title: "ServiPal",
-                    headerTitleStyle: {color: theme.text.val, fontFamily: 'Poppins-Bold', fontSize: 22,},
+                    headerTitleStyle: { color: theme.text.val, fontFamily: 'Poppins-Bold', fontSize: 22, },
                     headerStyle: { backgroundColor: theme.background.val },
                     headerLeft: () => <HeaderLeft />,
                     headerRight: () => (
@@ -101,6 +101,12 @@ const DeliveryLayout = () => {
             />
             <Stack.Screen
                 name="itemInfo"
+                options={{
+                    title: "",
+                }}
+            />
+            <Stack.Screen
+                name="[notificationId]"
                 options={{
                     title: "",
                 }}

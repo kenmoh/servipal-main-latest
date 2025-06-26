@@ -1,0 +1,7 @@
+{
+  "servers": {
+    "ServiPal": {
+      "url": "https://servipalbackend.onrender.com/mcp"
+    }
+  }
+}
