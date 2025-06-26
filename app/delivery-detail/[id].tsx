@@ -49,7 +49,7 @@ const ItemDetails = () => {
     const { user } = useAuth();
 
 
-    const { data, isLoading } = useQuery({
+    const { data, isLoading, refetch } = useQuery({
         queryKey: ["delivery", id],
         queryFn: () => fetchDelivery(id as string),
         refetchOnWindowFocus: true,
@@ -73,6 +73,8 @@ const ItemDetails = () => {
             queryClient.invalidateQueries({
                 queryKey: ["deliveries", user?.sub],
             });
+
+            refetch()
 
             Notifier.showNotification({
                 title: "Success",
@@ -104,6 +106,7 @@ const ItemDetails = () => {
             queryClient.invalidateQueries({
                 queryKey: ["deliveries", user?.sub],
             });
+            refetch();
 
             Notifier.showNotification({
                 title: "Success",
@@ -135,6 +138,14 @@ const ItemDetails = () => {
                 queryKey: ["deliveries", user?.sub],
             });
 
+            setTimeout(() => {
+                refetch().then((result) => {
+                    console.log("Refetched delivery data after delay:", result.data);
+                });
+            }, 500);
+
+            refetch();
+
             Notifier.showNotification({
                 title: "Success",
                 description: "This order has been assigned to you. Drive carefully!",
@@ -164,6 +175,8 @@ const ItemDetails = () => {
             queryClient.invalidateQueries({
                 queryKey: ["deliveries", user?.sub],
             });
+
+            refetch()
 
             Notifier.showNotification({
                 title: "Success",
@@ -195,6 +208,8 @@ const ItemDetails = () => {
                 queryKey: ["deliveries", user?.sub],
             });
 
+            refetch()
+
             Notifier.showNotification({
                 title: "Success",
                 description: "Delivery cancelled!",
@@ -223,7 +238,7 @@ const ItemDetails = () => {
         ) {
             return {
                 label: "Accept Delivery",
-                onPress: () => acceptDeliveryMutation.mutate(),
+                onPress: () => { acceptDeliveryMutation.mutate() },
                 loading: acceptDeliveryMutation.isPending,
             };
         }
@@ -256,7 +271,7 @@ const ItemDetails = () => {
             data?.delivery?.delivery_status === "delivered" &&
             data?.delivery?.delivery_type === "laundry" &&
             user?.sub === data?.order?.vendor_id &&
-            user?.user_type === "vendor"
+            user?.user_type === "laundry_vendor"
         ) {
             return {
                 label: "Item Received",
