@@ -25,7 +25,6 @@
     "@react-navigation/bottom-tabs": "^7.2.0",
     "@react-navigation/material-top-tabs": "^7.1.0",
     "@react-navigation/native": "^7.0.14",
-    "@rnmapbox/maps": "^10.1.38",
     "@tamagui/config": "^1.120.1",
     "@tamagui/toast": "^1.125.8",
     "@tanstack/react-query": "^5.64.2",

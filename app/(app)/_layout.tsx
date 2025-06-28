@@ -64,6 +64,8 @@ const TabBarLayout = () => {
         <Tabs
             tabBarStyle={{
                 backgroundColor: theme.background.val,
+
+
                 // alignItems:'center',
                 // justifyContent:'center'
 
@@ -77,6 +79,7 @@ const TabBarLayout = () => {
             screenOptions={{
 
                 tabBarActiveTintColor: theme.btnPrimaryColor.val,
+
 
                 // headerShown: false,
 

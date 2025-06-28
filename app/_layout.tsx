@@ -17,6 +17,7 @@ import "react-native-reanimated";
 import { TamaguiProvider } from "tamagui";
 import { NotifierWrapper } from "react-native-notifier";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { KeyboardProvider } from "react-native-keyboard-controller";
 import { useAuth } from '@/context/authContext';
 
 
@@ -91,6 +92,7 @@ export default function RootLayout() {
   }
 
   return (
+
     <QueryClientProvider client={queryClient}>
       <GestureHandlerRootView style={{ flex: 1 }}>
         <TamaguiProvider config={tamaguiConfig} defaultTheme={colorScheme!}>
@@ -225,5 +227,6 @@ export default function RootLayout() {
         </TamaguiProvider>
       </GestureHandlerRootView>
     </QueryClientProvider>
+
   );
 }

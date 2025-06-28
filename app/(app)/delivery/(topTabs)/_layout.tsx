@@ -12,7 +12,10 @@ const DeliveryLayout = () => {
 
             <DeliveryTabs
                 initialRouteName="index"
-                initialLayout={{ width: Dimensions.get('window').width }}
+                initialLayout={{
+                    width: Dimensions.get('window').width,
+                    // height: Dimensions.get('window').height
+                }}
 
                 screenOptions={{
                     tabBarLabelStyle: {

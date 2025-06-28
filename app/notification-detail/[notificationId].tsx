@@ -1,8 +1,10 @@
 import { StyleSheet, Text, View, FlatList, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller'
 import React, { useRef, useState } from 'react';
 import { XStack, YStack, Card, Button, Image, useTheme } from 'tamagui';
 import { Send, SendHorizonal } from 'lucide-react-native';
+import ChatInput from '@/components/ChatInput';
 
 const DUMMY_THREAD = [
     {
@@ -90,10 +92,7 @@ const NotificationDetails = () => {
                     style={{ width: 32, objectFit: 'cover', height: 32, borderRadius: 16, borderWidth: 2, borderColor: roleColor[item.sender.role] || '#ccc', backgroundColor: '#23272f' }}
 
                 />
-                {/* Thread line */}
-                {index < messages.length - 1 && (
-                    <View style={{ width: 2, flex: 1, backgroundColor: '#2d2f36', minHeight: 28, marginTop: 2, borderRadius: 1 }} />
-                )}
+
             </YStack>
 
             <YStack flex={1} marginLeft={0} padding={0}>
@@ -110,22 +109,21 @@ const NotificationDetails = () => {
     );
 
     return (
-        <View style={{ flex: 1, backgroundColor: theme.background.val }}>
-            <YStack padding={0}>
-                <FlatList
-                    ref={flatListRef}
-                    data={messages}
-                    renderItem={renderItem}
-                    keyExtractor={(item) => item.id}
-                    contentContainerStyle={{ padding: 20, paddingBottom: 120 }}
-                    showsVerticalScrollIndicator={false}
-                />
-            </YStack>
-            <KeyboardAvoidingView
-                behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-                keyboardVerticalOffset={80}
-                style={{ position: 'absolute', bottom: 0, left: 0, right: 0, paddingVertical: 14, paddingHorizontal: 16 }}
-            >
+
+        <>
+            <View style={{ flex: 1, backgroundColor: theme.background.val, }}>
+                <YStack padding={0}>
+                    <FlatList
+                        ref={flatListRef}
+                        scrollEnabled={false}
+                        data={messages}
+                        renderItem={renderItem}
+                        keyExtractor={(item) => item.id}
+                        contentContainerStyle={{ padding: 20, paddingBottom: 120 }}
+                        showsVerticalScrollIndicator={false}
+                    />
+                </YStack>
+
                 <XStack alignItems="flex-end" gap={10}>
                     <TextInput
                         value={input}
@@ -138,9 +136,7 @@ const NotificationDetails = () => {
                             minHeight: 44,
                             maxHeight: 120,
                             color: 'white',
-
                             paddingHorizontal: 18,
-                            // paddingTop: 12,
                             paddingBottom: 12,
                             fontSize: 14,
                             borderBottomWidth: 1,
@@ -149,6 +145,7 @@ const NotificationDetails = () => {
                         }}
                         onContentSizeChange={e => setInputHeight(Math.min(120, Math.max(44, e.nativeEvent.contentSize.height)))}
                     />
+                    <ChatInput onChange={setInput} value={input} placeholder="Type a message..." />
 
                 </XStack>
                 <TouchableOpacity
@@ -159,11 +156,12 @@ const NotificationDetails = () => {
 
                     <SendHorizonal color={!input.trim() ? theme.icon.val : theme.transparentBtnPrimaryColor.val} size={'20'} style={{ position: 'absolute', right: 16, bottom: 12 }} />
                 </TouchableOpacity>
-            </KeyboardAvoidingView>
-        </View>
+
+            </View>
+        </>
+
     );
 };
 
 export default NotificationDetails;
 
-const styles = StyleSheet.create({});

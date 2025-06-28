@@ -72,7 +72,7 @@ const ItemDetails = () => {
 
             queryClient.invalidateQueries({
                 queryKey: ["deliveries", user?.sub],
-                
+
             });
 
             refetch()
@@ -545,7 +545,7 @@ const ItemDetails = () => {
 
                     {/* Additional Action Buttons */}
                     <XStack marginTop="$4" gap="$2" width="90%" alignSelf="center" justifyContent="space-between">
-                        {data?.order?.order_type !== "package" && data?.order?.order_status === 'received' && (
+                        {data?.order?.order_type === "package" && (data?.order?.order_status === 'received' || data?.delivery?.delivery_status === 'delivered' || data?.delivery?.delivery_status === 'received') && (
                             <>
                                 <Button
                                     size={"$4"}

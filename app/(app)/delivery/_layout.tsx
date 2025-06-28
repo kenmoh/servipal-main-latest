@@ -55,6 +55,7 @@ const DeliveryLayout = () => {
                 },
                 contentStyle: {
                     backgroundColor: theme.background.val,
+                    // flex: 1
                 },
             }}
         >
@@ -105,12 +106,7 @@ const DeliveryLayout = () => {
                     title: "",
                 }}
             />
-            <Stack.Screen
-                name="[notificationId]"
-                options={{
-                    title: "",
-                }}
-            />
+
         </Stack>
     );
 };
