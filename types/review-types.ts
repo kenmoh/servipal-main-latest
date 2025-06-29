@@ -7,6 +7,7 @@ export type ReportType =
   | "others";
 
 type IssueStatus = "pending" | "investigating" | "resolved" | "dismissed";
+type ReporTag = "complainant" | "defendant";
 
 export type ReportedUserType = "vendor" | "customer" | "dispatch";
 
@@ -19,11 +20,33 @@ export interface ReportCreate {
   reported_user_type: ReportedUserType;
 }
 
-export interface ReposrtResponse extends ReportCreate {
+interface SenderInfo {
+  name?: string;
+  avatar?: string;
+}
+
+export interface MessageCreate {
+  content: string;
+}
+
+export interface ThreadMessage {
+  sender: SenderInfo;
+  message_type: string;
+  role: string;
+  date: string;
+  content: string;
+  read: boolean;
+}
+
+export interface ReposrtResponse {
   id: string;
-  issue_status: IssueStatus;
+  complainant_id: string;
+  description: string;
+  report_status: IssueStatus;
+  report_tag: ReporTag;
+  report_type: ReportedUserType;
   created_at: string;
-  updated_at: string;
+  thread: ThreadMessage[];
 }
 
 export interface ReportStatusUpdate {

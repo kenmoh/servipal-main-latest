@@ -8,7 +8,9 @@ import {
   VendorReviewResponse,
   ReportStatusUpdate,
   ReviewCreateResponse,
+  MessageCreate,
 } from "@/types/review-types";
+import { Message } from "yup";
 
 const REPORT_BASE_URL = "/reports";
 
@@ -41,7 +43,9 @@ export const fetchReport = async (
 };
 
 // Fetch reports
-export const fetchCurrentUserReports = async (userId: string): Promise<ReposrtResponse[]> => {
+export const fetchCurrentUserReports = async (
+  userId: string
+): Promise<ReposrtResponse[]> => {
   try {
     const response: ApiResponse<ReposrtResponse[] | ErrorResponse> =
       await apiClient.get(`${REPORT_BASE_URL}/${userId}`, {
@@ -100,6 +104,38 @@ export const createReport = async (
     throw new Error("An unexpected error occurred");
   }
 };
+// Create Report
+export const addMessage = async (
+  reportId: string,
+  reportData: MessageCreate
+): Promise<ReposrtResponse> => {
+  const data = {
+    content: reportData.content,
+  };
+  try {
+    const response: ApiResponse<ReposrtResponse | ErrorResponse> =
+      await apiClient.post(`${REPORT_BASE_URL}/${reportId}/message`, data, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+    if (!response.ok || !response.data || "detail" in response.data) {
+      const errorMessage =
+        response.data && "detail" in response.data
+          ? response.data.detail
+          : "Error creating message.";
+      throw new Error(errorMessage);
+    }
+    return response.data;
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    }
+    throw new Error("An unexpected error occurred");
+  }
+};
+
 // Update Report
 export const updateReportStatus = async (
   reportData: ReportStatusUpdate,

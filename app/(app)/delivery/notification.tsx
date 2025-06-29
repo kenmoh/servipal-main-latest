@@ -47,7 +47,7 @@ const DUMMY_NOTIFICATIONS = [
 
 const NotificationScreen = () => {
     const queryClient = useQueryClient();
-    const {user} = useAuth()
+    const { user } = useAuth()
 
     // Fetch notifications
     const {
@@ -57,7 +57,7 @@ const NotificationScreen = () => {
         refetch,
     } = useQuery({
         queryKey: ['notifications', user?.sub],
-        queryFn: () => fetchCurrentUserReports(user?.sub),
+        queryFn: () => fetchCurrentUserReports(user?.sub as string),
     });
 
     // Fetch badge count
@@ -121,6 +121,8 @@ const NotificationScreen = () => {
     // Use dummy data if no real notifications
     const notificationData = notifications.length > 0 ? notifications : DUMMY_NOTIFICATIONS;
 
+    console.log(notifications)
+
     return (
         <YStack flex={1} backgroundColor="$background" padding="$3">
             <XStack justifyContent="space-between" alignItems="center" marginBottom="$3">
@@ -140,19 +142,21 @@ const NotificationScreen = () => {
                 keyExtractor={(item) => item.id}
                 refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} />}
                 renderItem={({ item }) => (
-                    <TouchableOpacity onPress={() => router.push({ pathname: '/notification-detail/[notificationId]',
-                     params: { 
-                     	notificationId: item?.id,
-                     	reportTag: item?.report_tag,
-                     	thread: JSON.stringify(item?.thread),
-                     	complainantId: item?.complainant_id,
-                     	reportStatus: item?.report_status,
-                    } })}>
+                    <TouchableOpacity onPress={() => router.push({
+                        pathname: '/notification-detail/[notificationId]',
+                        params: {
+                            notificationId: item?.id,
+                            reportTag: item?.report_tag,
+                            thread: JSON.stringify(item?.thread),
+                            complainantId: item?.complainant_id,
+                            reportStatus: item?.report_status,
+                        }
+                    })}>
 
-                        <Card marginBottom="$3" padding="$3" backgroundColor={item.is_read ? '$cardDark' : '$yellow2'}>
+                        <Card marginBottom="$3" padding="$3">
                             <XStack justifyContent="space-between" alignItems="center">
-                                <Text fontWeight="bold" fontSize={16}>{item.title || 'Report'}</Text>
-                                {!item.is_read && (
+                                <Text fontWeight="bold" fontSize={16}>{item.report_type || 'Report'}</Text>
+                                {!item.report_status && (
                                     <Button size="$1" onPress={() => handleMarkRead(item.id)} disabled={markReadMutation.isPending}>
                                         {markReadMutation.isPending ? 'Marking...' : 'Mark as read'}
                                     </Button>
