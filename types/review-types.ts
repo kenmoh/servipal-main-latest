@@ -38,7 +38,7 @@ export interface ThreadMessage {
   read: boolean;
 }
 
-export interface ReposrtResponse {
+export interface ReportResponse {
   id: string;
   complainant_id: string;
   description: string;
@@ -46,6 +46,7 @@ export interface ReposrtResponse {
   report_tag: ReporTag;
   report_type: ReportedUserType;
   created_at: string;
+  is_read: boolean;
   thread: ThreadMessage[];
 }
 

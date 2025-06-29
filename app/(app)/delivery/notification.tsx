@@ -146,24 +146,21 @@ const NotificationScreen = () => {
                         pathname: '/notification-detail/[notificationId]',
                         params: {
                             notificationId: item?.id,
-                            reportTag: item?.report_tag,
-                            thread: JSON.stringify(item?.thread),
-                            complainantId: item?.complainant_id,
-                            reportStatus: item?.report_status,
+
                         }
                     })}>
 
-                        <Card marginBottom="$3" padding="$3">
+                        <Card marginBottom="$3" padding="$3" backgroundColor={item.is_read ? '$cardDark' : 'rgba(255, 255, 255, 0.17)'}>
                             <XStack justifyContent="space-between" alignItems="center">
-                                <Text fontWeight="bold" fontSize={16}>{item.report_type || 'Report'}</Text>
+                                <Text fontWeight="bold" fontSize={16} color={item.is_read ? '$text' : 'white'}>{item.report_type || 'Report'}</Text>
                                 {!item.report_status && (
                                     <Button size="$1" onPress={() => handleMarkRead(item.id)} disabled={markReadMutation.isPending}>
                                         {markReadMutation.isPending ? 'Marking...' : 'Mark as read'}
                                     </Button>
                                 )}
                             </XStack>
-                            <Text color="$icon" marginTop="$2">{item.description}</Text>
-                            <Text color="$gray8" fontSize={12} marginTop="$1">
+                            <Text color={item.is_read ? '$icon' : 'white'} marginTop="$2">{item.description}</Text>
+                            <Text color={item.is_read ? '$gray8' : 'rgba(255,255,255,0.7)'} fontSize={12} marginTop="$1">
                                 {new Date(item.created_at).toLocaleString()}
                             </Text>
                             {/* Uncomment below for admin delete */}

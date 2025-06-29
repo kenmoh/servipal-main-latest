@@ -2,7 +2,7 @@ import { apiClient } from "@/utils/client";
 import { ApiResponse } from "apisauce";
 import { ErrorResponse } from "./auth";
 import {
-  ReposrtResponse,
+  ReportResponse,
   ReportCreate,
   ReviewCreate,
   VendorReviewResponse,
@@ -17,10 +17,10 @@ const REPORT_BASE_URL = "/reports";
 // Fetch report
 export const fetchReport = async (
   reportId: string
-): Promise<ReposrtResponse[]> => {
+): Promise<ReportResponse> => {
   try {
-    const response: ApiResponse<ReposrtResponse[] | ErrorResponse> =
-      await apiClient.get(`${REPORT_BASE_URL}/${reportId}/detail`, {
+    const response: ApiResponse<ReportResponse | ErrorResponse> =
+      await apiClient.get(`${REPORT_BASE_URL}/${reportId}/report`, {
         headers: {
           "Content-Type": "application/json",
         },
@@ -45,9 +45,9 @@ export const fetchReport = async (
 // Fetch reports
 export const fetchCurrentUserReports = async (
   userId: string
-): Promise<ReposrtResponse[]> => {
+): Promise<ReportResponse[]> => {
   try {
-    const response: ApiResponse<ReposrtResponse[] | ErrorResponse> =
+    const response: ApiResponse<ReportResponse[] | ErrorResponse> =
       await apiClient.get(`${REPORT_BASE_URL}/${userId}`, {
         headers: {
           "Content-Type": "application/json",
@@ -74,7 +74,7 @@ export const fetchCurrentUserReports = async (
 export const createReport = async (
   orderId: string,
   reportData: ReportCreate
-): Promise<ReposrtResponse> => {
+): Promise<ReportResponse> => {
   const data = {
     description: reportData.description,
     reported_user_type: reportData.reported_user_type,
@@ -82,7 +82,7 @@ export const createReport = async (
     order_id: reportData.order_id,
   };
   try {
-    const response: ApiResponse<ReposrtResponse | ErrorResponse> =
+    const response: ApiResponse<ReportResponse | ErrorResponse> =
       await apiClient.post(`${REPORT_BASE_URL}/${orderId}/report`, data, {
         headers: {
           "Content-Type": "application/json",
@@ -108,12 +108,12 @@ export const createReport = async (
 export const addMessage = async (
   reportId: string,
   reportData: MessageCreate
-): Promise<ReposrtResponse> => {
+): Promise<ReportResponse> => {
   const data = {
     content: reportData.content,
   };
   try {
-    const response: ApiResponse<ReposrtResponse | ErrorResponse> =
+    const response: ApiResponse<ReportResponse | ErrorResponse> =
       await apiClient.post(`${REPORT_BASE_URL}/${reportId}/message`, data, {
         headers: {
           "Content-Type": "application/json",
@@ -145,7 +145,7 @@ export const updateReportStatus = async (
     issue_status: reportData.issue_status,
   };
   try {
-    const response: ApiResponse<ReposrtResponse | ErrorResponse> =
+    const response: ApiResponse<ReportResponse | ErrorResponse> =
       await apiClient.post(`${REPORT_BASE_URL}/${reportId}/update}`, data, {
         headers: {
           "Content-Type": "application/json",
