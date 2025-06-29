@@ -1,5 +1,6 @@
 import { View, Button, YStack } from 'tamagui'
 import React, { useEffect, useState } from 'react'
+import { KeyboardAvoidingView } from "react-native-keyboard-controller";
 import GoogleTextInput from "@/components/GoogleTextInput"
 import { useLocationStore } from '@/store/locationStore'
 import { useRouter } from 'expo-router'
@@ -49,6 +50,11 @@ const SendItem = () => {
   }, [origin, destination])
 
   return (
+     <KeyboardAvoidingView
+      behavior={"padding"}
+      keyboardVerticalOffset={100}
+      style={{  flex: 1,maxHeight: 600,}}
+    >
     <View backgroundColor={'$background'} flex={1}>
       <YStack marginTop={'$5'} gap={25}>
         <CurrentLocationButton
@@ -96,6 +102,7 @@ const SendItem = () => {
         Next
       </Button>
     </View>
+     </KeyboardAvoidingView>
   )
 }
 

@@ -41,10 +41,10 @@ export const fetchReport = async (
 };
 
 // Fetch reports
-export const fetchCurrentReports = async (): Promise<ReposrtResponse[]> => {
+export const fetchCurrentUserReports = async (userId: string): Promise<ReposrtResponse[]> => {
   try {
     const response: ApiResponse<ReposrtResponse[] | ErrorResponse> =
-      await apiClient.get(`${REPORT_BASE_URL}`, {
+      await apiClient.get(`${REPORT_BASE_URL}/${userId}`, {
         headers: {
           "Content-Type": "application/json",
         },
@@ -68,21 +68,18 @@ export const fetchCurrentReports = async (): Promise<ReposrtResponse[]> => {
 
 // Create Report
 export const createReport = async (
+  orderId: string,
   reportData: ReportCreate
 ): Promise<ReposrtResponse> => {
   const data = {
     description: reportData.description,
-    reporting: reportData.reporting,
-    issue_type: reportData.issue_type,
-    delivery_id: reportData.delivery_id || "",
-    dispatch_id: reportData.dispatch_id,
-    vendor_id: reportData.vendor_id,
-    customer_id: reportData.customer_id,
-    reporter_id: reportData.reporter_id,
+    reported_user_type: reportData.reported_user_type,
+    report_type: reportData.report_type,
+    order_id: reportData.order_id,
   };
   try {
     const response: ApiResponse<ReposrtResponse | ErrorResponse> =
-      await apiClient.post(`${REPORT_BASE_URL}`, data, {
+      await apiClient.post(`${REPORT_BASE_URL}/${orderId}/report`, data, {
         headers: {
           "Content-Type": "application/json",
         },

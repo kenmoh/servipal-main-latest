@@ -131,7 +131,7 @@ const Page = () => {
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
     const [hasItem, setHasItem] = useState(false);
 
-    const { data, isFetching, error, refetch } = useQuery({
+    const { data, isFetching, isPending, error, isLoading, refetch } = useQuery({
         queryKey: ["restaurants", selectedCategory],
         queryFn: () => fetchRestaurants(selectedCategory ?? undefined),
     });
@@ -254,7 +254,7 @@ const Page = () => {
         );
     }
 
-    const showEmptyState = !isFetching && filteredRestaurants.length === 0;
+    const showEmptyState = !isFetching && !isPending && !isLoading && filteredRestaurants.length === 0;
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: theme.background.val }}>
@@ -269,7 +269,7 @@ const Page = () => {
             />
             <Separator />
 
-            {showEmptyState ? (
+            {showEmptyState  ? (
                 <YStack flex={1} justifyContent="center" alignItems="center" padding="$4">
                     <Heading fontSize={18} color="$text" textAlign="center">
                         {selectedCategory ? "No restaurants found in this category" : "No restaurants found nearby"}
@@ -314,13 +314,6 @@ const Page = () => {
                 />
             )}
             
-            {/* Uncomment if needed */}
-            {/* {user?.user_type === "restaurant_vendor" && !hasItem && (
-                <FAB
-                    icon={<Plus size={25} color={theme.text.val} />}
-                    onPress={() => router.push({ pathname: "/restaurant-detail/addMenu" })}
-                />
-            )} */}
         </SafeAreaView>
     );
 };

@@ -17,7 +17,8 @@ type PickerProps = {
     placeholder?: string;
     isBank?: boolean;
     selectedValue?: string;
-    enabled?: boolean
+    enabled?: boolean,
+    width?: string;
     onValueChange: (val: string) => void;
 };
 const AppPicker = ({
@@ -28,12 +29,13 @@ const AppPicker = ({
     placeholder,
     onValueChange,
     isBank = false,
-    enabled = true
+    enabled = true,
+    width = '90%'
 }: PickerProps) => {
     const theme = useTheme();
     return (
         <View
-            width={"90%"}
+            width={width}
             overflow="hidden"
             alignSelf="center"
             marginVertical={"$1.5"}

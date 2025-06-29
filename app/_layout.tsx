@@ -92,7 +92,7 @@ export default function RootLayout() {
   }
 
   return (
-
+<KeyboardProvider statusBarTranslucent={true} navigationBarTranslucent={true}>
     <QueryClientProvider client={queryClient}>
       <GestureHandlerRootView style={{ flex: 1 }}>
         <TamaguiProvider config={tamaguiConfig} defaultTheme={colorScheme!}>
@@ -227,6 +227,7 @@ export default function RootLayout() {
         </TamaguiProvider>
       </GestureHandlerRootView>
     </QueryClientProvider>
+    </KeyboardProvider>
 
   );
 }

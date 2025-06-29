@@ -1,4 +1,4 @@
-type IssueType =
+export type ReportType =
   | "damage_items"
   | "wrong_items"
   | "late_delivery"
@@ -8,20 +8,15 @@ type IssueType =
 
 type IssueStatus = "pending" | "investigating" | "resolved" | "dismissed";
 
-type ReportingType = "vendor" | "customer" | "dispatch";
+export type ReportedUserType = "vendor" | "customer" | "dispatch";
 
 export type ReviewerType = "order" | "product";
 
 export interface ReportCreate {
-  order_id?: string;
-  delivery_id?: string;
-  dispatch_id?: string;
-  vendor_id?: string;
-  reporter_id: string;
-  customer_id?: string;
+  order_id: string;
   description: string;
-  issue_type: IssueType;
-  reporting: ReportingType;
+  report_type: ReportType;
+  reported_user_type: ReportedUserType;
 }
 
 export interface ReposrtResponse extends ReportCreate {

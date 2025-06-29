@@ -139,12 +139,6 @@ const ItemDetails = () => {
                 queryKey: ["deliveries", user?.sub],
             });
 
-            setTimeout(() => {
-                refetch().then((result) => {
-                    console.log("Refetched delivery data after delay:", result.data);
-                });
-            }, 500);
-
             refetch();
 
             Notifier.showNotification({
