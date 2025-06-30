@@ -36,7 +36,7 @@ const DeliveryTypeIcon = React.memo(({ type, size = 12, theme }: DeliveryIconPro
 DeliveryTypeIcon.displayName = 'DeliveryTypeIcon';
 
 // Memoize the Status component
-export const Status = React.memo(({ status }: { status?: DeliveryStatus }) => {
+export const Status = React.memo(({ status, label }: { label?: string, status?: DeliveryStatus }) => {
     const getStatusColors = (status?: DeliveryStatus) => {
         switch (status) {
             case 'pending':
@@ -72,7 +72,7 @@ export const Status = React.memo(({ status }: { status?: DeliveryStatus }) => {
                 fontSize={11}
                 textTransform='capitalize'
             >
-                {status}
+                {label || status}
             </Text>
         </View>
     );
@@ -313,7 +313,10 @@ const ItemCard = React.memo(({ data, isHomeScreen = false }: CardProp) => {
                     </XStack>
 
                     {!isHomeScreen && <XStack gap={5}>
-                        <Status status={data?.order?.require_delivery === 'delivery' ? data?.delivery?.delivery_status : data?.order?.order_status} />
+                        <Status
+                            label={data?.delivery?.delivery_status === 'accepted' ? 'Assigned' : undefined}
+                            status={data?.order?.require_delivery === 'delivery' ? data?.delivery?.delivery_status : data?.order?.order_status}
+                        />
                         <PaymentStatusColor status={data?.order?.order_payment_status} />
                     </XStack>}
 

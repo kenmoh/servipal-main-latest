@@ -106,7 +106,7 @@ const StoreDetails = () => {
                 onPress={() => router.push({ pathname: "/cart" })}
             />
 
-            {user?.user_type === "restaurant_vendor" && data && data?.[0]?.restaurant_id === user?.sub && (
+            {user?.user_type === "restaurant_vendor" && restaurantId === user?.sub && (
                 <FAB
                     icon={<Menu color={"white"} />}
                     onPress={() =>
