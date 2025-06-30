@@ -422,7 +422,6 @@ const styles = StyleSheet.create({
 
 
 
-
 // import React, { useEffect, useState, useCallback } from "react";
 // import { StyleSheet, FlatList, Image } from "react-native";
 // import {
@@ -829,3 +828,5 @@ const styles = StyleSheet.create({
 //         resizeMode: "cover",
 //     },
 // });
+
+

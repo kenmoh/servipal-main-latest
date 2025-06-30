@@ -32,6 +32,11 @@ const ReceiptPage = () => {
             return text.substring(0, maxLength) + '...';
         };
 
+        // Calculate total: sum of items total and delivery fee if present
+        const itemsTotal = Number(data.order?.total_price || 0) - Number(data.delivery?.delivery_fee || 0);
+        const deliveryFee = Number(data.delivery?.delivery_fee || 0);
+        const total = itemsTotal + deliveryFee;
+
         return `
             <html>
                 <head>
@@ -204,18 +209,18 @@ const ReceiptPage = () => {
                             ${data.order?.order_items && data.order.order_items.length > 0 ? `
                                 <div class="row">
                                     <span>Items Total</span>
-                                    <span class="amount">₦${Number(data.order?.total_price || 0 - Number(data.delivery?.delivery_fee || 0)).toFixed(2)}</span>
+                                    <span class="amount">₦${itemsTotal.toFixed(2)}</span>
                                 </div>
                             ` : ''}
                             ${data.delivery?.delivery_fee ? `
                                 <div class="row">
                                     <span>Delivery Fee</span>
-                                    <span class="amount">₦${Number(data.delivery?.delivery_fee).toFixed(2)}</span>
+                                    <span class="amount">₦${deliveryFee.toFixed(2)}</span>
                                 </div>
                             ` : ''}
                             <div class="row total">
                                 <span>Total Amount</span>
-                                <span class="amount">₦${Number(data.order?.total_price).toFixed(2)}</span>
+                                <span class="amount">₦${total.toFixed(2)}</span>
                             </div>
                             <div class="row">
                                 <span>Payment Status</span>
@@ -338,6 +343,10 @@ const ReceiptPage = () => {
         return <LoadingIndicator />;
     }
 
+    if (!data) {
+        return null;
+    }
+
     return (
         <ScrollView style={{ flex: 1, backgroundColor: theme.background.val, alignContent: 'center' }} >
             <YStack gap="$4" style={{ flex: 1, overflow: 'scroll' }}>
@@ -358,7 +367,7 @@ const ReceiptPage = () => {
                         {data?.order?.order_items && data.order.order_items.length > 0 && (
                             <XStack justifyContent="space-between">
                                 <Text>Items Total</Text>
-                                <Text>₦{Number(data.order?.total_price || 0 - Number(data.delivery?.delivery_fee || 0)).toFixed(2)}</Text>
+                                <Text>₦{(Number(data.order?.total_price || 0) - Number(data.delivery?.delivery_fee || 0)).toFixed(2)}</Text>
                             </XStack>
                         )}
 
@@ -371,7 +380,9 @@ const ReceiptPage = () => {
 
                         <XStack justifyContent="space-between">
                             <Text>Total Amount</Text>
-                            <Text fontWeight="bold">₦{Number(data?.order?.total_price).toFixed(2)}</Text>
+                            <Text fontWeight="bold">₦{(
+                                (Number(data.order?.total_price || 0) + Number(data.delivery?.delivery_fee || 0))
+                            ).toFixed(2)}</Text>
                         </XStack>
 
                         <XStack justifyContent="space-between">

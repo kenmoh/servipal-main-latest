@@ -1,6 +1,6 @@
-import { StyleSheet } from "react-native";
+import { ActivityIndicator, StyleSheet } from "react-native";
 import React, { useState } from "react";
-import { ScrollView, View, Button, Text, XStack } from "tamagui";
+import { ScrollView, View, Button, Text, XStack, useTheme } from "tamagui";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
@@ -15,6 +15,8 @@ import LoadingIndicator from "@/components/LoadingIndicator";
 import { queryClient } from "../_layout";
 import { useAuth } from '@/context/authContext'
 import type { ItemType, FoodGroup } from "@/types/item-types";
+import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
+import { useLocalSearchParams } from 'expo-router';
 
 const foodGroupOption = [
 
@@ -48,8 +50,29 @@ type FormData = z.infer<typeof schema>;
 
 const addMenu = () => {
     const [visble, setVisble] = useState(false);
-    const [selectedItemType, setSelectedItemType] = useState<string>("food");
     const { user } = useAuth()
+    const theme = useTheme();
+    const params = useLocalSearchParams();
+    const isEditing = Boolean(params.id);
+
+    // If params are present, use them to prefill
+    const paramItem = isEditing && params.name ? {
+        id: params.id,
+        name: params.name as string,
+        description: params.description as string,
+        price: Number(params.price),
+        images: params.images ? (() => {
+            try {
+                const parsed = JSON.parse(params.images as string);
+                return Array.isArray(parsed) ? parsed : [];
+            } catch {
+                return [];
+            }
+        })() : [],
+        item_type: params.item_type as string,
+        side: params.side ? params.side as string : '',
+    } : null;
+
 
     const {
         control,
@@ -62,7 +85,6 @@ const addMenu = () => {
         defaultValues: {
             name: "",
             description: "",
-            // price: 0,
             images: [],
             category_id: "",
             side: "",
@@ -151,6 +173,22 @@ const addMenu = () => {
         },
     });
 
+    // Prefill form when paramItem or itemData is loaded
+    React.useEffect(() => {
+        if (paramItem) {
+            reset({
+                name: paramItem.name || '',
+                description: paramItem.description || '',
+                price: paramItem.price || 0,
+                images: paramItem.images && paramItem.images.length > 0 ? [paramItem.images[0].url] : [],
+                itemType: paramItem.item_type || 'food',
+                side: paramItem.side || '',
+                // category_id, foodGroup left as default
+            });
+        }
+
+    }, []);
+
     const onSubmit = (data: FormData) => {
         console.log(data)
         itemMutate({
@@ -163,7 +201,7 @@ const addMenu = () => {
 
     return (
         <>
-            <ScrollView backgroundColor={"$background"} flex={1} showsVerticalScrollIndicator={false}>
+            <KeyboardAwareScrollView style={{ backgroundColor: theme.background.val }}>
                 <View marginTop={"$3"} marginBottom={"$12"}>
                     <Controller
                         control={control}
@@ -301,10 +339,10 @@ const addMenu = () => {
                         width={"90%"}
                         onPress={handleSubmit(onSubmit)}
                     >
-                        {isCreating ? <LoadingIndicator /> : "Submit"}
+                        {isCreating ? <ActivityIndicator color={"white"} size={'large'} /> : "Submit"}
                     </Button>
                 </View>
-            </ScrollView>
+            </KeyboardAwareScrollView>
             <AppModal visible={visble} onClose={() => setVisble(false)}>
                 <Text style={{ fontFamily: "Poppins-Medium" }}>Add New Category</Text>
                 <Controller
@@ -335,7 +373,7 @@ const addMenu = () => {
                         mutate(data);
                     })}
                 >
-                    {isPending ? <LoadingIndicator /> : "Add Category"}
+                    {isPending ? <ActivityIndicator color={"white"} size={'large'} /> : "Add Category"}
                 </Button>
             </AppModal>
         </>

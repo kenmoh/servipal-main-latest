@@ -2,22 +2,26 @@ import { StyleSheet, Image, Pressable } from 'react-native'
 import { MenuItem } from "@/types/item-types"
 import React from 'react'
 import { Card, Heading, Paragraph, Checkbox, Square, useTheme, XStack, YStack } from 'tamagui'
-import { Check } from 'lucide-react-native'
+import { Check, Edit, Trash } from 'lucide-react-native'
 import { useCartStore } from '@/store/cartStore'
 import { useAuth } from '@/context/authContext'
 import { Notifier, NotifierComponents } from 'react-native-notifier'
+import { AntDesign } from '@expo/vector-icons'
+import { router } from 'expo-router'
 
-const FoodCard = ({ item, onPress, cardType }: {
+const FoodCard = ({ item, onPress, cardType, onDelete }: {
     item: MenuItem,
     cardType: 'RESTAURANT' | 'LAUNDRY',
-    onPress: (id: string) => void
+    onPress: (id: string) => void,
+    onDelete?: (id: string) => void
 }) => {
     const theme = useTheme()
     const { user } = useAuth()
     const cartItems = useCartStore(state => state.cart.order_items)
-
     // Check if item exists in cart
     const isChecked = cartItems.some(cartItem => cartItem.item_id === item.id)
+
+    const isOwner = user?.user_type === 'restaurant_vendor' && user?.sub === item.user_id;
 
     return (
         <Pressable style={({ pressed }) => [{ opacity: pressed ? 0.5 : 1 }]} >
@@ -31,6 +35,41 @@ const FoodCard = ({ item, onPress, cardType }: {
                 marginVertical='$1.5'
                 backgroundColor={'$cardBackground'}
             >
+                {/* Edit/Delete buttons for owner */}
+                {isOwner && (
+                    <XStack position="absolute" top={10} right={10} gap={20} zIndex={2}>
+                        <Pressable
+                            onPress={() => router.push({
+                                pathname: '/restaurant-detail/addMenu',
+                                params: {
+                                    id: item.id,
+                                    name: item.name,
+                                    description: item.description,
+                                    price: item.price,
+                                    images: JSON.stringify(item.images),
+                                    item_type: item.item_type,
+                                }
+                            })}
+                            hitSlop={10}
+                            style={({ pressed }) => [{ opacity: pressed ? 0.5 : 1, transform: [{ scale: pressed ? 0.95 : 1 }] }]}
+                        >
+                            <Edit color={theme.icon.val} size={15} />
+                        </Pressable>
+                        <Pressable
+                            onPress={() => onDelete ? onDelete(item.id) : Notifier.showNotification({
+                                title: "Delete",
+                                description: "Delete action triggered",
+                                Component: NotifierComponents.Alert,
+                                duration: 2000,
+                                componentProps: { alertType: "warn" },
+                            })}
+                            hitSlop={10}
+                            style={({ pressed }) => [{ opacity: pressed ? 0.5 : 1, transform: [{ scale: pressed ? 0.95 : 1 }] }]}
+                        >
+                            <Trash color={theme.red10.val} size={15} />
+                        </Pressable>
+                    </XStack>
+                )}
                 <XStack gap={'$4'}>
                     <Square height={80} width={80} borderRadius={'$3'} overflow='hidden'>
                         <Image
@@ -66,7 +105,7 @@ const FoodCard = ({ item, onPress, cardType }: {
                     bottom={10}
                     hitSlop={25}
                     size={'$5'}
-                    disabled={user?.user_type === 'vendor'}
+                    disabled={user?.user_type === 'restaurant_vendor'}
                     onPressIn={user?.sub !== item?.user_id ? () => onPress(item.id) : () => Notifier.showNotification({
                         title: "Not Allowed",
                         description: "You cannot order from your restaurant",

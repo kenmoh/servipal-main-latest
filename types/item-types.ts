@@ -73,10 +73,10 @@ interface MenuBase {
 }
 
 export interface MenuItem extends MenuBase {
-  restaurant_id: string;
+  user_id: string;
   description: string;
 }
 
 export interface LaundryMenuItem extends MenuBase {
-  laundry_id: string;
+  user_id: string;
 }
