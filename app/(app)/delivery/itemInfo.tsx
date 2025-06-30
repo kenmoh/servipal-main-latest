@@ -14,7 +14,7 @@ import {
 } from "tamagui";
 import { z } from "zod";
 import { Notifier, NotifierComponents } from "react-native-notifier";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import AppTextInput from "@/components/AppInput";
@@ -25,6 +25,8 @@ import { Clock } from "lucide-react-native";
 import { sendItem } from "@/api/order";
 import { router } from "expo-router";
 import { ImageType } from "@/types/order-types";
+import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
+import { useAuth } from "@/context/authContext";
 
 const coordinatesSchema = z.tuple([
   z.number({ message: "Required" }).nullable(),
@@ -65,6 +67,7 @@ const ItemInfo = () => {
     useLocationStore();
 
   const theme = useTheme();
+  const { user } = useAuth()
   const [duration, setDuration] = useState("");
   const [distance, setDistance] = useState(0);
 
@@ -99,10 +102,25 @@ const ItemInfo = () => {
     distance: 0,
     duration: "",
   });
-
+  const queryClient = useQueryClient();
   const { mutate, isPending } = useMutation({
     mutationFn: sendItem,
     onSuccess: (data) => {
+      queryClient.invalidateQueries({
+        queryKey: ["deliveries", user?.sub],
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: ["delivery", data?.delivery?.id],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["delivery", data?.order?.id],
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: ["deliveries"],
+      });
+
       Notifier.showNotification({
         title: "Pending Payment Confirmation",
         description:
@@ -242,10 +260,7 @@ const ItemInfo = () => {
   };
 
   return (
-    <ScrollView
-      backgroundColor={"$background"}
-      flex={1}
-      showsVerticalScrollIndicator={false}
+    <KeyboardAwareScrollView
     >
       <YStack paddingLeft={20} gap={5}>
         <XStack alignItems="center" gap={10}>
@@ -440,7 +455,7 @@ const ItemInfo = () => {
           )}
         </Button>
       </View>
-    </ScrollView>
+    </KeyboardAwareScrollView>
   );
 };
 

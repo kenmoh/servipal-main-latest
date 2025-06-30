@@ -16,14 +16,7 @@ const PaymentComplete = () => {
     const txRef = params.txRef as string;
     const transactionId = params.transactionId as string;
 
-    console.log('Payment Complete - Extracted parameters:', {
-        paymentStatus,
-        txRef,
-        transactionId
-    });
-
     const isSuccess = paymentStatus === 'success';
-    console.log('Payment Complete - Payment status:', isSuccess ? 'Success' : 'Failed');
 
     return (
         <YStack
@@ -69,8 +62,8 @@ const PaymentComplete = () => {
             {/* Action buttons */}
             <XStack gap={16} marginTop="$10" alignItems="center">
                 {isSuccess && (
-                    <TouchableOpacity onPress={() => {
-                        console.log('Payment Complete - Navigating to receipt with txRef:', txRef);
+                    <TouchableOpacity onPressIn={() => {
+
                         router.push({
                             pathname: "/receipt/[deliveryId]",
                             params: { deliveryId: txRef }
@@ -105,8 +98,8 @@ const PaymentComplete = () => {
                 )}
 
                 <TouchableOpacity
-                    onPress={() => {
-                        console.log('Payment Complete - Navigating to home');
+                    onPressIn={() => {
+
                         router.replace({ pathname: "/delivery" });
                     }}
                 >

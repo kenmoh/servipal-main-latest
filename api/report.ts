@@ -9,6 +9,7 @@ import {
   ReportStatusUpdate,
   ReviewCreateResponse,
   MessageCreate,
+  BadgeCount,
 } from "@/types/review-types";
 import { Message } from "yup";
 
@@ -31,6 +32,33 @@ export const fetchReport = async (
         response.data && "detail" in response.data
           ? response.data.detail
           : "Error fetching report.";
+      throw new Error(errorMessage);
+    }
+    return response.data;
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    }
+    throw new Error("An unexpected error occurred");
+  }
+};
+// Fetch report
+export const fetchUnreadBadgeCount = async (
+  userId: string
+): Promise<BadgeCount> => {
+  try {
+    const response: ApiResponse<BadgeCount | ErrorResponse> =
+      await apiClient.get(`${REPORT_BASE_URL}/${userId}/unread-badge-count`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+    if (!response.ok || !response.data || "detail" in response.data) {
+      const errorMessage =
+        response.data && "detail" in response.data
+          ? response.data.detail
+          : "Error fetching badge count";
       throw new Error(errorMessage);
     }
     return response.data;
@@ -145,7 +173,7 @@ export const updateReportStatus = async (
     issue_status: reportData.issue_status,
   };
   try {
-    const response: ApiResponse<ReportResponse | ErrorResponse> =
+    const response: ApiResponse<ReportStatusUpdate | ErrorResponse> =
       await apiClient.post(`${REPORT_BASE_URL}/${reportId}/update}`, data, {
         headers: {
           "Content-Type": "application/json",
@@ -209,10 +237,10 @@ export const fetchNotificationById = async (notificationId: string) => {
 };
 
 // Mark notification as read
-export const markNotificationRead = async (notificationId: string) => {
+export const markReportRead = async (reportId: string) => {
   try {
     const response: ApiResponse<any> = await apiClient.post(
-      `/notification/${notificationId}/read`,
+      `${REPORT_BASE_URL}/${reportId}/mark-read`,
       {},
       { headers: { "Content-Type": "application/json" } }
     );

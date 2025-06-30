@@ -63,10 +63,6 @@ const StoreDetails = () => {
         [addItem, removeItem, storeId, checkedItems]
     );
 
-    console.log(selectedFoodGroup, 'SELECTED FOOD GROUP')
-    console.log(storeId, 'STORE ID', data)
-
-
     return (
         <View flex={1} backgroundColor={"$background"}>
             <YStack flex={1}>

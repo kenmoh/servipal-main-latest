@@ -1,5 +1,6 @@
+
 import React from "react";
-import { DeliveryType, fetchDeliveries, getTravelDistance } from "@/api/order";
+import { DeliveryType, fetchDeliveries, fetchPaidPendingDeliveries, getTravelDistance } from "@/api/order";
 import HDivider from "@/components/HDivider";
 import ItemCard from "@/components/ItemCard";
 import LoadingIndicator from "@/components/LoadingIndicator";
@@ -26,9 +27,8 @@ import { DeliveryListSkeleton, SearchBarSkeleton } from "@/components/LoadingSke
 
 const DeliveryScreen = () => {
   const theme = useTheme();
-  const { user, setProfile, profile } = useAuth();
+  const { user, setProfile } = useAuth();
   const { expoPushToken } = useNotification()
-  const [selectedType, setSelectedType] = useState<DeliveryType | "all">("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [locationPermission, setLocationPermission] = useState<boolean | null>(
     null
@@ -77,7 +77,7 @@ const DeliveryScreen = () => {
     mutationFn: registerForNotifications,
   });
 
-  const { data: userProfile, isSuccess, isLoading: profileIsLoading } = useQuery({
+  const { data: userProfile, isSuccess } = useQuery({
     queryKey: ["profile", user?.sub],
     queryFn: () => getCurrentUserProfile(user?.sub as string),
     refetchOnWindowFocus: true,
@@ -107,18 +107,10 @@ const DeliveryScreen = () => {
 
   const { data, isLoading, error, refetch, isFetching, isPending, isFetched } = useQuery({
     queryKey: ["deliveries"],
-    queryFn: () => fetchDeliveries(),
-    select: (data) => {
-      return (
-        data?.filter(
-          (order) =>
-            order.order.order_payment_status === "paid" &&
-            order.delivery?.delivery_status === "pending" && order?.order?.require_delivery === 'delivery'
-        ) || []
-      );
-    },
-
+    queryFn: () => fetchPaidPendingDeliveries(),
     refetchOnWindowFocus: true,
+    refetchOnMount: true,
+
   });
   // Handle location change
   const handleLocationChange = useCallback(
@@ -128,6 +120,7 @@ const DeliveryScreen = () => {
     },
     []
   );
+
 
   useLocationTracking(handleLocationChange);
 

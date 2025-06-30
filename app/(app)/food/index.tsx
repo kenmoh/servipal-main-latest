@@ -10,10 +10,9 @@ import {
 } from "tamagui";
 import StoreCard from "@/components/StoreCard";
 import * as Location from "expo-location";
-import { useTheme, View } from "tamagui";
+import { useTheme } from "tamagui";
 import { useQuery } from "@tanstack/react-query";
 import { fetchRestaurants } from "@/api/user";
-import LoadingIndicator from "@/components/LoadingIndicator";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Category from "@/components/Category";
 import AppTextInput from "@/components/AppInput";
@@ -23,10 +22,8 @@ import Swiper from "react-native-swiper";
 import { LinearGradient } from "expo-linear-gradient";
 import { getCoordinatesFromAddress } from "@/utils/geocoding";
 import { getTravelDistance } from "@/api/order";
-import FAB from "@/components/FAB";
-import { router } from "expo-router";
+
 import { useAuth } from "@/context/authContext";
-import { Plus } from "lucide-react-native";
 import { fetchCategories } from "@/api/item";
 import RefreshButton from "@/components/RefreshButton";
 import { StoreListSkeleton } from "@/components/LoadingSkeleton";
@@ -263,20 +260,20 @@ const Page = () => {
                     <AppTextInput
                         height="$3.5"
                         borderRadius={50}
-                        placeholder="Search Restaurants.."
+                        placeholder="Search.."
                     />
                 }
             />
             <Separator />
 
-            {showEmptyState  ? (
+            {showEmptyState ? (
                 <YStack flex={1} justifyContent="center" alignItems="center" padding="$4">
                     <Heading fontSize={18} color="$text" textAlign="center">
                         {selectedCategory ? "No restaurants found in this category" : "No restaurants found nearby"}
                     </Heading>
                     <Paragraph fontSize={14} color="$gray10" textAlign="center" marginTop="$2">
-                        {selectedCategory 
-                            ? "Try selecting a different category or clear the filter" 
+                        {selectedCategory
+                            ? "Try selecting a different category or clear the filter"
                             : "We couldn't find any restaurants within 100km of your location"
                         }
                     </Paragraph>
@@ -313,7 +310,7 @@ const Page = () => {
                     }}
                 />
             )}
-            
+
         </SafeAreaView>
     );
 };

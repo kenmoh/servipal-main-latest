@@ -5,8 +5,8 @@ import { StyleSheet, Image, Dimensions, TouchableOpacity } from "react-native";
 import { Card, Paragraph, YStack, XStack, useTheme, View } from "tamagui";
 import { LinearGradient } from "expo-linear-gradient";
 import { useAuth } from '@/context/authContext'
-
-
+import { getCoordinatesFromAddress } from '@/utils/geocoding';
+import { useLocationStore } from '@/store/locationStore';
 
 const IMAGET_HEIGHT = Dimensions.get("window").height * 0.25;
 
@@ -21,27 +21,36 @@ const StoreCard = ({
 }) => {
     const theme = useTheme();
     const { user } = useAuth()
+    const { setOrigin } = useLocationStore();
+
+    const handleStoreSelect = async () => {
+        const address = item?.location;
+        if (address) {
+            const coords = await getCoordinatesFromAddress(address);
+            if (coords) {
+                setOrigin(address, [coords.lat, coords.lng]);
+            }
+        }
+        router.push({
+            pathname: pathName as RelativePathString,
+            params: {
+                storeId: item?.id,
+                companyName: item?.company_name,
+                backDrop: item?.backdrop_image_url,
+                profileImage: item?.backdrop_image_url,
+                openingHour: item?.opening_hour,
+                closingHour: item?.closing_hour,
+                address: item?.location,
+                rating: item?.rating?.average_rating,
+                numberOfReviews: item?.rating.number_of_reviews,
+            },
+        });
+    };
 
     return (
         <TouchableOpacity
             activeOpacity={0.8}
-            onPress={() =>
-                router.push({
-                    pathname: pathName as RelativePathString,
-                    params: {
-                        storeId: item?.id,
-                        companyName: item?.company_name,
-                        backDrop: item?.backdrop_image_url,
-                        profileImage: item?.backdrop_image_url,
-                        openingHour: item?.opening_hour,
-                        closingHour: item?.closing_hour,
-                        address: item?.location,
-                        rating: item?.rating?.average_rating,
-                        numberOfReviews: item?.rating.number_of_reviews,
-
-                    },
-                })
-            }
+            onPress={handleStoreSelect}
         >
             <Card
                 width={"90%"}

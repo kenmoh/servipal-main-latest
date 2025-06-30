@@ -164,8 +164,8 @@ const ItemCard = React.memo(({ data, isHomeScreen = false }: CardProp) => {
 
     const handleGoToReceipt = (orderId: string) => {
         router.push({
-             pathname: "/orderReceipt/[orderId]",
-            params: {orderId: orderId as string }
+            pathname: "/orderReceipt/[orderId]",
+            params: { orderId: orderId as string }
         })
     }
 
@@ -175,7 +175,7 @@ const ItemCard = React.memo(({ data, isHomeScreen = false }: CardProp) => {
     const itemName = React.useMemo(() => firstOrderItem?.name, [firstOrderItem?.name]);
 
     return (
-        <TouchableOpacity activeOpacity={0.6} onPress={data?.order?.require_delivery==='delivery'? handlePress: ()=>handleGoToReceipt(data?.order?.id)}>
+        <TouchableOpacity activeOpacity={0.6} onPress={data?.order?.require_delivery === 'delivery' ? handlePress : () => handleGoToReceipt(data?.order?.id)}>
             <Card padding={10} >
                 <XStack flex={1}>
                     {/* Left side container */}
@@ -202,13 +202,13 @@ const ItemCard = React.memo(({ data, isHomeScreen = false }: CardProp) => {
                         <YStack flex={1} gap={5}>
                             <XStack gap={5} alignItems="center">
                                 <DeliveryTypeIcon
-                                    type={data?.order?.require_delivery==='delivery' ? data?.delivery?.delivery_type! : data?.order?.order_type!}
+                                    type={data?.order?.require_delivery === 'delivery' ? data?.delivery?.delivery_type! : data?.order?.order_type!}
                                     theme={theme}
                                 />
                                 <Text
                                     color="$text"
                                     fontFamily="$body"
-                                    fontSize={data?.order?.require_delivery==='delivery'?11: 16}
+                                    fontSize={data?.order?.require_delivery === 'delivery' ? 11 : 16}
                                     numberOfLines={1}
                                     flex={1}
                                 >
@@ -216,23 +216,23 @@ const ItemCard = React.memo(({ data, isHomeScreen = false }: CardProp) => {
                                 </Text>
 
                             </XStack>
-                           
-                              {data?.order?.require_delivery==='pickup' && 
-                                <XStack gap={5}>
-                                     <Landmark  size={15} color={theme.icon.val}/>
 
-                               <Text
-                                            flex={1}
-                                            color="$text"
-                                            fontFamily="$body"
-                                            fontSize={11}
-                                            numberOfLines={2}
-                                        >
-                                            {data?.order?.business_name}
-                                        </Text>
+                            {data?.order?.require_delivery === 'pickup' &&
+                                <XStack gap={5}>
+                                    <Landmark size={15} color={theme.icon.val} />
+
+                                    <Text
+                                        flex={1}
+                                        color="$text"
+                                        fontFamily="$body"
+                                        fontSize={11}
+                                        numberOfLines={2}
+                                    >
+                                        {data?.order?.business_name}
+                                    </Text>
                                 </XStack>
 
-                                    }
+                            }
 
                             {data?.order?.require_delivery === 'delivery' &&
 
@@ -276,15 +276,15 @@ const ItemCard = React.memo(({ data, isHomeScreen = false }: CardProp) => {
 
                             }
 
-                          { data?.order?.require_delivery==='delivery' && <XStack gap={5} alignItems="center" flexWrap="wrap">
-                                                          <XStack gap={5} alignItems="center" flexShrink={0}>
-                                                              <Feather name="clock" color={theme.icon.val} size={10} />
-                                                              <Text color="$text" fontFamily="$body" fontSize={11}>
-                                                                  {data?.delivery ? data?.delivery?.duration : ''}
-                                                              </Text>
-                                                          </XStack>
-                                                          {/* {'DISTANCE HERE IF NEEDED'} */}
-                                                      </XStack>}
+                            {data?.order?.require_delivery === 'delivery' && <XStack gap={5} alignItems="center" flexWrap="wrap">
+                                <XStack gap={5} alignItems="center" flexShrink={0}>
+                                    <Feather name="clock" color={theme.icon.val} size={10} />
+                                    <Text color="$text" fontFamily="$body" fontSize={11}>
+                                        {data?.delivery ? data?.delivery?.duration : ''}
+                                    </Text>
+                                </XStack>
+                                {/* {'DISTANCE HERE IF NEEDED'} */}
+                            </XStack>}
                         </YStack>
                     </XStack>
 
@@ -303,21 +303,21 @@ const ItemCard = React.memo(({ data, isHomeScreen = false }: CardProp) => {
                 >
                     <XStack gap={5} alignItems="center">
                         <AntDesign name="wallet" color={theme.icon.val} size={10} />
-                        {data?.order?.require_delivery==='delivery'? (
-<Text color="$text" fontFamily="$heading" fontSize={12} fontWeight="700">
-                            ₦ {Number(data?.delivery?.delivery_fee).toFixed(2)}
-                        </Text>
-                            ) : (<Text color="$text" fontFamily="$heading" fontSize={12} fontWeight="700">
+                        {data?.order?.require_delivery === 'delivery' ? (
+                            <Text color="$text" fontFamily="$heading" fontSize={12} fontWeight="700">
+                                ₦ {Number(data?.delivery?.delivery_fee).toFixed(2)}
+                            </Text>
+                        ) : (<Text color="$text" fontFamily="$heading" fontSize={12} fontWeight="700">
                             ₦ {Number(data?.order?.total_price).toFixed(2)}
                         </Text>)}
                     </XStack>
 
-                    <XStack gap={5}>
-                        <Status status={data?.order?.require_delivery==='delivery' ? data?.delivery?.delivery_status: data?.order?.order_status} />
+                    {!isHomeScreen && <XStack gap={5}>
+                        <Status status={data?.order?.require_delivery === 'delivery' ? data?.delivery?.delivery_status : data?.order?.order_status} />
                         <PaymentStatusColor status={data?.order?.order_payment_status} />
-                    </XStack>
+                    </XStack>}
 
-                    
+
                 </XStack>
             </Card>
         </TouchableOpacity>

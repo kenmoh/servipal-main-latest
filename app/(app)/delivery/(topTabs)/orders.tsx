@@ -1,4 +1,4 @@
-import { fetchDeliveries } from "@/api/order";
+import { fetchDeliveries, fetchUserRelatedOrders } from "@/api/order";
 import HDivider from "@/components/HDivider";
 import ItemCard from "@/components/ItemCard";
 import LoadingIndicator from "@/components/LoadingIndicator";
@@ -27,27 +27,11 @@ const UserOrders = () => {
     const { user } = useAuth();
 
     const { data, isLoading, error, refetch, isFetching, isPending, isFetched } = useQuery({
-        queryKey: ["deliveries", user?.sub ],
-        queryFn: () => fetchDeliveries(),
-        select: (data) => {
-            if (!user?.sub || !data) return [];
+        queryKey: ["deliveries", user?.sub],
+        queryFn: () => fetchUserRelatedOrders(user?.sub as string),
+        refetchOnWindowFocus: true,
+        refetchOnMount: true,
 
-            // return data.filter(
-            //     (order) =>
-            //         order?.delivery?.sender_id === user.sub ||
-            //         order?.delivery?.vendor_id === user.sub ||
-            //         order?.delivery?.dispatch_id === user.sub ||
-            //         order?.delivery?.rider_id === user.sub
-            // );
-
-            return data.filter(
-                (order) =>
-                    order?.order?.user_id === user.sub ||
-                    order?.order?.vendor_id === user.sub ||
-                    order?.delivery?.dispatch_id === user.sub ||
-                    order?.delivery?.rider_id === user.sub
-            );
-        },
 
     });
 

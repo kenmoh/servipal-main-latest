@@ -80,7 +80,6 @@ const TabBarLayout = () => {
 
                 tabBarActiveTintColor: theme.btnPrimaryColor.val,
 
-
                 // headerShown: false,
 
 

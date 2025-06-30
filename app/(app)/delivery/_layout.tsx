@@ -1,9 +1,12 @@
-import { Image, StyleSheet, TouchableOpacity } from "react-native";
+import { Image, StyleSheet, TouchableOpacity, Text } from "react-native";
 import React from "react";
 import { router, Stack } from "expo-router";
 import { Circle, Input, useTheme, View, XStack } from "tamagui";
 import { BellIcon, Search, UserRound } from "lucide-react-native";
 import AppTextInput from "@/components/AppInput";
+import { useQuery } from "@tanstack/react-query";
+import { fetchNotificationBadgeCount, fetchUnreadBadgeCount } from "@/api/report";
+import { useAuth } from "@/context/authContext";
 
 
 
@@ -15,13 +18,53 @@ const HeaderRight = ({
     onPressNotification: () => void;
 }) => {
     const theme = useTheme()
+    const { user } = useAuth()
+    const {
+        data: badges,
+    } = useQuery({
+        queryKey: ["notification-badge"],
+        queryFn: () => fetchUnreadBadgeCount(user?.sub as string),
+        // refetchInterval: 5000),
+        enabled: !!user?.sub,
+    });
+
+    console.log(badges)
+
     return (
         <XStack gap={"$3"}>
-
-            <Circle backgroundColor={"$cardDark"} width={"$4"} height={"$4"}>
+            <Circle backgroundColor={"$cardDark"} width={"$4"} height={"$4"} position="relative">
                 <TouchableOpacity onPressIn={onPressNotification}>
                     <BellIcon color={"#fff"} />
                 </TouchableOpacity>
+                {/* Badge for unread notifications */}
+                {badges && badges.unread_count > 0 && (
+                    <View
+                        style={{
+                            position: 'absolute',
+                            top: -5,
+                            right: -5,
+                            backgroundColor: theme.btnPrimaryColor.val,
+                            borderRadius: 10,
+                            minWidth: 20,
+                            height: 20,
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            borderWidth: 2,
+                            borderColor: theme.background.val,
+                        }}
+                    >
+                        <Text
+                            style={{
+                                color: 'white',
+                                fontSize: 10,
+                                fontWeight: 'bold',
+                                fontFamily: 'Poppins-Bold',
+                            }}
+                        >
+                            {badges.unread_count > 99 ? '99+' : badges.unread_count}
+                        </Text>
+                    </View>
+                )}
             </Circle>
         </XStack>
     );

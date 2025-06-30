@@ -6,13 +6,15 @@ export type PaymentStatus = "pending" | "paid" | "failed" | "cancelled";
 export type RiderDeliveryStatus = "in transit" | "delivered" | "canceled";
 export type SenderDeliveryStatus = "received";
 export type LaundryDeliveryStatus = "laundry received";
+
 export type DeliveryStatus =
   | "accepted"
   | "pending"
   | "delivered"
   | "received"
   | "laundry_received"
-  | "canceled";
+  | "canceled"
+  | "in-transit";
 
 export interface ImageType {
   url: string;

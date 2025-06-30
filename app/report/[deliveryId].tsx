@@ -13,7 +13,7 @@ import { ReportedUserType, ReportType } from "@/types/review-types";
 
 
 const ISSUE_TYPES = [
-    { id: "damaged_items", name: "Damaged Items" },
+    { id: "damage_items", name: "Damaged Items" },
     { id: "wrong_items", name: "Wrong Items" },
     { id: "late_delivery", name: "Late Delivery" },
     { id: "rider_behaviour", name: "Rider Behavior" },
@@ -65,7 +65,7 @@ const ReportPage = () => {
             });
         },
         onSuccess: (data) => {
-            
+
             queryClient.invalidateQueries({ queryKey: ["delivery", deliveryId] });
             Notifier.showNotification({
                 title: "Success",
@@ -98,7 +98,7 @@ const ReportPage = () => {
             >
                 <View backgroundColor={"$background"} flex={1} padding="$4">
                     <YStack gap="$4">
-                           <YStack gap="$2">
+                        <YStack gap="$2">
                             <Text>Issue</Text>
                             <Controller
                                 control={control}
@@ -137,7 +137,7 @@ const ReportPage = () => {
                             )}
                         </YStack>
 
-                     
+
 
                         <YStack gap="$2">
                             <Text>Description</Text>

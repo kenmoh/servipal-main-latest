@@ -20,6 +20,63 @@ interface FetchDeliveriesParams {
   limit?: number;
 }
 
+// Fetch Paid Pending Deliveries
+export const fetchPaidPendingDeliveries = async (): Promise<
+  DeliveryDetail[]
+> => {
+  try {
+    const response: ApiResponse<DeliveryDetail[] | ErrorResponse> =
+      await apiClient.get(`${BASE_URL}/paid-pending-deliveries`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+    if (!response.ok || !response.data || "detail" in response.data) {
+      const errorMessage =
+        response.data && "detail" in response.data
+          ? response.data.detail
+          : "Error fetching deliveries.";
+      throw new Error(errorMessage);
+    }
+
+    return response.data;
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    }
+    throw new Error("An unexpected error occurred");
+  }
+};
+// Fetch Paid Pending Deliveries
+export const fetchUserRelatedOrders = async (
+  userId: string
+): Promise<DeliveryDetail[]> => {
+  try {
+    const response: ApiResponse<DeliveryDetail[] | ErrorResponse> =
+      await apiClient.get(`${BASE_URL}/${userId}/user-related-orders`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+    if (!response.ok || !response.data || "detail" in response.data) {
+      const errorMessage =
+        response.data && "detail" in response.data
+          ? response.data.detail
+          : "Error fetching deliveries.";
+      throw new Error(errorMessage);
+    }
+
+    return response.data;
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    }
+    throw new Error("An unexpected error occurred");
+  }
+};
+
 // Fetch Deliveries
 export const fetchDeliveries = async ({
   skip = 0,

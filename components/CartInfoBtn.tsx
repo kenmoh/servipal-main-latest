@@ -68,7 +68,7 @@ const styles = StyleSheet.create({
     container: {
         position: 'absolute',
         width: "92%",
-        bottom: Platform.OS === 'ios' ? 40 : 25,
+        bottom: Platform.OS === 'ios' ? 40 : 35,
         flexDirection: 'row',
         borderRadius: 12,
         zIndex: 999,

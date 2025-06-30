@@ -21,7 +21,7 @@ const DeliveryWrapper = ({ children }: DeliveryWrapperProps) => {
 
     <View backgroundColor={'$background'} flex={1}>
       <Map />
-      <BottomSheet handleIndicatorStyle={{ backgroundColor: 'white' }} style={{ flex: 1 }} handleStyle={{ backgroundColor: theme.background.val }} snapPoints={['25%', '45%']} index={0} ref={bottomSheetRef}>
+      <BottomSheet handleIndicatorStyle={{ backgroundColor: 'white' }} style={{ flex: 1 }} handleStyle={{ backgroundColor: theme.background.val }} snapPoints={['40%', '50%']} index={0} ref={bottomSheetRef}>
         <BottomSheetScrollView style={{ flex: 1, backgroundColor: theme.background.val }} >
           {children}
         </BottomSheetScrollView>

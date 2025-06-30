@@ -6,12 +6,14 @@ import { router, useLocalSearchParams } from 'expo-router'
 import { Package, Shirt, CreditCard, Utensils } from 'lucide-react-native'
 import { OrderItemResponse } from '@/types/order-types';
 import { queryClient } from '../_layout';
+import { useAuth } from '@/context/authContext';
 
 
 const Payment = () => {
     const { orderNumber, deliveryType, orderId, deliveryId, paymentLink, deliveryFee, orderType, orderItems
     } = useLocalSearchParams()
     const theme = useTheme()
+    const { user } = useAuth()
     const [showWebView, setShowWebView] = useState(false);
     const [redirectedUrl, setRedirectedUrl] = useState<{ url?: string } | null>(null);
     const [isLoading, setIsLoading] = useState(false);
@@ -50,10 +52,23 @@ const Payment = () => {
                 params: { paymentStatus: 'success' }
             });
 
-            queryClient.invalidateQueries({ queryKey: ["deliveryies"] });
-            queryClient.invalidateQueries({ queryKey: ["orders"] });
-            queryClient.invalidateQueries({ queryKey: ["delivery", deliveryId] });
-            queryClient.invalidateQueries({ queryKey: ["orders", orderId] });
+            queryClient.invalidateQueries({
+                queryKey: ["delivery", deliveryId],
+            });
+            queryClient.invalidateQueries({
+                queryKey: ["delivery", orderId],
+            });
+
+            queryClient.invalidateQueries({
+                queryKey: ["deliveries"],
+            });
+
+            queryClient.invalidateQueries({
+                queryKey: ["deliveries", user?.sub],
+            });
+
+            queryClient.refetchQueries({ queryKey: ["deliveries"], exact: false });
+            queryClient.refetchQueries({ queryKey: ["deliveries", user?.sub], exact: false });
 
 
         }
@@ -145,13 +160,13 @@ const Payment = () => {
                             marginVertical="$3"
                         />
                         {/* Add subtotal */}
-                        <XStack justifyContent="space-between" marginBottom="$2">
+                        {orderType !== 'package' && <XStack justifyContent="space-between" marginBottom="$2">
                             <Text fontSize={14} color="$gray11">Subtotal</Text>
                             <Text fontSize={14} color="$text">
                                 ₦{parsedOrderItems.reduce((sum, item) =>
                                     sum + (Number(item.price) * Number(item.quantity)), 0).toFixed(2)}
                             </Text>
-                        </XStack>
+                        </XStack>}
                         {/* Add delivery fee */}
                         {deliveryFee && <XStack justifyContent="space-between" marginBottom="$2">
                             <Text fontSize={14} color="$gray11">Delivery Fee</Text>

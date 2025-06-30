@@ -13,6 +13,7 @@ import { router, Stack } from "expo-router";
 import { ListOrderedIcon, ShoppingCart, X } from "lucide-react-native";
 import React, { useEffect, useState } from "react";
 import { ScrollView, StyleSheet } from "react-native";
+import { KeyboardAvoidingView } from "react-native-keyboard-controller";
 import { Notifier, NotifierComponents } from "react-native-notifier";
 import {
     Text,
@@ -83,8 +84,8 @@ const Cart = () => {
             distance: cart.distance,
             require_delivery: cart.require_delivery,
             duration: cart.duration,
-            origin: origin,
-            destination: destination,
+            origin: origin ?? undefined,
+            destination: destination ?? undefined,
             ...(cart.additional_info && { additional_info: cart.additional_info }),
         };
     };
@@ -120,7 +121,7 @@ const Cart = () => {
         },
     });
 
-    console.log(data);
+
     // Fetch distance and duration when origin or destination changes
     useEffect(() => {
         const fetchAndUseTravelInfo = async () => {
@@ -129,6 +130,7 @@ const Cart = () => {
                 return;
             }
 
+            // Use origin from store for originQuery
             const originQuery = encodeURIComponent(origin);
             const destinationQuery = encodeURIComponent(destination);
 
@@ -161,7 +163,7 @@ const Cart = () => {
 
     return (
         <>
-       
+
             {cart?.order_items.length === 0 ? (
                 <View
                     flex={1}
@@ -174,7 +176,7 @@ const Cart = () => {
                 </View>
             ) : (
                 <View flex={1} backgroundColor={theme.background.val}>
-                    <View marginVertical={'$2.5'}/>
+                    <View marginVertical={'$2.5'} />
                     <ScrollView
                         contentContainerStyle={{
                             flexGrow: 1,
@@ -375,50 +377,52 @@ const Cart = () => {
                             </Card>
                         )}
                     </ScrollView>
-                    <AppModal
-                        visible={modalVisible}
-                        onClose={() => setModalVisible(false)}
+                    <KeyboardAvoidingView
+
+                        style={{ flex: 1 }}
+                    // behavior={Platform.OS === "ios" ? "padding" : "height"}
+                    // keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
                     >
-                        <GoogleTextInput
-                            placeholder="Pickup Location"
-                            errorMessage={error.origin}
-                            disableScroll={true}
-                            value={origin}
-                            onChangeText={() => { }}
-                            handlePress={(lat, lng, address) => {
-                                setOrigin(address, [lat, lng]);
-                                setError((prev) => ({ ...prev, origin: "" }));
-                            }}
-                        />
-
-                        <GoogleTextInput
-                            placeholder="Destination"
-                            disableScroll={true}
-                            value={destination}
-                            errorMessage={error.destination}
-                            onChangeText={() => { }}
-                            handlePress={(lat, lng, address) => {
-                                setDestination(address, [lat, lng]);
-                                setError((prev) => ({ ...prev, destination: "" }));
-                            }}
-                        />
-
-                        <AppTextInput
-                            placeholder="Additional Information"
-                            value={infoText}
-                            onChangeText={(e) => setInfoText(e)}
-                        />
-
-                        <Button
-                            width={"90%"}
-                            marginVertical={"$5"}
-                            backgroundColor={"$btnPrimaryColor"}
-                            alignSelf="center"
-                            onPress={handleNext}
+                        <AppModal
+                            visible={modalVisible}
+                            onClose={() => setModalVisible(false)}
                         >
-                            Ok
-                        </Button>
-                    </AppModal>
+
+                            <AppTextInput
+                                label="Pickup Location"
+                                value={origin || ""}
+                                editable={false}
+                            />
+
+                            <GoogleTextInput
+                                placeholder="Destination"
+                                disableScroll={true}
+                                value={destination}
+                                errorMessage={error.destination}
+                                onChangeText={() => { }}
+                                handlePress={(lat, lng, address) => {
+                                    setDestination(address, [lat, lng]);
+                                    setError((prev) => ({ ...prev, destination: "" }));
+                                }}
+                            />
+
+                            <AppTextInput
+                                label="Additional Information"
+                                value={infoText}
+                                onChangeText={(e) => setInfoText(e)}
+                            />
+
+                            <Button
+                                width={"90%"}
+                                marginVertical={"$5"}
+                                backgroundColor={"$btnPrimaryColor"}
+                                alignSelf="center"
+                                onPress={handleNext}
+                            >
+                                Ok
+                            </Button>
+                        </AppModal>
+                    </KeyboardAvoidingView>
                 </View>
             )}
         </>

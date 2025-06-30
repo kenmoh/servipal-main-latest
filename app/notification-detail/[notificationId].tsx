@@ -109,11 +109,11 @@ const NotificationDetails = () => {
     const {
         data: messages,
         refetch: refetchThread,
-        isFetching,
+        isFetching
     } = useQuery({
         queryKey: ["thread", notificationId],
         queryFn: () => fetchReport(notificationId as string),
-        refetchInterval: 5000,
+        // refetchInterval: 5000,
         enabled: !!notificationId,
     });
 

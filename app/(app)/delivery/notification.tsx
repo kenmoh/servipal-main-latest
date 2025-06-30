@@ -2,8 +2,7 @@ import React from 'react';
 import { FlatList, RefreshControl, TouchableOpacity } from 'react-native';
 import { YStack, Text, Card, Spinner, View, Button, XStack } from 'tamagui';
 import {
-    fetchAllNotifications,
-    markNotificationRead,
+    markReportRead,
     markAllNotificationsRead,
     deleteNotification,
     fetchNotificationBadgeCount,
@@ -13,37 +12,7 @@ import {
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { router } from 'expo-router';
 import { useAuth } from "@/context/authContext";
-
-const DUMMY_NOTIFICATIONS = [
-    {
-        id: '1',
-        title: 'Welcome to Servipal!',
-        content: 'Your account has been created successfully.',
-        is_read: false,
-        created_at: new Date().toISOString(),
-    },
-    {
-        id: '2',
-        title: 'Order Delivered',
-        content: 'Your recent order has been delivered. Please rate your experience.',
-        is_read: true,
-        created_at: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(),
-    },
-    {
-        id: '3',
-        title: 'Promo: 20% Off Laundry',
-        content: 'Get 20% off your next laundry order. Use code CLEAN20.',
-        is_read: false,
-        created_at: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(),
-    },
-    {
-        id: '4',
-        title: 'Wallet Funded',
-        content: '₦5,000 has been added to your wallet.',
-        is_read: true,
-        created_at: new Date(Date.now() - 1000 * 60 * 60 * 48).toISOString(),
-    },
-];
+import LoadingIndicator from '@/components/LoadingIndicator';
 
 const NotificationScreen = () => {
     const queryClient = useQueryClient();
@@ -74,7 +43,7 @@ const NotificationScreen = () => {
 
     // Mark as read mutation
     const markReadMutation = useMutation({
-        mutationFn: markNotificationRead,
+        mutationFn: markReportRead,
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['notifications'] });
             queryClient.invalidateQueries({ queryKey: ['notification-badge'] });
@@ -106,22 +75,11 @@ const NotificationScreen = () => {
         markAllReadMutation.mutate();
     };
 
-    // const handleDelete = (id: string) => {
-    //   deleteMutation.mutate(id);
-    // };
+
 
     if (isLoading) {
-        return (
-            <View flex={1} justifyContent="center" alignItems="center">
-                <Spinner size="large" />
-            </View>
-        );
+        return <LoadingIndicator />;
     }
-
-    // Use dummy data if no real notifications
-    const notificationData = notifications.length > 0 ? notifications : DUMMY_NOTIFICATIONS;
-
-    console.log(notifications)
 
     return (
         <YStack flex={1} backgroundColor="$background" padding="$3">
@@ -142,13 +100,15 @@ const NotificationScreen = () => {
                 keyExtractor={(item) => item.id}
                 refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} />}
                 renderItem={({ item }) => (
-                    <TouchableOpacity onPress={() => router.push({
-                        pathname: '/notification-detail/[notificationId]',
-                        params: {
-                            notificationId: item?.id,
-
-                        }
-                    })}>
+                    <TouchableOpacity onPress={() => {
+                        router.push({
+                            pathname: '/notification-detail/[notificationId]',
+                            params: {
+                                notificationId: item?.id,
+                            }
+                        });
+                        handleMarkRead(item.id);
+                    }}>
 
                         <Card marginBottom="$3" padding="$3" backgroundColor={item.is_read ? '$cardDark' : 'rgba(255, 255, 255, 0.17)'}>
                             <XStack justifyContent="space-between" alignItems="center">
