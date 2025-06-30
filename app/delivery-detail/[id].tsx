@@ -80,6 +80,8 @@ const ItemDetails = () => {
             queryClient.refetchQueries({ queryKey: ["deliveries", user?.sub], exact: false });
 
             refetch()
+            router.back()
+            router.back()
 
             Notifier.showNotification({
                 title: "Success",
@@ -114,7 +116,8 @@ const ItemDetails = () => {
                 queryKey: ["deliveries", user?.sub],
                 exact: false
             });
-            refetch();
+            refetch()
+            router.back();
 
             queryClient.refetchQueries({ queryKey: ["deliveries"], exact: false });
             queryClient.refetchQueries({ queryKey: ["deliveries", user?.sub], exact: false });
@@ -155,7 +158,8 @@ const ItemDetails = () => {
             queryClient.refetchQueries({ queryKey: ["deliveries"], exact: false });
             queryClient.refetchQueries({ queryKey: ["deliveries", user?.sub], exact: false });
 
-            refetch();
+            refetch()
+            router.back();
 
             Notifier.showNotification({
                 title: "Success",
@@ -194,6 +198,7 @@ const ItemDetails = () => {
             queryClient.refetchQueries({ queryKey: ["deliveries", user?.sub], exact: false });
 
             refetch()
+            router.back()
 
             Notifier.showNotification({
                 title: "Success",
@@ -232,6 +237,7 @@ const ItemDetails = () => {
             queryClient.refetchQueries({ queryKey: ["deliveries", user?.sub], exact: false });
 
             refetch()
+            router.back()
 
             Notifier.showNotification({
                 title: "Success",

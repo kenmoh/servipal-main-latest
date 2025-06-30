@@ -123,7 +123,7 @@ const UserOrders = () => {
                     />
                     <StatCard
                         icon={Handshake}
-                        label="Accepted"
+                        label="Assigned"
                         value={stats.acepted}
                         color={theme.gray11.val}
                     />
