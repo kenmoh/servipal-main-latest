@@ -354,6 +354,42 @@ export const updateCurrentVendorUser = async (
   }
 };
 
+// Update current user
+export const updateCurrentCustomer = async (
+  userData: UserProfileUpdate
+): Promise<UserDetails> => {
+  const data = {
+    phone_number: userData.phoneNumber,
+    bank_name: userData.bankName,
+    bank_account_number: userData.accountNumber,
+    store_name: userData.storeName,
+    business_address: userData.location,
+    full_name: userData.fullName,
+  };
+  try {
+    const response: ApiResponse<UserDetails | ErrorResponse> =
+      await apiClient.put(`${BASE_URL}/profile`, data, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+    if (!response.ok || !response.data || "detail" in response.data) {
+      const errorMessage =
+        response.data && "detail" in response.data
+          ? response.data.detail
+          : "Error loading user profile.";
+      throw new Error(errorMessage);
+    }
+    return response.data;
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    }
+    throw new Error("An unexpected error occurred");
+  }
+};
+
 // Dispatch update rider
 export const updateRider = async (
   riderId: string,

@@ -107,15 +107,17 @@ const StoreDetails = () => {
             />
 
             {user?.user_type === "restaurant_vendor" && restaurantId === user?.sub && (
-                <FAB
-                    icon={<Menu color={"white"} />}
-                    onPress={() =>
-                        router.push({
-                            pathname: "/restaurant-detail/addMenu"
+                <View position="absolute" bottom={50} right={10}>
+                    <FAB
+                        icon={<Menu color={"white"} />}
+                        onPress={() =>
+                            router.push({
+                                pathname: "/restaurant-detail/addMenu"
 
-                        })
-                    }
-                />
+                            })
+                        }
+                    />
+                </View>
             )}
         </View>
     );

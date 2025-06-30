@@ -386,6 +386,7 @@ const Cart = () => {
                         <AppModal
                             visible={modalVisible}
                             onClose={() => setModalVisible(false)}
+                            height="90%"
                         >
 
                             <AppTextInput
@@ -393,7 +394,7 @@ const Cart = () => {
                                 value={origin || ""}
                                 editable={false}
                             />
-
+                            <View marginVertical='$1.5' />
                             <GoogleTextInput
                                 placeholder="Destination"
                                 disableScroll={true}
@@ -405,7 +406,7 @@ const Cart = () => {
                                     setError((prev) => ({ ...prev, destination: "" }));
                                 }}
                             />
-
+                            <View marginVertical='$1.5' />
                             <AppTextInput
                                 label="Additional Information"
                                 value={infoText}

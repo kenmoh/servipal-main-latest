@@ -6,7 +6,7 @@ import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import AppTextInput from "@/components/AppInput";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { updateCurrentVendorUser } from "@/api/user";
+import { updateCurrentCustomer, updateCurrentVendorUser } from "@/api/user";
 import { ActivityIndicator, Platform } from "react-native";
 import { useAuth } from "@/context/authContext";
 import { Notifier, NotifierComponents } from "react-native-notifier";
@@ -18,6 +18,7 @@ import CurrentLocationButton from "@/components/CurrentLocationButton";
 import { useLocationStore } from "@/store/locationStore";
 import { getBanks } from "@/api/payment";
 import AppPicker from "@/components/AppPicker";
+import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 
 const profileSchema = z.object({
     phoneNumber: z
@@ -35,11 +36,8 @@ type ProfileFormData = z.infer<typeof profileSchema>;
 
 const Profile = () => {
     const theme = useTheme();
-    const { user, profile, setProfile } = useAuth();
+    const { profile, setProfile } = useAuth();
     const { setOrigin } = useLocationStore();
-
-
-    console.log(profile)
 
     const { data } = useQuery({
         queryKey: ["banks"],
@@ -48,8 +46,9 @@ const Profile = () => {
     });
 
     const { isPending, mutate } = useMutation({
-        mutationFn: updateCurrentVendorUser,
+        mutationFn: updateCurrentCustomer,
         onSuccess: async (data) => {
+            console.log(data, "from customer profile");
             await authStorage.removeProfile();
             await authStorage.storeProfile(data);
             setProfile(data);
@@ -103,6 +102,7 @@ const Profile = () => {
     };
 
     const onSubmit = (values: ProfileFormData) => {
+        console.log(values);
         mutate({
             ...values,
             accountNumber: values.accountNumber ?? "",
@@ -112,11 +112,7 @@ const Profile = () => {
     };
 
     return (
-        <ScrollView
-            flex={1}
-            backgroundColor={"$background"}
-            showsVerticalScrollIndicator={false}
-        >
+        <KeyboardAwareScrollView>
             <View>
                 <Controller
                     control={control}
@@ -161,7 +157,6 @@ const Profile = () => {
                         />
                     )}
                 />
-
 
                 <Controller
                     control={control}
@@ -209,7 +204,7 @@ const Profile = () => {
                     )}
                 </Button>
             </View>
-        </ScrollView>
+        </KeyboardAwareScrollView>
     );
 };
 

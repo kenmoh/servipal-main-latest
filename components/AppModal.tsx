@@ -1,6 +1,6 @@
 import { Profile } from '@/types/user-types';
 import React from 'react';
-import { Modal, View, StyleSheet, Text, TouchableWithoutFeedback } from 'react-native';
+import { Modal, View, StyleSheet, Text, TouchableWithoutFeedback, DimensionValue } from 'react-native';
 import { useTheme } from 'tamagui';
 
 
@@ -8,10 +8,11 @@ interface AppModalProps {
     visible: boolean;
     onClose: () => void;
     children: React.ReactNode;
+    height?: string
 
 }
 
-const AppModal = ({ visible, onClose, children }: AppModalProps) => {
+const AppModal = ({ visible, onClose, children, height = '70%' }: AppModalProps) => {
 
     const theme = useTheme()
     return (
@@ -24,7 +25,7 @@ const AppModal = ({ visible, onClose, children }: AppModalProps) => {
             <TouchableWithoutFeedback onPress={onClose}>
                 <View style={styles.overlay}>
                     <TouchableWithoutFeedback>
-                        <View style={[styles.modalContent, { backgroundColor: theme.background.val }]}>
+                        <View style={[styles.modalContent, { backgroundColor: theme.background.val, height: height as DimensionValue }]}>
                             {children}
                         </View>
                     </TouchableWithoutFeedback>
@@ -46,14 +47,14 @@ const styles = StyleSheet.create({
         bottom: 0,
         left: 0,
         right: 0,
-        height: '70%',
+
         width: '100%',
         borderTopRightRadius: 25,
         borderTopLeftRadius: 25,
         paddingTop: 20,
         paddingHorizontal: 10,
-        justifyContent: 'center',
-        alignItems: 'center',
+        // justifyContent: 'center',
+        // alignItems: 'center',
     },
 });
 
