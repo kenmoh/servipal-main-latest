@@ -8,11 +8,10 @@ import AppTextInput from "@/components/AppInput";
 import ImagePickerInput from "@/components/AppImagePicker";
 import AppPicker from "@/components/AppPicker";
 import AppModal from "@/components/AppModal";
-import { createCategory, createMenuItem, fetchCategories } from "@/api/item";
+import { createCategory, createMenuItem, fetchCategories, updateItem } from "@/api/item";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Notifier, NotifierComponents } from "react-native-notifier";
-import LoadingIndicator from "@/components/LoadingIndicator";
-import { queryClient } from "../_layout";
+
 import { useAuth } from '@/context/authContext'
 import type { ItemType, FoodGroup } from "@/types/item-types";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
@@ -54,6 +53,8 @@ const addMenu = () => {
     const theme = useTheme();
     const params = useLocalSearchParams();
     const isEditing = Boolean(params.id);
+
+    const queryClient = useQueryClient();
 
     // If params are present, use them to prefill
     const paramItem = isEditing && params.name ? {
@@ -110,7 +111,7 @@ const addMenu = () => {
 
     });
 
-    console.log(categories)
+
 
     const { mutate, isPending } = useMutation({
         mutationFn: createCategory,
@@ -173,6 +174,34 @@ const addMenu = () => {
         },
     });
 
+    const { mutate: updateMutate, isPending: isUpdating } = useMutation({
+        mutationFn: ({ id, data }: { id: string, data: any }) => updateItem(id, data),
+        onSuccess: (data) => {
+            Notifier.showNotification({
+                title: "Success",
+                description: "Item updated successfully",
+                Component: NotifierComponents.Alert,
+                duration: 1000,
+                componentProps: {
+                    alertType: "success",
+                },
+            });
+            reset();
+            queryClient.invalidateQueries({ queryKey: ["items"] });
+            return;
+        },
+        onError: (error) => {
+            Notifier.showNotification({
+                title: "Error",
+                description: `${error.message}`,
+                Component: NotifierComponents.Alert,
+                componentProps: {
+                    alertType: "error",
+                },
+            });
+        },
+    });
+
     // Prefill form when paramItem or itemData is loaded
     React.useEffect(() => {
         if (paramItem) {
@@ -190,13 +219,28 @@ const addMenu = () => {
     }, []);
 
     const onSubmit = (data: FormData) => {
-        console.log(data)
-        itemMutate({
-            ...data,
-            images: data.images ?? [],
-            itemType: data.itemType as ItemType,
-            food_group: data.foodGroup as FoodGroup,
-        });
+        if (isEditing && paramItem?.id) {
+            updateMutate({
+                id: paramItem.id as string,
+                data: {
+                    name: data.name,
+                    price: data.price,
+                    category_id: data.category_id,
+                    description: data.description,
+                    images: data.images ?? [],
+                    itemType: data.itemType as ItemType,
+                    food_group: data.foodGroup as FoodGroup,
+                    side: data.side,
+                }
+            });
+        } else {
+            itemMutate({
+                ...data,
+                images: data.images ?? [],
+                itemType: data.itemType as ItemType,
+                food_group: data.foodGroup as FoodGroup,
+            });
+        }
     };
 
     return (
@@ -333,13 +377,13 @@ const addMenu = () => {
                             textTransform: "uppercase",
                         }}
                         marginVertical={"$3"}
-                        disabled={isCreating}
+                        disabled={isCreating || isUpdating}
                         alignSelf="center"
-                        backgroundColor={isCreating ? "$cardDark" : "$btnPrimaryColor"}
+                        backgroundColor={isCreating || isUpdating ? "$cardDark" : "$btnPrimaryColor"}
                         width={"90%"}
                         onPress={handleSubmit(onSubmit)}
                     >
-                        {isCreating ? <ActivityIndicator color={"white"} size={'large'} /> : "Submit"}
+                        {(isCreating || isUpdating) ? <ActivityIndicator color={"white"} size={'large'} /> : (isEditing ? "Update" : "Submit")}
                     </Button>
                 </View>
             </KeyboardAwareScrollView>

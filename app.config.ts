@@ -73,6 +73,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   },
   plugins: [
     "expo-router",
+    "expo-font",
     [
       "expo-splash-screen",
       {
@@ -80,6 +81,15 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
         imageWidth: 150,
         resizeMode: "contain",
         backgroundColor: "#18191c",
+      },
+    ],
+    [
+      "react-native-edge-to-edge",
+      {
+        android: {
+          parentTheme: "Default",
+          enforceNavigationBarContrast: false,
+        },
       },
     ],
     [

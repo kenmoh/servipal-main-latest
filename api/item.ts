@@ -137,7 +137,6 @@ export const updateItem = async (
   const data = new FormData();
   data.append("name", itemData.name);
   data.append("price", itemData.price.toString());
-  data.append("item_type", itemData.itemType);
   if (itemData.category_id !== undefined) {
     data.append("category_id", itemData.category_id);
   }
@@ -156,7 +155,7 @@ export const updateItem = async (
   }
   try {
     const response: ApiResponse<ItemResponse | ErrorResponse> =
-      await apiClient.put(`/items/${itemId}`, data, {
+      await apiClient.put(`/items/${itemId}/update`, data, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
