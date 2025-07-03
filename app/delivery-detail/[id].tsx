@@ -646,7 +646,7 @@ const ItemDetails = () => {
                             )}
 
                         {data?.order?.order_payment_status === "paid" &&
-                            (data?.order?.owner_id === user?.sub ||
+                            (data?.order?.owner_id === user?.sub || data?.order?.user_id === user?.sub ||
                                 data?.order?.vendor_id === user?.sub) && (
                                 <Button
                                     size={"$4"}
