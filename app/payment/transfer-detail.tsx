@@ -85,7 +85,7 @@ const TransferDetailScreen = ({ transfer = dummyTransfer }: { transfer?: InitBan
                         Please transfer the exact amount to the above account. Use the reference and note as provided. The account will expire at the stated time.
                     </Text>
                 </YStack>
-                <Button marginTop={24} size="$4" backgroundColor={'$btnPrimaryColor'} color="white" borderRadius={12}>
+                <Button marginTop={24} size="$4" fontSize={'$2'} backgroundColor={'$btnPrimaryColor'} color="white" borderRadius={12}>
                     I have made the transfer
                 </Button>
             </Card>
