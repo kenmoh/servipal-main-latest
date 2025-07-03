@@ -176,7 +176,7 @@ const ItemCard = React.memo(({ data, isHomeScreen = false }: CardProp) => {
     const imageUrl = React.useMemo(() => firstOrderItem?.images[0]?.url, [firstOrderItem?.images]);
     const itemName = React.useMemo(() => firstOrderItem?.name, [firstOrderItem?.name]);
 
-    const canViewOrderDetail = data?.order?.owner_id === user?.sub || data?.order?.vendor_id === user?.sub || user?.user_type === 'rider' || user?.user_type === 'dispatch'
+    const canViewOrderDetail = data?.order?.user_id === user?.sub || data?.order?.owner_id === user?.sub || data?.order?.vendor_id === user?.sub || user?.user_type === 'rider' || user?.user_type === 'dispatch'
 
     return (
         <TouchableOpacity disabled={!canViewOrderDetail} activeOpacity={0.6} onPress={data?.order?.require_delivery === 'delivery' ? handlePress : () => handleGoToReceipt(data?.order?.id)}>
