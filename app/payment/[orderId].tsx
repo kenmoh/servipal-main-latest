@@ -36,12 +36,13 @@ const Payment = () => {
     };
 
 
-    const { mutate } = useMutation({
+    const { mutate, data } = useMutation({
         mutationFn: () => payWithBankTransfer(orderId as string),
-        onSuccess: () => {
+        onSuccess: (data) => {
+            console.log(data);
             router.replace({
-                pathname: "/payment/payment-complete",
-                params: { paymentStatus: 'success' }
+                pathname: "/payment/transfer-detail",
+                params: { data: JSON.stringify(data) }
             });
 
             Notifier.showNotification({
@@ -52,11 +53,6 @@ const Payment = () => {
             });
         },
         onError: (error) => {
-            router.replace({
-                pathname: "/payment/transfer-detail",
-
-            });
-
             Notifier.showNotification({
                 title: "Error",
                 description: error instanceof Error ? error.message : "Failed to initiate bank transfer.",

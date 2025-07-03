@@ -93,7 +93,7 @@ export const payWithBankTransfer = async (
   try {
     const response: ApiResponse<InitBankTransferResponse | ErrorResponse> =
       await apiClient.post(
-        `${BASE_URL}/${orderId}/init-bank-tranfer`,
+        `${BASE_URL}/${orderId}/init-bank-transfer`,
 
         {
           headers: {

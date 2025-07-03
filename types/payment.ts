@@ -18,7 +18,7 @@ export interface InitBankTransferResponse {
   message: string;
   transfer_reference: string;
   account_expiration: string;
-  transfer_acount: string;
+  transfer_account: string;
   transfer_bank: string;
   transfer_amount: string;
   transfer_note: string;
