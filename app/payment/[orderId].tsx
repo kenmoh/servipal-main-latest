@@ -3,7 +3,7 @@ import { Dimensions, ScrollView, StyleSheet } from 'react-native'
 import { WebView } from "react-native-webview";
 import { YStack, XStack, Text, Card, Button, View, useTheme } from 'tamagui'
 import { router, useLocalSearchParams } from 'expo-router'
-import { Package, Shirt, CreditCard, Utensils } from 'lucide-react-native'
+import { Package, Shirt, CreditCard, Utensils, Wallet } from 'lucide-react-native'
 import { OrderItemResponse } from '@/types/order-types';
 import { queryClient } from '../_layout';
 import { useAuth } from '@/context/authContext';
@@ -218,16 +218,31 @@ const Payment = () => {
                 {renderOrderItems()}
 
                 {/* Payment Button */}
-                <Button
-                    backgroundColor="$btnPrimaryColor"
-                    size="$5"
-                    marginTop="$4"
-                    pressStyle={{ opacity: 0.8 }}
-                    onPress={handleOpenWebView}
-                >
-                    <CreditCard size={20} color={theme.text.val} />
-                    Pay Now
-                </Button>
+                <XStack gap='$2'>
+                    <Button
+                        backgroundColor="$btnPrimaryColor"
+                        size="$5"
+                        marginTop="$4"
+                        pressStyle={{ opacity: 0.8 }}
+                        onPress={handleOpenWebView}
+                    >
+                        <CreditCard size={20} color={theme.text.val} />
+                        Pay Now
+                    </Button>
+                    <Button
+                        backgroundColor="$cardDark"
+                        size="$5"
+                        marginTop="$4"
+                        pressStyle={{ opacity: 0.8 }}
+                        onPress={handleOpenWebView}
+                        borderWidth='$0.5'
+                        borderColor={'$borderColor'}
+
+                    >
+                        <Wallet size={20} color={theme.text.val} />
+                        Pay With Wallet
+                    </Button>
+                </XStack>
             </YStack>
         </ScrollView>
     )

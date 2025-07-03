@@ -9,6 +9,7 @@ import {
 import { ParamListBase, TabNavigationState } from '@react-navigation/native';
 import { useTheme, View } from 'tamagui'
 import { Bell, BikeIcon, CookingPotIcon, Settings, Store, User, UserRound, Wallet, WashingMachine } from 'lucide-react-native'
+import { useAuth } from '@/context/authContext';
 
 
 
@@ -60,6 +61,7 @@ const CustomTabBarIcon = ({
 
 const TabBarLayout = () => {
     const theme = useTheme()
+    const { user } = useAuth()
     return (
         <Tabs
             screenOptions={{
@@ -71,9 +73,9 @@ const TabBarLayout = () => {
                 tabBarShowLabel: false,
                 tabBarHideOnKeyboard: true,
                 tabBarStyle: {
-                    height: 75, 
+                    height: 75,
                     marginBottom: 18,
-                    backgroundColor:theme.background.val
+                    backgroundColor: theme.background.val
                 },
                 tabBarItemStyle: {
                     padding: 15,
@@ -108,7 +110,7 @@ const TabBarLayout = () => {
             }} />
             <Tabs.Screen name='food' options={{
                 title: '',
-
+                href: user?.user_type === 'dispatch' || user?.user_type === 'rider' ? null : undefined,
                 tabBarIcon: ({ focused }) => (
                     <CustomTabBarIcon focused={focused}>
                         <CookingPotIcon
@@ -120,6 +122,8 @@ const TabBarLayout = () => {
             }} />
             <Tabs.Screen name='laundry' options={{
                 title: '',
+                href: user?.user_type === 'dispatch' || user?.user_type === 'rider' ? null : undefined,
+
 
                 tabBarIcon: ({ focused }) => (
                     <CustomTabBarIcon focused={focused}>
@@ -132,6 +136,8 @@ const TabBarLayout = () => {
             }} />
             <Tabs.Screen name='(marketplace)' options={{
                 title: '',
+                href: user?.user_type === 'dispatch' || user?.user_type === 'rider' ? null : undefined,
+
                 tabBarIcon: ({ focused }) => (
                     <CustomTabBarIcon focused={focused}>
                         <Store size={TAB_BAR_ICON_SIZE} color={focused ? 'white' : theme.icon.val} />
@@ -144,7 +150,6 @@ const TabBarLayout = () => {
 
             <Tabs.Screen name='profile' options={{
                 title: '',
-                // href: null,
                 tabBarIcon: ({ focused }) => (
                     <CustomTabBarIcon focused={focused}>
                         <Settings size={TAB_BAR_ICON_SIZE} color={focused ? 'white' : theme.icon.val} />

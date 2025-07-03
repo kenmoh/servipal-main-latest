@@ -47,7 +47,6 @@ const ItemDetails = () => {
     const theme = useTheme();
     const { user } = useAuth();
 
-
     const { data, isLoading, refetch } = useQuery({
         queryKey: ["delivery", id],
         queryFn: () => fetchDelivery(id as string),
@@ -63,7 +62,7 @@ const ItemDetails = () => {
         onSuccess: () => {
             queryClient.invalidateQueries({
                 queryKey: ["delivery", id],
-                exact: false
+                exact: false,
             });
             queryClient.invalidateQueries({
                 queryKey: ["deliveries"],
@@ -72,16 +71,18 @@ const ItemDetails = () => {
 
             queryClient.invalidateQueries({
                 queryKey: ["deliveries", user?.sub],
-                exact: false
-
+                exact: false,
             });
 
             queryClient.refetchQueries({ queryKey: ["deliveries"], exact: false });
-            queryClient.refetchQueries({ queryKey: ["deliveries", user?.sub], exact: false });
+            queryClient.refetchQueries({
+                queryKey: ["deliveries", user?.sub],
+                exact: false,
+            });
 
-            refetch()
-            router.back()
-            router.back()
+            refetch();
+            router.back();
+            router.back();
 
             Notifier.showNotification({
                 title: "Success",
@@ -105,22 +106,25 @@ const ItemDetails = () => {
         onSuccess: () => {
             queryClient.invalidateQueries({
                 queryKey: ["delivery", id],
-                exact: false
+                exact: false,
             });
             queryClient.invalidateQueries({
                 queryKey: ["deliveries"],
-                exact: false
+                exact: false,
             });
 
             queryClient.invalidateQueries({
                 queryKey: ["deliveries", user?.sub],
-                exact: false
+                exact: false,
             });
-            refetch()
+            refetch();
             router.back();
 
             queryClient.refetchQueries({ queryKey: ["deliveries"], exact: false });
-            queryClient.refetchQueries({ queryKey: ["deliveries", user?.sub], exact: false });
+            queryClient.refetchQueries({
+                queryKey: ["deliveries", user?.sub],
+                exact: false,
+            });
 
             Notifier.showNotification({
                 title: "Success",
@@ -144,21 +148,24 @@ const ItemDetails = () => {
         onSuccess: () => {
             queryClient.invalidateQueries({
                 queryKey: ["delivery", id],
-                exact: false
+                exact: false,
             });
             queryClient.invalidateQueries({
                 queryKey: ["deliveries"],
-                exact: false
+                exact: false,
             });
             queryClient.invalidateQueries({
                 queryKey: ["deliveries", user?.sub],
-                exact: false
+                exact: false,
             });
 
             queryClient.refetchQueries({ queryKey: ["deliveries"], exact: false });
-            queryClient.refetchQueries({ queryKey: ["deliveries", user?.sub], exact: false });
+            queryClient.refetchQueries({
+                queryKey: ["deliveries", user?.sub],
+                exact: false,
+            });
 
-            refetch()
+            refetch();
             router.back();
 
             Notifier.showNotification({
@@ -183,22 +190,25 @@ const ItemDetails = () => {
         onSuccess: () => {
             queryClient.invalidateQueries({
                 queryKey: ["delivery", id],
-                exact: false
+                exact: false,
             });
             queryClient.invalidateQueries({
                 queryKey: ["deliveries"],
-                exact: false
+                exact: false,
             });
             queryClient.invalidateQueries({
                 queryKey: ["deliveries", user?.sub],
-                exact: false
+                exact: false,
             });
 
             queryClient.refetchQueries({ queryKey: ["deliveries"], exact: false });
-            queryClient.refetchQueries({ queryKey: ["deliveries", user?.sub], exact: false });
+            queryClient.refetchQueries({
+                queryKey: ["deliveries", user?.sub],
+                exact: false,
+            });
 
-            refetch()
-            router.back()
+            refetch();
+            router.back();
 
             Notifier.showNotification({
                 title: "Success",
@@ -222,22 +232,25 @@ const ItemDetails = () => {
         onSuccess: () => {
             queryClient.invalidateQueries({
                 queryKey: ["delivery", id],
-                exact: false
+                exact: false,
             });
             queryClient.invalidateQueries({
                 queryKey: ["deliveries"],
-                exact: false
+                exact: false,
             });
             queryClient.invalidateQueries({
                 queryKey: ["deliveries", user?.sub],
-                exact: false
+                exact: false,
             });
 
             queryClient.refetchQueries({ queryKey: ["deliveries"], exact: false });
-            queryClient.refetchQueries({ queryKey: ["deliveries", user?.sub], exact: false });
+            queryClient.refetchQueries({
+                queryKey: ["deliveries", user?.sub],
+                exact: false,
+            });
 
-            refetch()
-            router.back()
+            refetch();
+            router.back();
 
             Notifier.showNotification({
                 title: "Success",
@@ -267,7 +280,9 @@ const ItemDetails = () => {
         ) {
             return {
                 label: "Accept Delivery",
-                onPress: () => { acceptDeliveryMutation.mutate() },
+                onPress: () => {
+                    acceptDeliveryMutation.mutate();
+                },
                 loading: acceptDeliveryMutation.isPending,
             };
         }
@@ -318,12 +333,13 @@ const ItemDetails = () => {
     };
 
     const actionButton = getActionButton();
-    const showFullBtnSize = data?.delivery?.delivery_status === "pending" && user?.sub === data?.delivery?.sender_id;
+    const showFullBtnSize =
+        data?.delivery?.delivery_status === "pending" &&
+        user?.sub === data?.delivery?.sender_id;
     const showCancel =
         (user?.sub === data?.delivery?.sender_id ||
             user?.sub === data?.delivery?.rider_id) &&
-        ["accepted", 'pending'].includes(data?.delivery?.delivery_status as string);
-
+        ["accepted", "pending"].includes(data?.delivery?.delivery_status as string);
 
     if (isLoading) {
         return <LoadingIndicator />;
@@ -332,11 +348,10 @@ const ItemDetails = () => {
     return (
         <>
             <DeliveryWrapper>
-
                 {user?.sub === data?.delivery?.sender_id &&
                     data?.delivery?.sender_id &&
-                    data?.delivery?.delivery_status !== 'pending' &&
-                    data?.delivery?.delivery_status !== 'received' && (
+                    data?.delivery?.delivery_status !== "pending" &&
+                    data?.delivery?.delivery_status !== "received" && (
                         <TouchableOpacity
                             style={{
                                 backgroundColor: theme.cardDark.val,
@@ -354,7 +369,7 @@ const ItemDetails = () => {
                                 router.push({
                                     pathname: "/user-details/[userId]",
                                     params: {
-                                        userId: data?.delivery?.rider_id!
+                                        userId: data?.delivery?.rider_id!,
                                     },
                                 })
                             }
@@ -383,10 +398,13 @@ const ItemDetails = () => {
                                         orderId: data?.order.id ?? "",
                                         deliveryFee: data?.delivery?.delivery_fee,
                                         orderNumber: data?.order?.order_number,
-                                        deliveryType: `${data?.order?.require_delivery === 'delivery' ? data?.delivery?.delivery_fee : data?.order?.order_type}`,
+                                        deliveryType: `${data?.order?.require_delivery === "delivery"
+                                                ? data?.delivery?.delivery_fee
+                                                : data?.order?.order_type
+                                            }`,
                                         orderItems: JSON.stringify(data?.order.order_items ?? []),
                                         paymentLink: data?.order.payment_link,
-                                        orderType: data?.order?.order_type
+                                        orderType: data?.order?.order_type,
                                     },
                                 })
                             }
@@ -573,12 +591,18 @@ const ItemDetails = () => {
                     </XStack>
 
                     {/* Additional Action Buttons */}
-                    <XStack marginTop="$4" gap="$2" width="90%" alignSelf="center" justifyContent="space-between">
+                    <XStack
+                        marginTop="$4"
+                        gap="$2"
+                        width="90%"
+                        alignSelf="center"
+                        justifyContent="space-between"
+                    >
                         {/* Review Button - Hide for package deliveries */}
                         {data?.order?.order_type !== "package" &&
-                            (data?.order?.order_status === 'received' ||
-                                data?.delivery?.delivery_status === 'delivered' ||
-                                data?.delivery?.delivery_status === 'received') && (
+                            (data?.order?.order_status === "received" ||
+                                data?.delivery?.delivery_status === "delivered" ||
+                                data?.delivery?.delivery_status === "received") && (
                                 <Button
                                     size={"$4"}
                                     backgroundColor={"$cardDark"}
@@ -592,7 +616,7 @@ const ItemDetails = () => {
                                     onPressIn={() => {
                                         router.push({
                                             pathname: "/review/[deliveryId]",
-                                            params: { deliveryId: data?.order?.id }
+                                            params: { deliveryId: data?.order?.id },
                                         });
                                     }}
                                 >
@@ -601,9 +625,9 @@ const ItemDetails = () => {
                             )}
 
                         {/* Report Button - Show for all delivery types */}
-                        {(data?.order?.order_status === 'received' ||
-                            data?.delivery?.delivery_status === 'delivered' ||
-                            data?.delivery?.delivery_status === 'received') && (
+                        {(data?.order?.order_status === "received" ||
+                            data?.delivery?.delivery_status === "delivered" ||
+                            data?.delivery?.delivery_status === "received") && (
                                 <Button
                                     size={"$4"}
                                     backgroundColor={"$cardDark"}
@@ -617,7 +641,7 @@ const ItemDetails = () => {
                                     onPressIn={() => {
                                         router.push({
                                             pathname: "/report/[deliveryId]",
-                                            params: { deliveryId: id as string, }
+                                            params: { deliveryId: id as string },
                                         });
                                     }}
                                 >
@@ -625,27 +649,33 @@ const ItemDetails = () => {
                                 </Button>
                             )}
 
-                        {data?.order?.order_payment_status === "paid" && (
-                            <Button
-                                size={"$4"}
-                                backgroundColor={"$cardDark"}
-                                width={data?.delivery?.delivery_status === "received" ? "32%" : "100%"}
-                                textAlign="center"
-                                fontSize={12}
-                                fontFamily={"$body"}
-                                color={"$text"}
-                                fontWeight={"500"}
-                                pressStyle={{ backgroundColor: "$cardDarkHover" }}
-                                onPressIn={() => {
-                                    router.push({
-                                        pathname: "/receipt/[deliveryId]",
-                                        params: { deliveryId: id as string }
-                                    });
-                                }}
-                            >
-                                Receipt
-                            </Button>
-                        )}
+                        {data?.order?.order_payment_status === "paid" &&
+                            (data?.order?.owner_id === user?.sub ||
+                                data?.order?.vendor_id === user?.sub) && (
+                                <Button
+                                    size={"$4"}
+                                    backgroundColor={"$cardDark"}
+                                    width={
+                                        data?.delivery?.delivery_status === "received"
+                                            ? "32%"
+                                            : "100%"
+                                    }
+                                    textAlign="center"
+                                    fontSize={12}
+                                    fontFamily={"$body"}
+                                    color={"$text"}
+                                    fontWeight={"500"}
+                                    pressStyle={{ backgroundColor: "$cardDarkHover" }}
+                                    onPressIn={() => {
+                                        router.push({
+                                            pathname: "/receipt/[deliveryId]",
+                                            params: { deliveryId: id as string },
+                                        });
+                                    }}
+                                >
+                                    Receipt
+                                </Button>
+                            )}
                     </XStack>
                 </Card>
             </DeliveryWrapper>

@@ -33,7 +33,7 @@ const ReceiptPage = () => {
         };
 
         // Calculate total: sum of items total and delivery fee if present
-        const itemsTotal = Number(data.order?.total_price || 0) - Number(data.delivery?.delivery_fee || 0);
+        const itemsTotal = Number(data.order?.total_price || 0);
         const deliveryFee = Number(data.delivery?.delivery_fee || 0);
         const total = itemsTotal + deliveryFee;
 

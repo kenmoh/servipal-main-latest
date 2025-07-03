@@ -3,9 +3,10 @@ import React from 'react'
 import { Card, View, XStack, YStack, Image, useTheme, Text, Square } from 'tamagui'
 import { Feather, MaterialCommunityIcons, AntDesign } from '@expo/vector-icons'
 import { router } from 'expo-router'
-import { DeliveryDetail, DeliveryStatus, OrderStatus, PaymentStatus } from '@/types/order-types'
+import { DeliveryDetail, DeliveryStatus, PaymentStatus } from '@/types/order-types'
 import { Package, Landmark, Shirt, Utensils } from 'lucide-react-native'
 import { useLocationStore } from '@/store/locationStore'
+import { useAuth } from '@/context/authContext'
 
 type CardProp = {
     data: DeliveryDetail
@@ -126,6 +127,7 @@ Status.displayName = 'Status';
 const ItemCard = React.memo(({ data, isHomeScreen = false }: CardProp) => {
     const theme = useTheme();
     const { setOrigin, setDestination } = useLocationStore();
+    const { user } = useAuth()
 
     const handlePress = React.useCallback(() => {
         // Set origin and destination if available
@@ -174,8 +176,10 @@ const ItemCard = React.memo(({ data, isHomeScreen = false }: CardProp) => {
     const imageUrl = React.useMemo(() => firstOrderItem?.images[0]?.url, [firstOrderItem?.images]);
     const itemName = React.useMemo(() => firstOrderItem?.name, [firstOrderItem?.name]);
 
+    const canViewOrderDetail = data?.order?.owner_id === user?.sub || data?.order?.vendor_id === user?.sub || user?.user_type === 'rider' || user?.user_type === 'dispatch'
+
     return (
-        <TouchableOpacity activeOpacity={0.6} onPress={data?.order?.require_delivery === 'delivery' ? handlePress : () => handleGoToReceipt(data?.order?.id)}>
+        <TouchableOpacity disabled={!canViewOrderDetail} activeOpacity={0.6} onPress={data?.order?.require_delivery === 'delivery' ? handlePress : () => handleGoToReceipt(data?.order?.id)}>
             <Card padding={10} >
                 <XStack flex={1}>
                     {/* Left side container */}
