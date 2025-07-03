@@ -52,6 +52,13 @@ const ProfileLayout = () => {
 
 
             }} />
+            <Stack.Screen name='fund-wallet' options={{
+                title: 'Fund Wallet',
+                animation: 'slide_from_bottom',
+
+
+
+            }} />
         </Stack>
     )
 }

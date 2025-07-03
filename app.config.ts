@@ -20,7 +20,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     infoPlist: {
       ITSAppUsesNonExemptEncryption: false,
     },
-    associatedDomains: ["applinks:servipalbackend.onrender.com"],
+    associatedDomains: ["applinks:servi-pal.com"],
   },
   android: {
     googleServicesFile: "./google-services.json",
@@ -47,7 +47,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
         data: [
           {
             scheme: "https",
-            host: "servipalbackend.onrender.com",
+            host: "api.servi-pal.com",
             pathPrefix: "/api/payment/order-payment-callback",
           },
         ],

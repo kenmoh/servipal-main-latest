@@ -5,12 +5,16 @@ import { ArrowDown, ArrowUp, Eye, EyeOff } from 'lucide-react-native';
 import Animated, { FadeInUp } from 'react-native-reanimated';
 import Transactioncard from '@/components/Transactioncard';
 import HDivider from "@/components/HDivider";
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { useAuth } from '@/context/authContext';
 import { getCurrentUserWallet } from '@/api/user';
 import { useState } from 'react';
 import { formatCurrency } from '@/utils/formatCurrency';
+import BalanceShimmer from '@/components/BalanceShimmer';
 import { Transaction } from '@/types/user-types'
+import { router } from 'expo-router';
+import { withDrawFunds } from '@/api/payment';
+import { Notifier, NotifierComponents } from 'react-native-notifier';
 
 
 const index = () => {
@@ -23,8 +27,34 @@ const index = () => {
 
     })
 
-    console.log(data)
+    const { data: withdrawData, mutate: withdrawMutation } = useMutation({
+        mutationFn: withDrawFunds,
+        onSuccess: () => {
+            Notifier.showNotification({
+                title: "Success",
+                description: "Withdrawal request processing. We will notify you once it is completed.",
+                Component: NotifierComponents.Alert,
+                componentProps: {
+                    alertType: "success",
+                },
+            });
 
+            refetch();
+
+        },
+        onError: (error) => {
+            Notifier.showNotification({
+                title: "Error",
+                description: error.message,
+                Component: NotifierComponents.Alert,
+                componentProps: {
+                    alertType: "error",
+                },
+            });
+        },
+    })
+
+    console.log('Withdraw Data:', data)
     return (
         <View flex={1} backgroundColor={'$background'}>
             <Animated.View
@@ -39,10 +69,10 @@ const index = () => {
 
                 >
                     <LinearGradient
-                        colors={['#f46b45', '#eea849']}
+                        colors={['#ff9966', '#ff5e62', '#ff7955', '#ffb347']}
                         style={[styles.background]}
                         start={[0, 0]}
-                        end={[1, 0]}
+                        end={[1, 1]}
                     >
                         <Card.Header padding="$4">
                             <XStack justifyContent='space-between' alignItems='center' marginBottom="$5">
@@ -60,9 +90,13 @@ const index = () => {
                                     </XStack>
                                     <XStack alignItems='baseline' gap={'$1'} marginTop="$2">
                                         <Text style={styles.currency}>₦</Text>
-                                        <Text style={styles.amount}>
-                                            {isBalanceHidden ? '****' : formatCurrency(data?.balance || 0)}
-                                        </Text>
+                                        {isFetching ? (
+                                            <BalanceShimmer width={80} height={24} borderRadius={8} />
+                                        ) : (
+                                            <Text style={styles.amount}>
+                                                {isBalanceHidden ? '****' : formatCurrency(data?.balance || 0)}
+                                            </Text>
+                                        )}
                                     </XStack>
                                 </YStack>
                                 <YStack>
@@ -70,9 +104,13 @@ const index = () => {
                                     <Text style={[styles.label]}>Escrow Balance</Text>
                                     <XStack alignItems='baseline' gap={'$1'} marginTop="$2">
                                         <Text style={[styles.currency, { fontFamily: "Poppins-Thin" }]}>₦</Text>
-                                        <Text style={[styles.amount, { fontFamily: "Poppins-Thin" }]}>
-                                            {isBalanceHidden ? '****' : formatCurrency(data?.escrow_balance || 0)}
-                                        </Text>
+                                        {isFetching ? (
+                                            <BalanceShimmer width={80} height={24} borderRadius={8} />
+                                        ) : (
+                                            <Text style={[styles.amount, { fontFamily: "Poppins-Thin" }]}>
+                                                {isBalanceHidden ? '****' : formatCurrency(data?.escrow_balance || 0)}
+                                            </Text>
+                                        )}
                                     </XStack>
                                 </YStack>
 
@@ -97,8 +135,8 @@ const index = () => {
             </Animated.View>
             <Animated.View entering={FadeInUp.duration(500).delay(400)}>
                 <XStack width={'90%'} alignSelf='center' gap={'4%'} marginTop={'$3'}>
-                    <Button fontSize={'$2'} fontWeight={'600'} icon={<ArrowDown />} width={'48%'} backgroundColor={'$transparentBtnPrimaryColor'}>Withdraw</Button>
-                    <Button fontSize={'$2'} fontWeight={'600'} icon={<ArrowUp />} width={'48%'} borderWidth={StyleSheet.hairlineWidth} borderColor={'$btnPrimaryColor'}>Deposit</Button>
+                    <Button onPress={() => withdrawMutation()} fontSize={'$2'} fontWeight={'600'} icon={<ArrowDown />} width={'48%'} backgroundColor={'$transparentBtnPrimaryColor'}>Withdraw</Button>
+                    <Button onPressIn={() => router.push({ pathname: '/profile/fund-wallet' })} fontSize={'$2'} fontWeight={'600'} icon={<ArrowUp />} width={'48%'} borderWidth={StyleSheet.hairlineWidth} borderColor={'$btnPrimaryColor'}>Deposit</Button>
                 </XStack>
             </Animated.View>
 

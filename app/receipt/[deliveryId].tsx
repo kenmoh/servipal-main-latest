@@ -445,14 +445,7 @@ const ReceiptPage = () => {
                     >
                         Share PDF
                     </Button>
-                    <Button
-                        flex={1}
-                        backgroundColor={"$cardDark"}
-                        icon={<Share2 color="white" />}
-                        onPress={() => router.push('/payment/transfer-detail')}
-                    >
-                        Share PDF
-                    </Button>
+
                 </XStack>
 
 
