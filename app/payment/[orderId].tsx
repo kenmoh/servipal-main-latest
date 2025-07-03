@@ -291,11 +291,13 @@ const Payment = () => {
                         marginTop="$4"
                         pressStyle={{ opacity: 0.8 }}
                         onPress={handleOpenWebView}
+                        fontSize={'$2'}
+
                     >
                         <CreditCard size={20} color={theme.text.val} />
                         Card
                     </Button>
-                    <XStack gap='$1'>
+                    <XStack gap='$2'>
                         <Button
                             backgroundColor="$cardDark"
                             size="$5"
@@ -304,6 +306,9 @@ const Payment = () => {
                             onPress={() => payWithWalletMutation()}
                             borderWidth='$0.5'
                             borderColor={'$borderColor'}
+                            fontSize={'$2'}
+                            width={'50%'}
+
 
 
                         >
@@ -318,7 +323,8 @@ const Payment = () => {
                             onPress={() => mutate()}
                             borderWidth='$0.5'
                             borderColor={'$borderColor'}
-
+                            fontSize={'$2'}
+                            width={'50%'}
 
                         >
                             <ArrowLeftRight size={20} color={theme.text.val} />

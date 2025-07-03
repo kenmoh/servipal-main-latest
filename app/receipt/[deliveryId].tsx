@@ -367,7 +367,7 @@ const ReceiptPage = () => {
                         {data?.order?.order_items && data?.order?.order_type !== 'package' && data.order.order_items.length > 0 && (
                             <XStack justifyContent="space-between">
                                 <Text>Items Total</Text>
-                                <Text>₦{(Number(data.order?.total_price || 0) - Number(data.delivery?.delivery_fee || 0)).toFixed(2)}</Text>
+                                <Text>₦{(Number(data.order?.total_price || 0)).toFixed(2)}</Text>
                             </XStack>
                         )}
 
@@ -381,7 +381,7 @@ const ReceiptPage = () => {
                         <XStack justifyContent="space-between">
                             <Text>Total Amount</Text>
                             <Text fontWeight="bold">₦{(
-                                (Number(data.order?.total_price || 0))).toFixed(2)}</Text>
+                                (Number(data.order?.total_price || 0) + Number(data.delivery?.delivery_fee || 0))).toFixed(2)}</Text>
                         </XStack>
 
                         <XStack justifyContent="space-between">

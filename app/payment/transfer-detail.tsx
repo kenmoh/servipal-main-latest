@@ -30,11 +30,11 @@ const TransferDetailScreen = ({ transfer = dummyTransfer }: { transfer?: InitBan
             <Card bordered elevate size="$5" backgroundColor={theme.cardBackground.val} padding={22} borderRadius={18}>
                 <XStack alignItems="center" gap={10} marginBottom={18}>
                     <CheckCircle color={theme.green10.val} size={28} />
-                    <Text style={{ fontWeight: 'bold', fontSize: 20, color: theme.green10.val }}>
+                    <Text style={{ fontWeight: 'bold', fontSize: 12, color: theme.green10.val }}>
                         {transfer.status === 'success' ? 'Transfer Account Created' : 'Transfer Pending'}
                     </Text>
                 </XStack>
-                <Text color={'$text'} fontSize={'$4'}>{transfer.message}</Text>
+
                 <YStack gap={14} marginTop={'$5'}>
                     <XStack alignItems="center" justifyContent="space-between">
                         <Text style={styles.label}>Bank</Text>
