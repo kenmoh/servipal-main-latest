@@ -1,22 +1,18 @@
 import {
     StyleSheet,
     TouchableOpacity,
-    Dimensions,
-    ScrollView,
     ActivityIndicator,
 } from "react-native";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import {
     Card,
     Text,
     XStack,
-    Circle,
-    Avatar,
     YStack,
     Paragraph,
     useTheme,
     Button,
-    View,
+
 } from "tamagui";
 import { Notifier, NotifierComponents } from "react-native-notifier";
 import { router, useLocalSearchParams } from "expo-router";
@@ -399,8 +395,8 @@ const ItemDetails = () => {
                                         deliveryFee: data?.delivery?.delivery_fee,
                                         orderNumber: data?.order?.order_number,
                                         deliveryType: `${data?.order?.require_delivery === "delivery"
-                                                ? data?.delivery?.delivery_fee
-                                                : data?.order?.order_type
+                                            ? data?.delivery?.delivery_fee
+                                            : data?.order?.order_type
                                             }`,
                                         orderItems: JSON.stringify(data?.order.order_items ?? []),
                                         paymentLink: data?.order.payment_link,

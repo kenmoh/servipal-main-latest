@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet } from 'react-native'
 import React from 'react'
 import { Stack } from 'expo-router'
 import { useTheme } from 'tamagui'
@@ -34,6 +34,17 @@ const PaymentStatusLayout = () => {
                 animation: 'none',
                 headerShown: false,
                 presentation: 'transparentModal',
+            }} />
+
+            <Stack.Screen name='transfer-detail' options={{
+                title: 'Transfer Details',
+                animation: 'slide_from_bottom',
+
+                presentation: 'transparentModal',
+                headerStyle: {
+                    backgroundColor: theme.background.val,
+
+                },
             }} />
 
         </Stack>

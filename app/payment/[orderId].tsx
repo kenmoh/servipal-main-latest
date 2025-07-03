@@ -3,10 +3,13 @@ import { Dimensions, ScrollView, StyleSheet } from 'react-native'
 import { WebView } from "react-native-webview";
 import { YStack, XStack, Text, Card, Button, View, useTheme } from 'tamagui'
 import { router, useLocalSearchParams } from 'expo-router'
-import { Package, Shirt, CreditCard, Utensils, Wallet } from 'lucide-react-native'
+import { Notifier, NotifierComponents } from "react-native-notifier";
+import { Package, Shirt, CreditCard, Utensils, Wallet, ArrowLeftRight } from 'lucide-react-native'
 import { OrderItemResponse } from '@/types/order-types';
 import { queryClient } from '../_layout';
 import { useAuth } from '@/context/authContext';
+import { useMutation } from '@tanstack/react-query';
+import { payWithBankTransfer, payWithWallet } from '@/api/payment';
 
 
 const Payment = () => {
@@ -31,6 +34,67 @@ const Payment = () => {
         setShowWebView(true);
 
     };
+
+
+    const { mutate } = useMutation({
+        mutationFn: () => payWithBankTransfer(orderId as string),
+        onSuccess: () => {
+            router.replace({
+                pathname: "/payment/payment-complete",
+                params: { paymentStatus: 'success' }
+            });
+
+            Notifier.showNotification({
+                title: "Bank Details",
+                description: "Please make a transfer to the account details provided.",
+                Component: NotifierComponents.Alert,
+                componentProps: { alertType: "info" },
+            });
+        },
+        onError: (error) => {
+            router.replace({
+                pathname: "/payment/transfer-detail",
+
+            });
+
+            Notifier.showNotification({
+                title: "Error",
+                description: error instanceof Error ? error.message : "Failed to initiate bank transfer.",
+                Component: NotifierComponents.Alert,
+                componentProps: { alertType: "error" },
+            });
+        }
+    })
+    const { mutate: payWithWalletMutation } = useMutation({
+        mutationFn: () => payWithWallet(orderId as string),
+        onSuccess: () => {
+            router.replace({
+                pathname: "/payment/payment-complete",
+                params: { paymentStatus: 'success' }
+            });
+
+            Notifier.showNotification({
+                title: "Bank Details",
+                description: "Payment successful! Your wallet has been charged.",
+                Component: NotifierComponents.Alert,
+                componentProps: { alertType: "success" },
+            });
+        },
+        onError: (error) => {
+            router.replace({
+                pathname: "/payment/payment-complete",
+                params: { paymentStatus: 'failed' }
+            });
+
+            Notifier.showNotification({
+                title: "Error",
+                description: error instanceof Error ? error.message : "Failed to initiate bank transfer.",
+                Component: NotifierComponents.Alert,
+                componentProps: { alertType: "error" },
+            });
+        }
+    })
+
 
     // function to calculate total
     const calculateTotal = () => {
@@ -218,7 +282,9 @@ const Payment = () => {
                 {renderOrderItems()}
 
                 {/* Payment Button */}
-                <XStack gap='$2'>
+                <YStack>
+                    <Text color={'$text'} fontSize={'$2'}>Pay with:</Text>
+
                     <Button
                         backgroundColor="$btnPrimaryColor"
                         size="$5"
@@ -227,22 +293,39 @@ const Payment = () => {
                         onPress={handleOpenWebView}
                     >
                         <CreditCard size={20} color={theme.text.val} />
-                        Pay Now
+                        Card
                     </Button>
-                    <Button
-                        backgroundColor="$cardDark"
-                        size="$5"
-                        marginTop="$4"
-                        pressStyle={{ opacity: 0.8 }}
-                        onPress={handleOpenWebView}
-                        borderWidth='$0.5'
-                        borderColor={'$borderColor'}
+                    <XStack gap='$1'>
+                        <Button
+                            backgroundColor="$cardDark"
+                            size="$5"
+                            marginTop="$4"
+                            pressStyle={{ opacity: 0.8 }}
+                            onPress={() => payWithWalletMutation()}
+                            borderWidth='$0.5'
+                            borderColor={'$borderColor'}
 
-                    >
-                        <Wallet size={20} color={theme.text.val} />
-                        Pay With Wallet
-                    </Button>
-                </XStack>
+
+                        >
+                            <Wallet size={20} color={theme.text.val} />
+                            Wallet
+                        </Button>
+                        <Button
+                            backgroundColor="$cardDark"
+                            size="$5"
+                            marginTop="$4"
+                            pressStyle={{ opacity: 0.8 }}
+                            onPress={() => mutate()}
+                            borderWidth='$0.5'
+                            borderColor={'$borderColor'}
+
+
+                        >
+                            <ArrowLeftRight size={20} color={theme.text.val} />
+                            Transfer
+                        </Button>
+                    </XStack>
+                </YStack>
             </YStack>
         </ScrollView>
     )

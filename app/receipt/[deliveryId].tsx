@@ -1,7 +1,7 @@
 import { StyleSheet, Share, Platform, Dimensions, ScrollView } from "react-native";
 import React from "react";
 import { View, YStack, Text, XStack, Card, Paragraph, Button, useTheme } from "tamagui";
-import { useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { useQuery } from "@tanstack/react-query";
 import { fetchDelivery } from "@/api/order";
 import LoadingIndicator from "@/components/LoadingIndicator";
@@ -364,7 +364,7 @@ const ReceiptPage = () => {
                             <Text>{format(new Date(data?.delivery?.created_at || ""), "PPP")}</Text>
                         </XStack>
 
-                        {data?.order?.order_items && data.order.order_items.length > 0 && (
+                        {data?.order?.order_items && data?.order?.order_type !== 'package' && data.order.order_items.length > 0 && (
                             <XStack justifyContent="space-between">
                                 <Text>Items Total</Text>
                                 <Text>₦{(Number(data.order?.total_price || 0) - Number(data.delivery?.delivery_fee || 0)).toFixed(2)}</Text>
@@ -381,8 +381,7 @@ const ReceiptPage = () => {
                         <XStack justifyContent="space-between">
                             <Text>Total Amount</Text>
                             <Text fontWeight="bold">₦{(
-                                (Number(data.order?.total_price || 0) + Number(data.delivery?.delivery_fee || 0))
-                            ).toFixed(2)}</Text>
+                                (Number(data.order?.total_price || 0))).toFixed(2)}</Text>
                         </XStack>
 
                         <XStack justifyContent="space-between">
@@ -446,7 +445,16 @@ const ReceiptPage = () => {
                     >
                         Share PDF
                     </Button>
+                    <Button
+                        flex={1}
+                        backgroundColor={"$cardDark"}
+                        icon={<Share2 color="white" />}
+                        onPress={() => router.push('/payment/transfer-detail')}
+                    >
+                        Share PDF
+                    </Button>
                 </XStack>
+
 
             </YStack>
         </ScrollView>
