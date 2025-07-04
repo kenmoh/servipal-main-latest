@@ -8,7 +8,7 @@ import {
 } from '@bottom-tabs/react-navigation';
 import { ParamListBase, TabNavigationState } from '@react-navigation/native';
 import { useTheme, View } from 'tamagui'
-import { Bell, BikeIcon, CookingPotIcon, Settings, Store, User, UserRound, Wallet, WashingMachine } from 'lucide-react-native'
+import { Bell, BikeIcon, CookingPotIcon, Settings, Store, User, UserRound, Utensils, Wallet, WashingMachine } from 'lucide-react-native'
 import { useAuth } from '@/context/authContext';
 
 
@@ -73,8 +73,8 @@ const TabBarLayout = () => {
                 tabBarShowLabel: false,
                 tabBarHideOnKeyboard: true,
                 tabBarStyle: {
-                    height: 75,
-                    marginBottom: 18,
+                    height: 110,
+                    // marginBottom: 18,
                     backgroundColor: theme.background.val
                 },
                 tabBarItemStyle: {
@@ -113,7 +113,7 @@ const TabBarLayout = () => {
                 href: user?.user_type === 'dispatch' || user?.user_type === 'rider' ? null : undefined,
                 tabBarIcon: ({ focused }) => (
                     <CustomTabBarIcon focused={focused}>
-                        <CookingPotIcon
+                        <Utensils
                             size={TAB_BAR_ICON_SIZE}
                             color={focused ? 'white' : theme.icon.val}
                         />

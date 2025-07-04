@@ -3,16 +3,15 @@ import AppTextInput from "@/components/AppInput";
 import AppModal from "@/components/AppModal";
 import Item from "@/components/CartItem";
 import GoogleTextInput from "@/components/GoogleTextInput";
-import LoadingIndicator from "@/components/LoadingIndicator";
 import { useAuth } from "@/context/authContext";
 import { useCartStore } from "@/store/cartStore";
 import { useLocationStore } from "@/store/locationStore";
 import { OrderFoodOLaundry } from "@/types/order-types";
 import { useMutation } from "@tanstack/react-query";
-import { router, Stack } from "expo-router";
-import { ListOrderedIcon, ShoppingCart, X } from "lucide-react-native";
+import { router } from "expo-router";
+import { ShoppingCart, X } from "lucide-react-native";
 import React, { useEffect, useState } from "react";
-import { ScrollView, StyleSheet } from "react-native";
+import { ActivityIndicator, ScrollView, StyleSheet } from "react-native";
 import { KeyboardAvoidingView } from "react-native-keyboard-controller";
 import { Notifier, NotifierComponents } from "react-native-notifier";
 import {
@@ -175,7 +174,7 @@ const Cart = () => {
                     <Text fontSize={12} color={'$icon'} textAlign="center">Your cart is empty!</Text>
                 </View>
             ) : (
-                <View flex={1} backgroundColor={theme.background.val}>
+                <>
                     <View marginVertical={'$2.5'} />
                     <ScrollView
                         contentContainerStyle={{
@@ -208,7 +207,7 @@ const Cart = () => {
                             backgroundColor={isPending ? '$cardDark' : "$btnPrimaryColor"}
                             onPress={() => mutate()}
                         >
-                            {isPending ? <LoadingIndicator /> : 'PROCEED TO PAYMENT'}
+                            {isPending ? <ActivityIndicator size="large" color="white" /> : 'PROCEED TO PAYMENT'}
                         </Button>
                         <XStack
                             gap={"$3"}
@@ -241,7 +240,8 @@ const Cart = () => {
                                 width={"90%"}
                                 alignSelf="center"
                                 bordered
-                                marginBottom="$5"
+                                marginBottom="$15"
+
                             >
                                 {/* DELIVERY INFO */}
                                 <XStack>
@@ -377,54 +377,49 @@ const Cart = () => {
                             </Card>
                         )}
                     </ScrollView>
-                    <KeyboardAvoidingView
 
-                        style={{ flex: 1 }}
-                    // behavior={Platform.OS === "ios" ? "padding" : "height"}
-                    // keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
+                    <AppModal
+                        visible={modalVisible}
+                        onClose={() => setModalVisible(false)}
+                        height="90%"
                     >
-                        <AppModal
-                            visible={modalVisible}
-                            onClose={() => setModalVisible(false)}
-                            height="90%"
+
+                        <AppTextInput
+                            label="Pickup Location"
+                            value={origin || ""}
+                            editable={false}
+                        />
+                        <View marginVertical='$1.5' />
+                        <GoogleTextInput
+                            placeholder="Destination"
+                            disableScroll={true}
+                            value={destination}
+                            errorMessage={error.destination}
+                            onChangeText={() => { }}
+                            handlePress={(lat, lng, address) => {
+                                setDestination(address, [lat, lng]);
+                                setError((prev) => ({ ...prev, destination: "" }));
+                            }}
+                        />
+                        <View marginVertical='$1.5' />
+                        <AppTextInput
+                            label="Additional Information"
+                            value={infoText}
+                            onChangeText={(e) => setInfoText(e)}
+                        />
+
+                        <Button
+                            width={"90%"}
+                            marginVertical={"$5"}
+                            backgroundColor={"$btnPrimaryColor"}
+                            alignSelf="center"
+                            onPress={handleNext}
                         >
+                            Ok
+                        </Button>
+                    </AppModal>
 
-                            <AppTextInput
-                                label="Pickup Location"
-                                value={origin || ""}
-                                editable={false}
-                            />
-                            <View marginVertical='$1.5' />
-                            <GoogleTextInput
-                                placeholder="Destination"
-                                disableScroll={true}
-                                value={destination}
-                                errorMessage={error.destination}
-                                onChangeText={() => { }}
-                                handlePress={(lat, lng, address) => {
-                                    setDestination(address, [lat, lng]);
-                                    setError((prev) => ({ ...prev, destination: "" }));
-                                }}
-                            />
-                            <View marginVertical='$1.5' />
-                            <AppTextInput
-                                label="Additional Information"
-                                value={infoText}
-                                onChangeText={(e) => setInfoText(e)}
-                            />
-
-                            <Button
-                                width={"90%"}
-                                marginVertical={"$5"}
-                                backgroundColor={"$btnPrimaryColor"}
-                                alignSelf="center"
-                                onPress={handleNext}
-                            >
-                                Ok
-                            </Button>
-                        </AppModal>
-                    </KeyboardAvoidingView>
-                </View>
+                </>
             )}
         </>
     );

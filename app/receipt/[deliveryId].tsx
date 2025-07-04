@@ -1,21 +1,36 @@
-import { StyleSheet, Share, Platform, Dimensions, ScrollView } from "react-native";
+import {
+    StyleSheet,
+    Share,
+    Platform,
+    Dimensions,
+    ScrollView,
+} from "react-native";
 import React from "react";
-import { View, YStack, Text, XStack, Card, Paragraph, Button, useTheme } from "tamagui";
+import {
+    View,
+    YStack,
+    Text,
+    XStack,
+    Card,
+    Paragraph,
+    Button,
+    useTheme,
+} from "tamagui";
 import { router, useLocalSearchParams } from "expo-router";
 import { useQuery } from "@tanstack/react-query";
 import { fetchDelivery } from "@/api/order";
 import LoadingIndicator from "@/components/LoadingIndicator";
 import { format } from "date-fns";
 import { Download, Share2 } from "lucide-react-native";
-import * as FileSystem from 'expo-file-system';
-import * as Sharing from 'expo-sharing';
+import * as FileSystem from "expo-file-system";
+import * as Sharing from "expo-sharing";
 import { Notifier, NotifierComponents } from "react-native-notifier";
-import * as Print from 'expo-print';
+import * as Print from "expo-print";
 
 const ReceiptPage = () => {
     const { deliveryId } = useLocalSearchParams();
-    const screenWidth = Dimensions.get('window').width;
-    const theme = useTheme()
+    const screenWidth = Dimensions.get("window").width;
+    const theme = useTheme();
 
     const { data, isLoading } = useQuery({
         queryKey: ["delivery", deliveryId],
@@ -23,13 +38,13 @@ const ReceiptPage = () => {
     });
 
     const generateReceiptHTML = () => {
-        if (!data) return '';
+        if (!data) return "";
 
         // Function to truncate long text
         const truncateText = (text: string, maxLength: number = 150) => {
-            if (!text) return '';
+            if (!text) return "";
             if (text.length <= maxLength) return text;
-            return text.substring(0, maxLength) + '...';
+            return text.substring(0, maxLength) + "...";
         };
 
         // Calculate total: sum of items total and delivery fee if present
@@ -193,7 +208,7 @@ const ReceiptPage = () => {
                 <body>
                     <div class="container">
                         <div class="header">
-                            // <img src="android-icon.png" class="logo" alt="ServiPal Logo" />
+                            
                             <h1>Receipt</h1>
                         </div>
                         
@@ -204,53 +219,86 @@ const ReceiptPage = () => {
                             </div>
                             <div class="row">
                                 <span>Date</span>
-                                <span>${format(new Date(data.delivery?.created_at || ""), "PPP")}</span>
+                                <span>${format(
+            new Date(data.delivery?.created_at || ""),
+            "PPP"
+        )}</span>
                             </div>
-                            ${data.order?.order_items && data.order.order_items.length > 0 ? `
+                            ${data.order?.order_items &&
+                data.order.order_items.length > 0
+                ? `
                                 <div class="row">
                                     <span>Items Total</span>
-                                    <span class="amount">₦${itemsTotal.toFixed(2)}</span>
+                                    <span class="amount">₦${itemsTotal.toFixed(
+                    2
+                )}</span>
                                 </div>
-                            ` : ''}
-                            ${data.delivery?.delivery_fee ? `
+                            `
+                : ""
+            }
+                            ${data.delivery?.delivery_fee
+                ? `
                                 <div class="row">
                                     <span>Delivery Fee</span>
-                                    <span class="amount">₦${deliveryFee.toFixed(2)}</span>
+                                    <span class="amount">₦${deliveryFee.toFixed(
+                    2
+                )}</span>
                                 </div>
-                            ` : ''}
+                            `
+                : ""
+            }
                             <div class="row total">
                                 <span>Total Amount</span>
                                 <span class="amount">₦${total.toFixed(2)}</span>
                             </div>
                             <div class="row">
                                 <span>Payment Status</span>
-                                <span class="status-${data.order?.order_payment_status === 'paid' ? 'paid' : 'unpaid'}">
+                                <span class="status-${data.order?.order_payment_status === "paid"
+                ? "paid"
+                : "unpaid"
+            }">
                                     ${data.order?.order_payment_status?.toUpperCase()}
                                 </span>
                             </div>
                         </div>
 
-                        ${data.order?.order_items && data?.order?.order_type !== 'package' && data.order.order_items.length > 0 ? `
+                        ${data.order?.order_items &&
+                data?.order?.order_type !== "package" &&
+                data.order.order_items.length > 0
+                ? `
                             <div class="section">
                                 <h2>Order Items</h2>
-                                ${data.order.order_items.map((item: any) => `
+                                ${data.order.order_items
+                    .map(
+                        (item: any) => `
                                     <div class="row">
-                                        <span>${item.quantity}X  ${item.name}</span>
-                                        <span class="amount">₦${Number(item.price * item.quantity).toFixed(2)}</span>
+                                        <span>${item.quantity}X  ${item.name
+                            }</span>
+                                        <span class="amount">₦${Number(
+                                item.price * item.quantity
+                            ).toFixed(2)}</span>
                                     </div>
-                                `).join('')}
+                                `
+                    )
+                    .join("")}
                             </div>
-                        ` : ''}
+                        `
+                : ""
+            }
 
                         <div class="section">
                             <h2>Delivery Details</h2>
                             <div class="address-info">
                                 <div class="address-label">From</div>
-                                <div class="address-value">${truncateText(data.delivery?.origin || '')}</div>
+                                <div class="address-value">${truncateText(
+                data.delivery?.origin || ""
+            )}</div>
                             </div>
                             <div class="address-info">
                                 <div class="address-label">To</div>
-                                <div class="address-value">${truncateText(data.delivery?.destination || '')}</div>
+                                <div class="address-value">${truncateText(
+                data.delivery?.destination || ""
+            )}</div>
                             </div>
                             <div class="row" style="margin-top: 12px;">
                                 <span>Status</span>
@@ -275,17 +323,17 @@ const ReceiptPage = () => {
                 html,
                 width: screenWidth,
                 height: screenWidth * 1.4,
-                base64: false
+                base64: false,
             });
 
             // Create a filename for the PDF
-            const fileName = `Receipt_${data?.order?.order_number || 'unknown'}.pdf`;
+            const fileName = `Receipt_${data?.order?.order_number || "unknown"}.pdf`;
             const destinationUri = `${FileSystem.documentDirectory}${fileName}`;
 
             // Copy the PDF to the documents directory
             await FileSystem.copyAsync({
                 from: uri,
-                to: destinationUri
+                to: destinationUri,
             });
 
             Notifier.showNotification({
@@ -295,7 +343,7 @@ const ReceiptPage = () => {
                 componentProps: { alertType: "success" },
             });
         } catch (error) {
-            console.error('Download error:', error);
+            console.error("Download error:", error);
             Notifier.showNotification({
                 title: "Error",
                 description: "Failed to download receipt",
@@ -312,14 +360,14 @@ const ReceiptPage = () => {
                 html,
                 width: screenWidth,
                 height: screenWidth * 1.4,
-                base64: false
+                base64: false,
             });
 
             if (await Sharing.isAvailableAsync()) {
                 await Sharing.shareAsync(uri, {
-                    mimeType: 'application/pdf',
+                    mimeType: "application/pdf",
                     dialogTitle: `Receipt #${data?.order?.order_number}`,
-                    UTI: 'com.adobe.pdf'
+                    UTI: "com.adobe.pdf",
                 });
             } else {
                 Notifier.showNotification({
@@ -348,77 +396,108 @@ const ReceiptPage = () => {
     }
 
     return (
-        <ScrollView style={{ flex: 1, backgroundColor: theme.background.val, alignContent: 'center' }} >
-            <YStack gap="$4" style={{ flex: 1, overflow: 'scroll' }}>
+        <ScrollView
+            style={{
+                flex: 1,
+                backgroundColor: theme.background.val,
+                alignContent: "center",
+            }}
+        >
+            <YStack gap="$4" style={{ flex: 1, overflow: "scroll" }} padding="$3">
                 {/* <Text fontSize={20} fontWeight="bold" textAlign="center">Receipt</Text> */}
 
-                <Card padding="$4" backgroundColor={"$cardBackground"}>
+                <Card padding="$4" backgroundColor={"$cardBackground"} bordered>
                     <YStack gap="$3">
                         <XStack justifyContent="space-between">
-                            <Text>Order Number</Text>
+                            <Text color={'$icon'}>Order Number</Text>
                             <Text fontWeight="bold">#{data?.order?.order_number}</Text>
                         </XStack>
 
                         <XStack justifyContent="space-between">
-                            <Text>Date</Text>
-                            <Text>{format(new Date(data?.delivery?.created_at || ""), "PPP")}</Text>
+                            <Text color={'$icon'}>Date</Text>
+                            <Text>
+                                {format(new Date(data?.delivery?.created_at || ""), "PPP")}
+                            </Text>
                         </XStack>
 
-                        {data?.order?.order_items && data?.order?.order_type !== 'package' && data.order.order_items.length > 0 && (
-                            <XStack justifyContent="space-between">
-                                <Text>Items Total</Text>
-                                <Text>₦{(Number(data.order?.total_price || 0)).toFixed(2)}</Text>
-                            </XStack>
-                        )}
+                        {data?.order?.order_items &&
+                            data?.order?.order_type !== "package" &&
+                            data.order.order_items.length > 0 && (
+                                <XStack justifyContent="space-between">
+                                    <Text color={'$icon'}>Items Total</Text>
+                                    <Text>
+                                        ₦{Number(data.order?.total_price || 0).toFixed(2)}
+                                    </Text>
+                                </XStack>
+                            )}
 
                         {data?.delivery?.delivery_fee && (
                             <XStack justifyContent="space-between">
-                                <Text>Delivery Fee</Text>
+                                <Text color={'$icon'}>Delivery Fee</Text>
                                 <Text>₦{Number(data.delivery.delivery_fee).toFixed(2)}</Text>
                             </XStack>
                         )}
 
                         <XStack justifyContent="space-between">
-                            <Text>Total Amount</Text>
-                            <Text fontWeight="bold">₦{(
-                                (Number(data.order?.total_price || 0) + Number(data.delivery?.delivery_fee || 0))).toFixed(2)}</Text>
+                            <Text color={'$icon'}>Total Amount</Text>
+                            {data?.order?.order_type !== "package" ? <Text fontWeight="bold">
+                                ₦
+                                {(
+                                    Number(data.order?.total_price || 0) +
+                                    Number(data.delivery?.delivery_fee || 0)
+                                ).toFixed(2)}
+                            </Text> : <Text>₦{data?.delivery?.delivery_fee}</Text>}
                         </XStack>
 
                         <XStack justifyContent="space-between">
-                            <Text>Payment Status</Text>
-                            <Text color={data?.order?.order_payment_status === "paid" ? "green" : "red"}>
+                            <Text color={'$icon'}>Payment Status</Text>
+                            <Text
+                                color={
+                                    data?.order?.order_payment_status === "paid" ? "green" : "red"
+                                }
+                            >
                                 {data?.order?.order_payment_status?.toUpperCase()}
                             </Text>
                         </XStack>
                     </YStack>
                 </Card>
 
-                {data?.order?.order_items && data?.order?.order_type !== 'package' && data.order.order_items.length > 0 && (
-                    <Card padding="$4" backgroundColor={"$cardBackground"}>
-                        <YStack gap="$3">
-                            <Text fontWeight="bold">Order Items</Text>
-                            {data.order.order_items.map((item: any) => (
-                                <XStack key={item.id} justifyContent="space-between">
-                                    <Text>{item.quantity}X {item.name}</Text>
-                                    <Text>₦{Number(item.price * item.quantity).toFixed(2)}</Text>
-                                </XStack>
-                            ))}
-                        </YStack>
-                    </Card>
-                )}
+                {data?.order?.order_items &&
+                    data?.order?.order_type !== "package" &&
+                    data.order.order_items.length > 0 && (
+                        <Card padding="$4" backgroundColor={"$cardBackground"} bordered>
+                            <YStack gap="$3">
+                                <Text fontWeight="bold">Order Items</Text>
+                                {data.order.order_items.map((item: any) => (
+                                    <XStack key={item.id} justifyContent="space-between">
+                                        <Text color={'$icon'}>
+                                            {item.quantity}X {item.name}
+                                        </Text>
+                                        <Text>
+                                            ₦{Number(item.price * item.quantity).toFixed(2)}
+                                        </Text>
+                                    </XStack>
+                                ))}
+                            </YStack>
+                        </Card>
+                    )}
 
-                <Card padding="$4" backgroundColor={"$cardBackground"}>
+                <Card padding="$4" backgroundColor={"$cardBackground"} bordered>
                     <YStack gap="$3">
                         <Text fontWeight="bold">Delivery Details</Text>
 
                         <YStack gap="$2">
                             <Text color="$gray11">From</Text>
-                            <Text numberOfLines={2} ellipsizeMode="tail">{data?.delivery?.origin}</Text>
+                            <Text numberOfLines={2} ellipsizeMode="tail">
+                                {data?.delivery?.origin}
+                            </Text>
                         </YStack>
 
                         <YStack gap="$2">
                             <Text color="$gray11">To</Text>
-                            <Text numberOfLines={2} ellipsizeMode="tail">{data?.delivery?.destination}</Text>
+                            <Text numberOfLines={2} ellipsizeMode="tail">
+                                {data?.delivery?.destination}
+                            </Text>
                         </YStack>
 
                         <XStack justifyContent="space-between">
@@ -428,7 +507,13 @@ const ReceiptPage = () => {
                     </YStack>
                 </Card>
 
-                <XStack gap="$2" justifyContent="space-between" width={'90%'} alignSelf="center" marginBottom={'$3'}>
+                <XStack
+                    gap="$2"
+                    justifyContent="space-between"
+                    width={"100%"}
+                    alignSelf="center"
+                    marginBottom={"$3"}
+                >
                     <Button
                         flex={1}
                         backgroundColor={"$btnPrimaryColor"}
@@ -445,13 +530,10 @@ const ReceiptPage = () => {
                     >
                         Share PDF
                     </Button>
-
                 </XStack>
-
-
             </YStack>
         </ScrollView>
     );
 };
 
-export default ReceiptPage; 
+export default ReceiptPage;

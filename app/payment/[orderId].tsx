@@ -25,8 +25,6 @@ const Payment = () => {
     // Parse the stringified orderItems back to an array
     const parsedOrderItems: OrderItemResponse[] = orderItems ? JSON.parse(orderItems as string) : []
 
-
-
     const handleOpenWebView = () => {
         if (!paymentLink) {
             return;
@@ -267,9 +265,9 @@ const Payment = () => {
                     padding="$4"
                 >
                     <YStack gap={10}>
-                        <Text fontSize={16} color="$gray11">ORD #: {orderNumber} </Text>
+                        <Text fontSize={16} color="$gray11">ORDER #: {orderNumber} </Text>
                         <Text fontSize={14} color="$gray11"> Order Type:
-                            {" "} {`${deliveryType}`.toUpperCase() || `${orderType}`.toUpperCase()}
+                            {" "} {`${orderType}`.toUpperCase()}
                         </Text>
                     </YStack>
                 </Card>
@@ -278,8 +276,8 @@ const Payment = () => {
                 {renderOrderItems()}
 
                 {/* Payment Button */}
-                <YStack>
-                    <Text color={'$text'} fontSize={'$2'}>Pay with:</Text>
+                <YStack marginTop='$6'>
+                    <Text color={'$text'} fontSize={'$3'}>Pay with:</Text>
 
                     <Button
                         backgroundColor="$btnPrimaryColor"
