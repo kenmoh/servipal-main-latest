@@ -1,31 +1,18 @@
 import { StyleSheet } from 'react-native'
-import React, { ReactNode } from 'react'
-import { withLayoutContext, Tabs } from 'expo-router'
-import {
-    createNativeBottomTabNavigator,
-    NativeBottomTabNavigationOptions,
-    NativeBottomTabNavigationEventMap,
-} from '@bottom-tabs/react-navigation';
-import { ParamListBase, TabNavigationState } from '@react-navigation/native';
-import { useTheme, View } from 'tamagui'
-import { Bell, BikeIcon, CookingPotIcon, Settings, Store, User, UserRound, Utensils, Wallet, WashingMachine } from 'lucide-react-native'
-import { useAuth } from '@/context/authContext';
+import React, { ReactNode, memo } from 'react'
+import { Tabs } from 'expo-router'
 
+import { useTheme, View } from 'tamagui'
+import { Bell, BikeIcon, Settings, Store, Utensils, WashingMachine } from 'lucide-react-native'
+import { useAuth } from '@/context/authContext';
 
 
 const TAB_BAR_ICON_SIZE = 25;
 
-// const BottomTabNavigator = createNativeBottomTabNavigator().Navigator
-
-// const Tabs = withLayoutContext<
-//     NativeBottomTabNavigationOptions,
-//     typeof BottomTabNavigator,
-//     TabNavigationState<ParamListBase>,
-//     NativeBottomTabNavigationEventMap
-// >(BottomTabNavigator);
 
 
-const CustomTabBarIcon = ({
+
+const CustomTabBarIcon = memo(({
     children,
     focused,
 
@@ -57,16 +44,23 @@ const CustomTabBarIcon = ({
 
         </>
     );
-};
+});
+
+CustomTabBarIcon.displayName = 'CustomTabBarIcon';
 
 const TabBarLayout = () => {
     const theme = useTheme()
     const { user } = useAuth()
+
+    // Memoize theme values to prevent re-renders
+    const activeColor = theme.btnPrimaryColor.val;
+    const iconColor = theme.icon.val;
+
     return (
         <Tabs
             screenOptions={{
 
-                tabBarActiveTintColor: theme.btnPrimaryColor.val,
+                tabBarActiveTintColor: activeColor,
                 headerShown: false,
                 headerTitleAlign: "center",
                 headerTintColor: theme.text.val,
@@ -104,7 +98,7 @@ const TabBarLayout = () => {
 
                 tabBarIcon: ({ focused }) => (
                     <CustomTabBarIcon focused={focused}>
-                        <BikeIcon size={TAB_BAR_ICON_SIZE} color={focused ? 'white' : theme.icon.val} />
+                        <BikeIcon size={TAB_BAR_ICON_SIZE} color={focused ? 'white' : iconColor} />
                     </CustomTabBarIcon>
                 ),
             }} />
@@ -115,7 +109,7 @@ const TabBarLayout = () => {
                     <CustomTabBarIcon focused={focused}>
                         <Utensils
                             size={TAB_BAR_ICON_SIZE}
-                            color={focused ? 'white' : theme.icon.val}
+                            color={focused ? 'white' : iconColor}
                         />
                     </CustomTabBarIcon>
                 ),
@@ -129,22 +123,12 @@ const TabBarLayout = () => {
                     <CustomTabBarIcon focused={focused}>
                         <WashingMachine
                             size={TAB_BAR_ICON_SIZE}
-                            color={focused ? 'white' : theme.icon.val}
+                            color={focused ? 'white' : iconColor}
                         />
                     </CustomTabBarIcon>
                 ),
             }} />
-            <Tabs.Screen name='(marketplace)' options={{
-                title: '',
-                href: user?.user_type === 'dispatch' || user?.user_type === 'rider' ? null : undefined,
 
-                tabBarIcon: ({ focused }) => (
-                    <CustomTabBarIcon focused={focused}>
-                        <Store size={TAB_BAR_ICON_SIZE} color={focused ? 'white' : theme.icon.val} />
-
-                    </CustomTabBarIcon>
-                ),
-            }} />
 
 
 
@@ -152,7 +136,7 @@ const TabBarLayout = () => {
                 title: '',
                 tabBarIcon: ({ focused }) => (
                     <CustomTabBarIcon focused={focused}>
-                        <Settings size={TAB_BAR_ICON_SIZE} color={focused ? 'white' : theme.icon.val} />
+                        <Settings size={TAB_BAR_ICON_SIZE} color={focused ? 'white' : iconColor} />
                     </CustomTabBarIcon>
                 ),
             }} />
@@ -163,144 +147,7 @@ const TabBarLayout = () => {
 }
 
 
-// const TabBarLayout = () => {
-//     const theme = useTheme()
-//     return (
-//         <Tabs
-//             tabBarStyle={{
-//                 backgroundColor: theme.background.val,
 
-
-//                 // alignItems:'center',
-//                 // justifyContent:'center'
-
-
-//             }}
-//             // labeled
-//             tabLabelStyle={{
-//                 fontFamily: 'Poppins-Light'
-//             }}
-
-//             screenOptions={{
-
-//                 tabBarActiveTintColor: theme.btnPrimaryColor.val,
-
-//                 // headerShown: false,
-
-
-
-
-
-//                 // headerShown: false,
-//                 // headerTitleAlign: "center",
-//                 // headerTintColor: theme.text.val,
-//                 // tabBarShowLabel: false,
-//                 // tabBarHideOnKeyboard: true,
-//                 // tabBarStyle: {
-//                 //     height: 55
-//                 // },
-//                 // tabBarItemStyle: {
-//                 //     padding: 15,
-//                 //     justifyContent: 'center',
-//                 //     alignItems: 'center',
-//                 //     flexDirection: 'column',
-//                 //     backgroundColor: theme.background.val,
-//                 // },
-//                 // tabBarBadgeStyle: {
-//                 //     position: 'absolute',
-//                 //     top: -12,
-//                 //     backgroundColor: theme.btnPrimaryColor.val,
-//                 //     color: 'white'
-//                 // }
-
-
-
-//             }}
-
-
-//         >
-//             <Tabs.Screen name='delivery' options={{
-
-//                 // headerShown: false,
-//                 title: '',
-//                 tabBarIcon: () => require('@/assets/images/bike.svg')
-//                 // tabBarIcon: ({ focused }) => (
-//                 //     <CustomTabBarIcon focused={focused}>
-//                 //         <BikeIcon size={TAB_BAR_ICON_SIZE} color={focused ? 'white' : theme.icon.val} />
-//                 //     </CustomTabBarIcon>
-//                 // ),
-//             }} />
-//             <Tabs.Screen name='food' options={{
-//                 title: '',
-//                 // tabBarLabel: 'Restau...',
-//                 tabBarIcon: () => require('@/assets/images/utensils.svg')
-
-//                 // tabBarIcon: ({ focused }) => (
-//                 //     <CustomTabBarIcon focused={focused}>
-//                 //         <CookingPotIcon
-//                 //             size={TAB_BAR_ICON_SIZE}
-//                 //             color={focused ? 'white' : theme.icon.val}
-//                 //         />
-//                 //     </CustomTabBarIcon>
-//                 // ),
-//             }} />
-//             <Tabs.Screen name='laundry' options={{
-//                 title: '',
-//                 // tabBarLabel: 'Laundry',
-//                 tabBarIcon: () => require('@/assets/images/washing-machine.svg')
-//                 // tabBarIcon: ({ focused }) => (
-//                 //     <CustomTabBarIcon focused={focused}>
-//                 //         <WashingMachine
-//                 //             size={TAB_BAR_ICON_SIZE}
-//                 //             color={focused ? 'white' : theme.icon.val}
-//                 //         />
-//                 //     </CustomTabBarIcon>
-//                 // ),
-//             }} />
-//             <Tabs.Screen name='(marketplace)' options={{
-//                 title: '',
-//                 // tabBarLabel: 'Store',
-
-//                 tabBarIcon: () => require('@/assets/images/store.svg')
-//                 // tabBarIcon: ({ focused }) => (
-//                 //     <CustomTabBarIcon focused={focused}>
-//                 //         <Store size={TAB_BAR_ICON_SIZE} color={focused ? 'white' : theme.icon.val} />
-
-//                 //     </CustomTabBarIcon>
-//                 // ),
-//             }} />
-//             {/*  <Tabs.Screen name='wallet' options={{
-//                 title: '',
-//                 // tabBarLabel: 'Wallet',
-//                 tabBarIcon: () => require('@/assets/images/wallet.svg')
-//                 // tabBarIcon: ({ focused }) => (
-//                 //     <CustomTabBarIcon focused={focused}>
-//                 //         <Wallet size={TAB_BAR_ICON_SIZE} color={focused ? 'white' : theme.icon.val} />
-//                 //     </CustomTabBarIcon>
-//                 // ),
-//             }} />*/}
-//             {/* <Tabs.Screen name='(profile)' options={{
-//                 title: '',
-//                 tabBarIcon: () => require('@/assets/images/user-round.svg')
-
-//             }} /> */}
-
-//             <Tabs.Screen name='profile' options={{
-//                 title: '',
-//                 // tabBarLabel: 'Profile',
-//                 tabBarIcon: () => require('@/assets/images/user-round.svg')
-
-//                 // tabBarIcon: ({ focused }) => (
-//                 //     <CustomTabBarIcon focused={focused}>
-//                 //         <Bell size={TAB_BAR_ICON_SIZE} color={focused ? 'white' : theme.icon.val} />
-//                 //     </CustomTabBarIcon>
-//                 // ),
-//             }} />
-
-
-//         </Tabs>
-//     )
-// }
 
 export default TabBarLayout
 
