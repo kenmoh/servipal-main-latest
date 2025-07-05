@@ -42,17 +42,15 @@ const FundWallet = () => {
 
     const { mutate, isPending } = useMutation({
         mutationFn: fundWallet,
-        onSuccess: () => {
-            Notifier.showNotification({
-                title: "Success",
-                description: "Wallet funded successfully",
-                Component: NotifierComponents.Alert,
-                componentProps: {
-                    alertType: "success",
-                },
+        onSuccess: (data) => {
+
+            router.push({
+                pathname: '/profile/wallet-payment',
+                params: {
+                    orderId: data?.id,
+                    fundWalletData: JSON.stringify(data),
+                }
             });
-            reset();
-            router.back();
         },
         onError: (error) => {
             Notifier.showNotification({

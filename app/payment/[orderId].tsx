@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Dimensions, ScrollView, StyleSheet } from 'react-native'
+import { ActivityIndicator, Dimensions, ScrollView, StyleSheet } from 'react-native'
 import { WebView } from "react-native-webview";
 import { YStack, XStack, Text, Card, Button, View, useTheme } from 'tamagui'
 import { router, useLocalSearchParams } from 'expo-router'
@@ -9,7 +9,7 @@ import { OrderItemResponse } from '@/types/order-types';
 import { queryClient } from '../_layout';
 import { useAuth } from '@/context/authContext';
 import { useMutation } from '@tanstack/react-query';
-import { payWithBankTransfer, payWithWallet } from '@/api/payment';
+import { FundWalletReturn, payWithBankTransfer, payWithWallet } from '@/api/payment';
 
 
 const Payment = () => {
@@ -59,13 +59,31 @@ const Payment = () => {
             });
         }
     })
-    const { mutate: payWithWalletMutation } = useMutation({
+    const { mutate: payWithWalletMutation, isPending } = useMutation({
         mutationFn: () => payWithWallet(orderId as string),
         onSuccess: () => {
             router.replace({
                 pathname: "/payment/payment-complete",
                 params: { paymentStatus: 'success' }
             });
+
+            queryClient.invalidateQueries({
+                queryKey: ["delivery", deliveryId],
+            });
+            queryClient.invalidateQueries({
+                queryKey: ["delivery", orderId],
+            });
+
+            queryClient.invalidateQueries({
+                queryKey: ["deliveries"],
+            });
+
+            queryClient.invalidateQueries({
+                queryKey: ["deliveries", user?.sub],
+            });
+
+            queryClient.refetchQueries({ queryKey: ["deliveries"], exact: false });
+            queryClient.refetchQueries({ queryKey: ["deliveries", user?.sub], exact: false });
 
             Notifier.showNotification({
                 title: "Bank Details",
@@ -306,8 +324,8 @@ const Payment = () => {
 
 
                         >
-                            <Wallet size={20} color={theme.text.val} />
-                            Wallet
+                            {isPending ? <ActivityIndicator size="small" color={theme.text.val} /> : <Wallet size={20} color={theme.text.val} />}
+                            {!isPending && 'Wallet'}
                         </Button>
                         <Button
                             backgroundColor="$cardDark"

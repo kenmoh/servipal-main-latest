@@ -13,26 +13,30 @@ interface Amount {
   amount: number;
 }
 
+export interface FundWalletReturn extends Amount {
+  id: string;
+  payment_link: string;
+}
+
 // Fund wallet
 // This function allows a user to fund their wallet with a specified amount.
 // It takes an object with an amount property and returns a promise that resolves to the funded amount
 // or throws an error if the funding fails.
 // The function sends a POST request to the /fund-wallet endpoint with the amount in the request body.
 // If the response is not ok or contains an error, it throws an error with a message
-export const fundWallet = async (payData: Amount): Promise<Amount> => {
+export const fundWallet = async (
+  payData: Amount
+): Promise<FundWalletReturn> => {
   const data = {
     amount: payData.amount,
   };
   try {
-    const response: ApiResponse<Amount | ErrorResponse> = await apiClient.post(
-      `${BASE_URL}/fund-wallet`,
-      data,
-      {
+    const response: ApiResponse<FundWalletReturn | ErrorResponse> =
+      await apiClient.post(`${BASE_URL}/fund-wallet`, data, {
         headers: {
           "Content-Type": "application/json",
         },
-      }
-    );
+      });
 
     if (!response.ok || !response.data || "detail" in response.data) {
       const errorMessage =

@@ -55,9 +55,14 @@ const ProfileLayout = () => {
             <Stack.Screen name='fund-wallet' options={{
                 title: 'Fund Wallet',
                 animation: 'slide_from_bottom',
-
-
-
+            }} />
+            <Stack.Screen name='wallet-payment' options={{
+                title: 'Wallet Top-up',
+                animation: 'slide_from_bottom',
+            }} />
+            <Stack.Screen name='[transactionId]' options={{
+                title: '',
+                animation: 'slide_from_bottom',
             }} />
         </Stack>
     )

@@ -27,6 +27,7 @@ const index = () => {
 
     })
 
+
     const { data: withdrawData, mutate: withdrawMutation } = useMutation({
         mutationFn: withDrawFunds,
         onSuccess: () => {

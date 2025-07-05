@@ -96,6 +96,8 @@ export interface Transaction {
   created_at: string;
   amount: number;
   payment_by: string;
+  payment_link: string;
+  payment_status: string;
   transaction_type: TransactionType;
 }
 export interface Wallet {
