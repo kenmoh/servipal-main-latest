@@ -167,7 +167,7 @@ const ItemCard = React.memo(({ data, isHomeScreen = false }: CardProp) => {
     const handleGoToReceipt = (orderId: string) => {
         router.push({
             pathname: "/orderReceipt/[orderId]",
-            params: { orderId: orderId as string }
+            params: { orderId: orderId as string, paymentStatus: data?.order?.order_payment_status }
         })
     }
 

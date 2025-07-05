@@ -30,7 +30,7 @@ import * as Print from "expo-print";
 import { useAuth } from "@/context/authContext";
 
 const OrderReceiptPage = () => {
-    const { orderId } = useLocalSearchParams();
+    const { orderId, paymentStatus } = useLocalSearchParams();
     const screenWidth = Dimensions.get("window").width;
     const theme = useTheme();
     const { user } = useAuth()
@@ -39,6 +39,24 @@ const OrderReceiptPage = () => {
         queryKey: ["order", orderId],
         queryFn: () => fetchDelivery(orderId as string),
     });
+
+    const handleGotoPayment = () => {
+        router.push({
+            pathname: "/payment/[orderId]",
+            params: {
+                orderId: data?.order.id ?? "",
+                deliveryFee: data?.delivery?.delivery_fee,
+                orderNumber: data?.order?.order_number,
+                deliveryType: `${data?.order?.require_delivery === "delivery"
+                    ? data?.delivery?.delivery_type
+                    : data?.order?.order_type
+                    }`,
+                orderItems: JSON.stringify(data?.order.order_items ?? []),
+                paymentLink: data?.order.payment_link,
+                orderType: data?.order?.order_type || data?.delivery?.delivery_type,
+            },
+        })
+    }
 
     const generateReceiptHTML = () => {
         if (!data) return "";
@@ -487,10 +505,10 @@ const OrderReceiptPage = () => {
                 alignContent: "center",
             }}
         >
-            <YStack gap="$4" style={{ flex: 1, overflow: "scroll" }}>
+            <YStack gap="$4" paddingHorizontal='$3' style={{ flex: 1, overflow: "scroll" }}>
                 {/* <Text fontSize={20} fontWeight="bold" textAlign="center">Receipt</Text> */}
 
-                <Card padding="$4" backgroundColor={"$cardBackground"}>
+                <Card padding="$4" backgroundColor={"$cardBackground"} bordered>
                     <YStack gap="$3">
                         <XStack justifyContent="space-between">
                             <Text>Order Number</Text>
@@ -525,7 +543,7 @@ const OrderReceiptPage = () => {
                 </Card>
 
                 {data?.order?.order_items && data.order.order_items.length > 0 && (
-                    <Card padding="$4" backgroundColor={"$cardBackground"}>
+                    <Card padding="$4" backgroundColor={"$cardBackground"} bordered>
                         <YStack gap="$3">
                             <Text fontWeight="bold">Order Items</Text>
                             {data.order.order_items.map((item: any) => (
@@ -540,7 +558,7 @@ const OrderReceiptPage = () => {
                     </Card>
                 )}
 
-                <Card padding="$4" backgroundColor={"$cardBackground"}>
+                <Card padding="$4" backgroundColor={"$cardBackground"} bordered>
                     <YStack gap="$3">
                         <Text fontWeight="bold">Delivery Details</Text>
 
@@ -557,7 +575,7 @@ const OrderReceiptPage = () => {
                     </YStack>
                 </Card>
 
-                {actionButton && <Button
+                {actionButton && paymentStatus === "paid" && <Button
                     size={"$4"}
                     backgroundColor={actionButton.loading ? "$cardDark" : "$btnPrimaryColor"}
                     width="90%"
@@ -572,6 +590,22 @@ const OrderReceiptPage = () => {
                     onPressIn={actionButton.onPress}
                 >
                     {actionButton.loading ? <ActivityIndicator size={'small'} color={theme.text.val} /> : actionButton.label}
+
+                </Button>}
+                {paymentStatus !== "paid" && <Button
+                    size={"$4"}
+                    backgroundColor={"$btnPrimaryColor"}
+                    width="90%"
+                    alignSelf="center"
+                    textAlign="center"
+                    fontSize={16}
+                    fontFamily={"$body"}
+                    color={"$text"}
+                    fontWeight={"500"}
+                    pressStyle={{ backgroundColor: "$cardDarkHover" }}
+                    onPressIn={handleGotoPayment}
+                >
+                    P A Y
 
                 </Button>}
 
