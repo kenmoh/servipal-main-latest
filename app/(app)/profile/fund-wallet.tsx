@@ -67,7 +67,7 @@ const FundWallet = () => {
     });
 
     const onSubmit = (value: FundWalletForm) => {
-        console.log("Submitting:", value.amount);
+
         mutate({ amount: Number(value.amount) });
     };
 

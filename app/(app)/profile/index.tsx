@@ -56,7 +56,7 @@ const profile = () => {
         mutationFn: logOutUser,
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["profile", user?.sub] });
-            console.log("Log out");
+
         },
     });
 

@@ -147,11 +147,7 @@ const Page = () => {
             if (status !== "granted") return;
 
             const location = await Location.getCurrentPositionAsync({});
-            console.log(
-                "LOCATION",
-                location.coords.latitude,
-                location.coords.longitude
-            );
+
             setUserLocation({
                 latitude: location.coords.latitude,
                 longitude: location.coords.longitude,
@@ -225,7 +221,7 @@ const Page = () => {
 
         filterLaundryVendors();
     }, [data, userLocation, user?.sub, user?.user_type]);
-    console.log(data, 'FROM LAUNDEY UI')
+
     if (isFetching) {
         return (
             <SafeAreaView style={{ flex: 1, backgroundColor: theme.background.val }}>

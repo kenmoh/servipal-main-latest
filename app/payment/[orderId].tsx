@@ -37,7 +37,7 @@ const Payment = () => {
     const { mutate, data } = useMutation({
         mutationFn: () => payWithBankTransfer(orderId as string),
         onSuccess: (data) => {
-            console.log(data);
+
             router.replace({
                 pathname: "/payment/transfer-detail",
                 params: { data: JSON.stringify(data) }

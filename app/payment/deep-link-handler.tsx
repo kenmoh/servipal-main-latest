@@ -9,7 +9,7 @@ const DeepLinkHandler = () => {
     const params = useLocalSearchParams();
 
     useEffect(() => {
-        console.log('Deep Link Handler - Raw params:', params);
+
 
         // Parse URL parameters
         const urlParams = new URLSearchParams(params.url as string);
@@ -17,12 +17,6 @@ const DeepLinkHandler = () => {
         const txRef = urlParams.get('tx_ref') || params.txRef as string;
         const transactionId = urlParams.get('transaction_id') || params.transactionId as string;
 
-        console.log('Deep Link Handler - Parsed parameters:', {
-            status,
-            txRef,
-            transactionId,
-            rawUrl: params.url
-        });
 
         if (!status) {
             console.error('Deep Link Handler - Missing status parameter');
@@ -38,11 +32,11 @@ const DeepLinkHandler = () => {
 
         // Convert status to lowercase for consistent comparison
         const normalizedStatus = status.toLowerCase();
-        console.log('Deep Link Handler - Processing status:', normalizedStatus);
+
 
         switch (normalizedStatus) {
             case 'successful':
-                console.log('Deep Link Handler - Payment successful, navigating to payment complete');
+
                 router.replace({
                     pathname: '/payment/payment-complete',
                     params: {
@@ -53,7 +47,7 @@ const DeepLinkHandler = () => {
                 });
                 break;
             case 'failed':
-                console.log('Deep Link Handler - Payment failed, navigating to payment complete');
+
                 router.replace({
                     pathname: '/payment/payment-complete',
                     params: {
@@ -64,7 +58,7 @@ const DeepLinkHandler = () => {
                 });
                 break;
             case 'cancelled':
-                console.log('Deep Link Handler - Payment cancelled, navigating to payment complete');
+
                 router.replace({
                     pathname: '/payment/payment-complete',
                     params: {

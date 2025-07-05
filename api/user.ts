@@ -45,7 +45,7 @@ export const getCurrentUserProfile = async (
           : "Error loading user profile.";
       throw new Error(errorMessage);
     }
-    console.log(response.data);
+    
     return response.data;
   } catch (error) {
     if (error instanceof Error) {

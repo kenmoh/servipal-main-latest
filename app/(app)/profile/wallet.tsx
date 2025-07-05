@@ -54,7 +54,7 @@ const index = () => {
         },
     })
 
-    console.log('Withdraw Data:', data)
+
     return (
         <View flex={1} backgroundColor={'$background'}>
             <Animated.View

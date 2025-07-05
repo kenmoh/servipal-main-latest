@@ -1,15 +1,9 @@
 import { apiClient } from "@/utils/client";
 import { ApiResponse } from "apisauce";
 import { ErrorResponse } from "./auth";
-import {
-  BuyItemResponse,
-  BuyItem,
-} from "@/types/marketplace";
+import { BuyItemResponse, BuyItem } from "@/types/marketplace";
 
-
-const BASE_URL = '/marketplace'
-
-
+const BASE_URL = "/marketplace";
 
 // Fetch Vendor Items
 export const fetchVendorItems = async (
@@ -31,7 +25,6 @@ export const fetchVendorItems = async (
       throw new Error(errorMessage);
     }
 
-    console.log(response.data, response.status, response.problem);
     return response.data;
   } catch (error) {
     if (error instanceof Error) {
@@ -41,9 +34,10 @@ export const fetchVendorItems = async (
   }
 };
 
-
 // Fetch items
-export const buyItem = async (productId: string): Promise<BuyItemResponse[]> => {
+export const buyItem = async (
+  productId: string
+): Promise<BuyItemResponse[]> => {
   try {
     const response: ApiResponse<BuyItemResponse[] | ErrorResponse> =
       await apiClient.get(`${BASE_URL}/${productId}/buy`, {
@@ -67,5 +61,3 @@ export const buyItem = async (productId: string): Promise<BuyItemResponse[]> => 
     throw new Error("An unexpected error occurred");
   }
 };
-
-

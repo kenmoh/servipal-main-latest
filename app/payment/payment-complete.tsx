@@ -8,9 +8,7 @@ const PaymentComplete = () => {
     const theme = useTheme();
     const params = useLocalSearchParams();
 
-    useEffect(() => {
-        console.log('Payment Complete - Received params:', params);
-    }, [params]);
+
 
     const paymentStatus = params.paymentStatus as string;
     const txRef = params.txRef as string;

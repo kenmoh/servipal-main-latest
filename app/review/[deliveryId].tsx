@@ -45,8 +45,6 @@ const ReviewPage = () => {
     const theme = useTheme()
 
 
-    console.log(orderType)
-
 
     const {
         control,
@@ -102,7 +100,7 @@ const ReviewPage = () => {
             comment: data.description,
             review_type: data.reviewType as ReviewerType,
         });
-        console.log(data);
+
     };
 
     return (

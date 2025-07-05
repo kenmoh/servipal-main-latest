@@ -12,7 +12,7 @@ const schema = z.object({
     oldPassword: z.string().min(1, 'Required'),
     newPassword: z.string().min(1, 'Required'),
     confirmPassword: z.string().min(1, 'Required')
-}).refine(data=> data.newPassword===data.confirmPassword, {message: "Password do not match.", path:['confirmPassword']})
+}).refine(data => data.newPassword === data.confirmPassword, { message: "Password do not match.", path: ['confirmPassword'] })
 type FormData = z.infer<typeof schema>
 
 const ChangePassword = () => {
@@ -22,7 +22,7 @@ const ChangePassword = () => {
     })
 
     const onSubmit = (data: FormData) => {
-        console.log(data)
+
     }
 
     return (

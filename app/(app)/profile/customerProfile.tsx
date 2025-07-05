@@ -48,7 +48,7 @@ const Profile = () => {
     const { isPending, mutate } = useMutation({
         mutationFn: updateCurrentCustomer,
         onSuccess: async (data) => {
-            console.log(data, "from customer profile");
+
             await authStorage.removeProfile();
             await authStorage.storeProfile(data);
             setProfile(data);
@@ -102,7 +102,7 @@ const Profile = () => {
     };
 
     const onSubmit = (values: ProfileFormData) => {
-        console.log(values);
+
         mutate({
             ...values,
             accountNumber: values.accountNumber ?? "",

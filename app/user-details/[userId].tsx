@@ -13,7 +13,7 @@ const Modal = () => {
     const theme = useTheme()
     const { userId } = useLocalSearchParams()
 
-    console.log(userId)
+
 
     const { data, isLoading } = useQuery({
         queryKey: ["profile", userId],
@@ -22,7 +22,7 @@ const Modal = () => {
 
     });
 
-    console.log(data)
+
 
     const handleContentPress = (e: any) => {
         e.stopPropagation();
@@ -59,7 +59,7 @@ const Modal = () => {
                             <Bike size={20} color={theme.gray11.val} />
                             <Text color="$text" fontSize={14}>{data?.bike_number}</Text>
                         </XStack>
-                       
+
                     </YStack>
 
                     {/* Call and Report Button */}

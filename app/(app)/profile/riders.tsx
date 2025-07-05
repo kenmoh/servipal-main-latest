@@ -22,7 +22,7 @@ const riders = () => {
         queryFn: () => getCurrentDispatchRiders(),
     })
 
-    console.log(data)
+
 
 
     if (isFetching) return <LoadingIndicator />

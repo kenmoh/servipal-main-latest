@@ -23,7 +23,7 @@ const StoreHeader = () => {
         profileImage,
     } = useLocalSearchParams();
 
-    console.log('Backdrop: ', backDrop, 'Profile: ', profileImage)
+
     return (
         <View backgroundColor={theme.background.val}>
             <View backgroundColor={theme.cardBackground.val}>

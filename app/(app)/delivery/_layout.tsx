@@ -28,7 +28,7 @@ const HeaderRight = ({
         enabled: !!user?.sub,
     });
 
-    console.log(badges)
+
 
     return (
         <XStack gap={"$3"}>

@@ -45,7 +45,7 @@ const ProfileImagePicker = ({
       type: asset.mimeType || 'image/jpeg',
       name: asset.fileName || `image_${Date.now()}.jpg`,
     };
-    console.log(imageData)
+
     onImageSelect(imageData);
   };
 

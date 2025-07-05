@@ -44,7 +44,7 @@ const ConfirmAccount = () => {
     const [canResend, setCanResend] = useState(false);
     const [email, setEmail] = useState("");
 
-    console.log(email);
+
 
 
     const { control, handleSubmit, formState: { errors } } = useForm<FormData>({
