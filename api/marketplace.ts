@@ -2,6 +2,7 @@ import { apiClient } from "@/utils/client";
 import { ApiResponse } from "apisauce";
 import { ErrorResponse } from "./auth";
 import { BuyItemResponse, BuyItem } from "@/types/marketplace";
+import { MenuItem } from "@/types/item-types";
 
 const BASE_URL = "/marketplace";
 

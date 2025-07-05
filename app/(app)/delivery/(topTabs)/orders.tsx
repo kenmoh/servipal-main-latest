@@ -17,10 +17,11 @@ import {
     Shirt,
     Utensils,
 } from "lucide-react-native";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useCallback } from "react";
 import { FlatList, ScrollView } from "react-native";
 import { YStack, Text, useTheme, Card, View, Button } from "tamagui";
 import { StatsSkeleton, DeliveryListSkeleton } from "@/components/LoadingSkeleton";
+import React from "react";
 
 const UserOrders = () => {
     const theme = useTheme();
@@ -61,6 +62,11 @@ const UserOrders = () => {
         }),
         [data]
     );
+
+    // Memoized FlatList helpers
+    const renderItem = useCallback(({ item }: { item: DeliveryDetail }) => <ItemCard data={item} />, []);
+    const renderSeparator = useCallback(() => <HDivider />, []);
+    const keyExtractor = useCallback((item: DeliveryDetail) => item?.order?.id!, []);
 
     if (isLoading || isFetching || isPending || !isFetched || !data) {
         return (
@@ -160,11 +166,15 @@ const UserOrders = () => {
             <YStack backgroundColor={"$background"} flex={1}>
                 <FlatList
                     data={data}
-                    keyExtractor={(item: DeliveryDetail) => item?.order?.id!}
-                    renderItem={({ item }) => <ItemCard data={item} />}
-                    ItemSeparatorComponent={() => <HDivider />}
+                    keyExtractor={keyExtractor}
+                    renderItem={renderItem}
+                    ItemSeparatorComponent={renderSeparator}
                     refreshing={isFetching}
                     onRefresh={refetch}
+                    removeClippedSubviews={true}
+                    initialNumToRender={10}
+                    maxToRenderPerBatch={10}
+                    windowSize={10}
                 />
             </YStack>
         </YStack>
@@ -173,12 +183,7 @@ const UserOrders = () => {
 
 export default UserOrders;
 
-const StatCard = ({
-    icon: Icon,
-    label,
-    value,
-    color,
-}: {
+const StatCard = React.memo(({ icon: Icon, label, value, color }: {
     icon: any;
     label: string;
     value: number;
@@ -205,4 +210,5 @@ const StatCard = ({
             </Text>
         </YStack>
     </Card>
-);
+));
+StatCard.displayName = 'StatCard';

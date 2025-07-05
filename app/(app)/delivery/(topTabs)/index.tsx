@@ -1,9 +1,8 @@
-
 import React from "react";
 import { DeliveryType, fetchDeliveries, fetchPaidPendingDeliveries, getTravelDistance } from "@/api/order";
 import HDivider from "@/components/HDivider";
 import ItemCard from "@/components/ItemCard";
-import LoadingIndicator from "@/components/LoadingIndicator";
+
 import { DeliveryDetail } from "@/types/order-types";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useState, useEffect, useCallback, useMemo } from "react";
@@ -124,31 +123,24 @@ const DeliveryScreen = () => {
 
   useLocationTracking(handleLocationChange);
 
-  const getItemDistance = async (pickupCoords: [number, number]) => {
+  // Memoize getItemDistance
+  const getItemDistance = useCallback(async (pickupCoords: [number, number]) => {
     if (!userLocation) return null;
-
-    // Check cache first
     const cachedDistance = distanceCache.get(
       userLocation.latitude,
       userLocation.longitude,
       pickupCoords[0],
       pickupCoords[1]
     );
-
     if (cachedDistance !== null) {
       return cachedDistance;
     }
-
-    // Calculate new distance
     const distance = await getTravelDistance(
       userLocation.latitude,
       userLocation.longitude,
       pickupCoords[0],
       pickupCoords[1]
     );
-
-
-    // Cache the result
     if (distance !== null) {
       distanceCache.set(
         userLocation.latitude,
@@ -158,9 +150,8 @@ const DeliveryScreen = () => {
         distance
       );
     }
-
     return distance;
-  };
+  }, [userLocation]);
 
   // Memoize render functions
   const renderItem: ListRenderItem<DeliveryDetail> = useCallback(
@@ -194,13 +185,11 @@ const DeliveryScreen = () => {
 
   useEffect(() => {
     let isMounted = true;
-
     const filterDeliveries = async () => {
       if (!data || !locationPermission || !userLocation) {
         if (isMounted) setFilteredData([]);
         return;
       }
-
       const itemsWithinRange = await Promise.all(
         data.map(async (item) => {
           const pickupCoords = item.delivery?.pickup_coordinates;
@@ -212,27 +201,22 @@ const DeliveryScreen = () => {
             typeof pickupCoords[1] !== "number"
           )
             return null;
-
           const distance = await getItemDistance([
             pickupCoords[0],
             pickupCoords[1],
           ]);
           if (distance === null || distance > 100) return null;
-
           return {
             ...item,
             distance,
           };
         })
       );
-
       let filtered = itemsWithinRange.filter(Boolean) as (DeliveryDetail & {
         distance: number;
       })[];
-
       // Sort by distance (closest first)
       filtered.sort((a, b) => a.distance - b.distance);
-
       if (searchQuery.trim()) {
         const searchTerm = searchQuery.toLowerCase().trim();
         filtered = filtered.filter((item) => {
@@ -243,15 +227,24 @@ const DeliveryScreen = () => {
           );
         });
       }
-
-      if (isMounted) setFilteredData(filtered);
+      // Only update state if changed
+      setFilteredData((prev) => {
+        const prevIds = prev.map((i) => (i.delivery?.id ?? '') + (typeof (i as any).distance !== 'undefined' ? (i as any).distance : ''));
+        const nextIds = filtered.map((i) => (i.delivery?.id ?? '') + (typeof (i as any).distance !== 'undefined' ? (i as any).distance : ''));
+        if (
+          prev.length === filtered.length &&
+          prevIds.every((id, idx) => id === nextIds[idx])
+        ) {
+          return prev;
+        }
+        return filtered;
+      });
     };
     filterDeliveries();
-
     return () => {
       isMounted = false;
     };
-  }, [data, searchQuery, locationPermission, userLocation]);
+  }, [data, searchQuery, locationPermission, userLocation, getItemDistance]);
 
   if (!locationPermission) {
     return <LocationPermission onRetry={checkLocationPermission} />;
