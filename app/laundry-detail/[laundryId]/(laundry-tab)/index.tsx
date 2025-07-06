@@ -16,13 +16,15 @@ import { Menu } from "lucide-react-native";
 
 const StoreDetails = () => {
     const { user } = useAuth();
-    const { storeId } = useLocalSearchParams();
+    const { laundryId, storeId } = useLocalSearchParams();
     const { cart, addItem, totalCost, removeItem } = useCartStore();
     const [checkedItems, setCheckedItems] = useState<Set<string>>(new Set());
 
+    const laundryVendorId = storeId || laundryId;
+
     const { data, refetch, isFetching } = useQuery({
-        queryKey: ["laundryItems", storeId],
-        queryFn: () => fetchLaundryMenu(storeId as string),
+        queryKey: ["laundryItems", laundryVendorId],
+        queryFn: () => fetchLaundryMenu(laundryVendorId as string),
         select: (items) =>
             items?.filter((item) => item.item_type === "laundry") || [],
     });
@@ -38,7 +40,7 @@ const StoreDetails = () => {
                     return newChecked;
                 });
             } else {
-                addItem(storeId as string, item.id, 1, {
+                addItem(laundryVendorId as string, item.id, 1, {
                     name: item.name,
                     price: Number(item.price),
                     image: item.images[0]?.url || "",
@@ -50,8 +52,9 @@ const StoreDetails = () => {
                 });
             }
         },
-        [addItem, removeItem, storeId, checkedItems]
+        [addItem, removeItem, laundryVendorId, checkedItems]
     );
+
 
     return (
         <View flex={1} backgroundColor={"$background"}>
@@ -68,7 +71,7 @@ const StoreDetails = () => {
                     )}
                     removeClippedSubviews={true}
                     ListEmptyComponent={
-                        !isFetching && user?.sub === storeId ? (
+                        !isFetching && user?.sub === laundryId ? (
                             <EmptyList
                                 title="No Menu Items"
                                 description="Add your first menu item to start selling"
@@ -91,15 +94,17 @@ const StoreDetails = () => {
                 onPress={() => router.push({ pathname: "/cart" })}
             />
 
-            {user?.user_type === "laundry_vendor" && data && data[0]?.laundry_id === user?.sub && (
-                <FAB
-                    icon={<Menu color={"white"} />}
-                    onPress={() =>
-                        router.push({
-                            pathname: "/laundry-detail/addLaundryItem"
-                        })
-                    }
-                />
+            {user?.user_type === "laundry_vendor" && laundryVendorId === user?.sub && data && data?.length > 0 && (
+                <View position="absolute" bottom={40} right={10}>
+                    <FAB
+                        icon={<Menu color={"white"} />}
+                        onPress={() =>
+                            router.push({
+                                pathname: "/laundry-detail/addLaundryItem"
+                            })
+                        }
+                    />
+                </View>
             )}
         </View>
     );

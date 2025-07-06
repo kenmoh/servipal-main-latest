@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { YStack, XStack, Text, Card, Button, useTheme, View } from "tamagui";
+import { YStack, Text, Card, Button, useTheme, View } from "tamagui";
 import { useLocalSearchParams, router } from "expo-router";
-import { CreditCard, ArrowLeftRight } from "lucide-react-native";
+import { CreditCard } from "lucide-react-native";
 import { FundWalletReturn } from "@/api/payment";
 import WebView from "react-native-webview";
 import { Dimensions, StyleSheet } from "react-native";

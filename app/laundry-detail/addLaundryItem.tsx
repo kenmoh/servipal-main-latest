@@ -37,8 +37,6 @@ const schema = z.object({
 type FormData = z.infer<typeof schema>;
 
 const adLaundryItem = () => {
-    const [visble, setVisble] = useState(false);
-    const [selectedItemType, setSelectedItemType] = useState<string>("food");
     const { user } = useAuth()
 
     const {
@@ -51,7 +49,7 @@ const adLaundryItem = () => {
         mode: "onBlur",
         defaultValues: {
             name: "",
-            price: 0,
+            // price: 0,
             images: [],
             itemType: "laundry",
         },
@@ -111,9 +109,9 @@ const adLaundryItem = () => {
                             />
                         )}
                     />
-                    <XStack alignSelf="center" gap={5} justifyContent="center" alignItems="center">
+                    <XStack gap={5} >
 
-                        <View width={'47.5%'}>
+                        <View width={'50%'} margginLeft={5} >
                             <Controller
                                 control={control}
                                 name="price"
@@ -130,7 +128,7 @@ const adLaundryItem = () => {
                                 )}
                             />
                         </View>
-                        <View width={'47.5%'}>
+                        <View width={'47.5%'} display="none">
                             <Controller
                                 control={control}
                                 name="itemType"

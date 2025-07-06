@@ -79,7 +79,7 @@ const profile = () => {
                     restaurantId: user.sub,
                     companyName: profile?.profile?.business_name,
                     backDrop: profile?.profile?.backdrop_image_url,
-                    profileImage: profile?.profile?.backdrop_image_url,
+                    profileImage: profile?.profile?.profile_image_url,
                     openingHour: profile?.profile?.opening_hours,
                     closingHour: profile?.profile?.closing_hours,
                     address: profile?.profile?.business_address,
@@ -90,7 +90,17 @@ const profile = () => {
                 }
             });
         } else if (user?.user_type === "laundry_vendor") {
-            router.push({ pathname: "/laundry-detail/[laundryId]", params: { laundryId: user.sub } });
+            router.push({
+                pathname: "/laundry-detail/[laundryId]", params: {
+                    laundryId: user.sub,
+                    companyName: profile?.profile?.business_name,
+                    backDrop: profile?.profile?.backdrop_image_url,
+                    profileImage: profile?.profile?.profile_image_url,
+                    openingHour: profile?.profile?.opening_hours,
+                    closingHour: profile?.profile?.closing_hours,
+                    address: profile?.profile?.business_address,
+                }
+            });
         }
     };
 

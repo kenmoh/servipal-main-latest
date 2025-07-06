@@ -139,7 +139,6 @@ const Page = () => {
     });
 
 
-
     // Get user's location
     useEffect(() => {
         const getUserLocation = async () => {

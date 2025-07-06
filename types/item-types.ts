@@ -74,7 +74,7 @@ interface MenuBase {
 
 export interface MenuItem extends MenuBase {
   user_id: string;
-  description: string;
+  description?: string;
 }
 
 export interface LaundryMenuItem extends MenuBase {
