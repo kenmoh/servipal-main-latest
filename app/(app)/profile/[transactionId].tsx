@@ -10,18 +10,19 @@ const TransactionDetails = () => {
     const {
         amount,
         date,
-        status,
+        status: paymentStatus,
         transactionId,
         paymentBy,
         id,
         transactionType,
         paymentLink,
+        data
     } = useLocalSearchParams();
     const [showWebView, setShowWebView] = React.useState(false);
     const [redirectedUrl, setRedirectedUrl] = useState<{ url?: string } | null>(
         null
     );
-    const paymentStatus = redirectedUrl?.url
+    const status = redirectedUrl?.url
         ? redirectedUrl?.url?.split("?")[1]?.split("&")
         : null;
 
@@ -33,28 +34,28 @@ const TransactionDetails = () => {
         setShowWebView(true);
     };
 
-    const statusString = Array.isArray(status) ? status[0] : status;
+    const statusString = Array.isArray(paymentStatus) ? paymentStatus[0] : paymentStatus;
 
     useEffect(() => {
-        if (!paymentStatus) return;
+        if (!status) return;
 
-        // Add paymentStatus to the redirect
-        if (paymentStatus[0] === "status=successful") {
+        // Add status to the redirect
+        if (status[0] === "status=successful") {
             router.replace({
                 pathname: "/payment/payment-complete",
-                params: { paymentStatus: "success" },
+                params: { status: "success" },
             });
         }
         if (
-            paymentStatus[0] === "status=failed" ||
-            paymentStatus[0] === "status=cancelled"
+            status[0] === "status=failed" ||
+            status[0] === "status=cancelled"
         ) {
             router.replace({
                 pathname: "/payment/payment-complete",
-                params: { paymentStatus: "failed" },
+                params: { status: "failed" },
             });
         }
-    }, [paymentStatus]);
+    }, [status]);
 
     if (showWebView && paymentLink) {
         return (
@@ -74,6 +75,7 @@ const TransactionDetails = () => {
                 </YStack>
                 <WebView
                     style={styles.webview}
+                    onNavigationStateChange={setRedirectedUrl}
                     source={{
                         uri: Array.isArray(paymentLink)
                             ? paymentLink[0]
@@ -89,7 +91,7 @@ const TransactionDetails = () => {
             flex={1}
             backgroundColor={theme.background.val}
             padding="$3"
-            gap={30}
+            gap={50}
         >
             <Card
                 bordered
@@ -99,7 +101,7 @@ const TransactionDetails = () => {
                 width="100%"
                 maxWidth={400}
             >
-                <YStack gap={10}>
+                <YStack gap={20}>
                     <Text fontSize={18} color="$gray11">
                         Transaction Details
                     </Text>
@@ -131,7 +133,7 @@ const TransactionDetails = () => {
                         </Text>
                     </XStack>
                 </YStack>
-                <YStack gap={6} marginTop={16}>
+                <YStack gap={20} marginTop={16}>
                     <Text fontSize={16} color="$gray11">
                         Transaction ID:
                     </Text>
@@ -159,7 +161,7 @@ const TransactionDetails = () => {
                     </XStack>
                 </YStack>
             </Card>
-            {status === "pending" && (
+            {paymentStatus === "pending" && (
                 <Button
                     backgroundColor="$btnPrimaryColor"
                     size="$4"

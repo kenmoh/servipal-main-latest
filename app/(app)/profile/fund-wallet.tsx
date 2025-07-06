@@ -47,7 +47,7 @@ const FundWallet = () => {
             router.push({
                 pathname: '/profile/wallet-payment',
                 params: {
-                    orderId: data?.id,
+                    transactionId: data?.id,
                     fundWalletData: JSON.stringify(data),
                 }
             });
@@ -65,8 +65,8 @@ const FundWallet = () => {
     });
 
     const onSubmit = (value: FundWalletForm) => {
-
         mutate({ amount: Number(value.amount) });
+        reset();
     };
 
     return (
