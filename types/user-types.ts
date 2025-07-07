@@ -29,7 +29,7 @@ export interface CompanyProfile {
   company_name: string;
   email: string;
   phone_number: string;
-  profile_image_url: string;
+  profile_image: string;
   location: string;
   backdrop_image_url: string;
   opening_hour: string;

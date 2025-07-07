@@ -1,10 +1,10 @@
 import { FlatList, ScrollView } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
-import { useTheme, View, YStack } from "tamagui";
-import FoodCard from "@/components/FoodCard";
+import { Heading, Paragraph, useTheme, View, YStack } from "tamagui";
+import LaundryCard from "@/components/LaundryCard";
 import CartInfoBtn from "@/components/CartInfoBtn";
 import { useAuth } from "@/context/authContext";
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchLaundryMenu } from "@/api/user";
 import { LaundryMenuItem } from "@/types/item-types";
@@ -18,7 +18,6 @@ const StoreDetails = () => {
     const { user } = useAuth();
     const { laundryId, storeId } = useLocalSearchParams();
     const { cart, addItem, totalCost, removeItem } = useCartStore();
-    const [checkedItems, setCheckedItems] = useState<Set<string>>(new Set());
 
     const laundryVendorId = storeId || laundryId;
 
@@ -32,44 +31,35 @@ const StoreDetails = () => {
 
     const handleAddToCart = useCallback(
         (item: LaundryMenuItem) => {
-            if (checkedItems.has(item.id)) {
+            const isInCart = cart.order_items.some((cartItem) => cartItem.item_id === item.id);
+            if (isInCart) {
                 removeItem(item.id);
-                setCheckedItems((prev) => {
-                    const newChecked = new Set(prev);
-                    newChecked.delete(item.id);
-                    return newChecked;
-                });
             } else {
                 addItem(laundryVendorId as string, item.id, 1, {
                     name: item.name,
                     price: Number(item.price),
-                    image: item.images[0]?.url || "",
-                });
-                setCheckedItems((prev) => {
-                    const newChecked = new Set(prev);
-                    newChecked.add(item.id);
-                    return newChecked;
+                    image: item.images?.[0]?.url || "",
                 });
             }
         },
-        [addItem, removeItem, laundryVendorId, checkedItems]
+        [addItem, removeItem, laundryVendorId, cart.order_items]
     );
 
 
     return (
-        <View flex={1} backgroundColor={"$background"}>
+        <View flex={1} backgroundColor={"$background"} padding='$2'>
             <YStack flex={1}>
                 <FlatList
                     data={data ?? []}
                     keyExtractor={(item) => item?.id}
                     renderItem={({ item }: { item: LaundryMenuItem }) => (
-                        <FoodCard
+                        <LaundryCard
                             item={item}
-                            cardType={"LAUNDRY"}
                             onPress={() => handleAddToCart(item)}
                         />
                     )}
                     removeClippedSubviews={true}
+                    ListHeaderComponent={<View />}
                     ListEmptyComponent={
                         !isFetching && user?.sub === laundryId ? (
                             <EmptyList
@@ -87,6 +77,7 @@ const StoreDetails = () => {
                     stickyHeaderIndices={[0]}
                 />
             </YStack>
+
             <CartInfoBtn
                 label="View Cart"
                 totalCost={totalCost?.toString()!}

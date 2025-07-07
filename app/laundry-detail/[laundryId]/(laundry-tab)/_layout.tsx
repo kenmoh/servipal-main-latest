@@ -24,6 +24,9 @@ const StoreHeader = () => {
     } = useLocalSearchParams();
 
 
+    console.log(profileImage, "profileImage from params");
+
+
     return (
         <View backgroundColor={theme.background.val}>
             <View backgroundColor={theme.cardBackground.val}>
@@ -38,7 +41,11 @@ const StoreHeader = () => {
                 <View padding="$4" backgroundColor={'$cardBackground'}>
                     <View position="absolute" top={-35} left={20}>
                         <Image
-                            source={{ uri: profileImage || require("@/assets/images/Burge.jpg") }}
+                            source={
+                                profileImage && profileImage !== ""
+                                    ? { uri: profileImage }
+                                    : require("@/assets/images/Burge.jpg")
+                            }
                             style={{
                                 height: 65,
                                 width: 65,

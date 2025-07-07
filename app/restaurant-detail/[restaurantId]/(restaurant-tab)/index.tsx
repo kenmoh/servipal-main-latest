@@ -24,7 +24,7 @@ const groups: CategoryType[] = [
 
 const StoreDetails = () => {
     const { user } = useAuth();
-    const { storeId, screenType, restaurantId } = useLocalSearchParams();
+    const { storeId, restaurantId } = useLocalSearchParams();
     const { cart, addItem, totalCost, removeItem } = useCartStore();
     const [checkedItems, setCheckedItems] = useState<Set<string>>(new Set());
     const [selectedFoodGroup, setSelectedFoodGroup] = useState<string | undefined>('main_course');
@@ -64,7 +64,7 @@ const StoreDetails = () => {
     );
 
     return (
-        <View flex={1} backgroundColor={"$background"}>
+        <View flex={1} backgroundColor={"$background"} padding='$2'>
             <YStack flex={1}>
                 <FlatList
                     data={data ?? []}
@@ -72,11 +72,12 @@ const StoreDetails = () => {
                     renderItem={({ item }: { item: MenuItem }) => (
                         <FoodCard
                             item={item}
-                            cardType={"RESTAURANT"}
+
                             onPress={() => handleAddToCart(item)}
                         />
                     )}
                     removeClippedSubviews={true}
+
                     ListHeaderComponent={<Category
                         categories={groups || []}
                         onCategorySelect={val => setSelectedFoodGroup(val ?? undefined)}

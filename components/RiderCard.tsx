@@ -1,4 +1,4 @@
-import { StyleSheet, TouchableOpacity } from "react-native";
+import { ActivityIndicator, StyleSheet, TouchableOpacity } from "react-native";
 import React from "react";
 import {
     Avatar,
@@ -17,7 +17,6 @@ import { Edit, Trash2 } from "lucide-react-native";
 import HDivider from "./HDivider";
 import { RiderResponse } from "@/types/user-types";
 import { deleteRider } from "@/api/user";
-import LoadingIndicator from "./LoadingIndicator";
 import { useAuth } from '@/context/authContext'
 import { queryClient } from '@/app/_layout'
 
@@ -25,7 +24,7 @@ const RiderCard = ({ rider }: { rider: RiderResponse }) => {
     const theme = useTheme();
     const { user } = useAuth()
 
-    const { mutate, isPending } = useMutation({
+    const { mutate: deleteRiderMutation, isPending } = useMutation({
         mutationFn: () => deleteRider(rider?.id),
         onSuccess: () => {
             // Optimistically update cache
@@ -101,8 +100,8 @@ const RiderCard = ({ rider }: { rider: RiderResponse }) => {
                             <Edit color={theme.icon.val} size={20} />
                         </TouchableOpacity>
 
-                        <TouchableOpacity onPress={() => mutate()}>
-                            {isPending ? <LoadingIndicator size='small' /> : <Trash2 color={theme.icon.val} size={20} />}
+                        <TouchableOpacity onPress={() => deleteRiderMutation()}>
+                            {isPending ? <ActivityIndicator color={theme.icon.val} size='small' /> : <Trash2 color={theme.icon.val} size={20} />}
                         </TouchableOpacity>
                     </YStack>
                 </XStack>

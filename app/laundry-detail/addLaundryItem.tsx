@@ -1,4 +1,4 @@
-import { StyleSheet } from "react-native";
+import { ActivityIndicator, StyleSheet } from "react-native";
 import React, { useState } from "react";
 import { ScrollView, View, Button, Text, XStack } from "tamagui";
 import { z } from "zod";
@@ -111,7 +111,7 @@ const adLaundryItem = () => {
                     />
                     <XStack gap={5} >
 
-                        <View width={'50%'} margginLeft={5} >
+                        <View width={'50%'} marginLeft={10} >
                             <Controller
                                 control={control}
                                 name="price"
@@ -172,7 +172,7 @@ const adLaundryItem = () => {
                         width={"90%"}
                         onPress={handleSubmit(onSubmit)}
                     >
-                        {isCreating ? <LoadingIndicator /> : "Submit"}
+                        {isCreating ? <ActivityIndicator size="small" color="white" /> : "Submit"}
                     </Button>
                 </View>
             </ScrollView>
